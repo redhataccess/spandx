@@ -1,10 +1,12 @@
 {
   "name": "spandx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Develop locally, proxy to prod, browser-sync, and process ESI tags.",
   "main": "app/spandx.js",
   "bin": "app/cli.js",
-  "files": [ "app" ],
+  "files": [
+    "app"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app/spandx.js",
