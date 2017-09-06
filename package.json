@@ -1,0 +1,41 @@
+{
+  "name": "spandx",
+  "version": "0.0.1",
+  "description": "Develop locally, proxy to prod, browser-sync, and process ESI tags.",
+  "main": "app/spandx.js",
+  "bin": "app/cli.js",
+  "files": [ "app" ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app/spandx.js",
+    "dev": "nodemon spandx.js",
+    "debug": "node-debug spandx.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/redhataccess/spandx.git"
+  },
+  "keywords": [
+    "proxy",
+    "esi",
+    "local"
+  ],
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/redhataccess/spandx/issues"
+  },
+  "homepage": "https://github.com/redhataccess/spandx#readme",
+  "dependencies": {
+    "browser-sync": "^2.18.13",
+    "connect": "^3.6.3",
+    "http-proxy": "^1.16.2",
+    "lodash": "^4.17.4",
+    "nodesi": "^1.6.0",
+    "print-colors": "^1.0.1",
+    "transformer-proxy": "^0.3.4",
+    "yargs": "^8.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
