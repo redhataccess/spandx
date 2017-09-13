@@ -69,6 +69,7 @@ function init(confIn) {
     const proxy = httpProxy.createProxyServer({
         changeOrigin: true,
         autoRewrite: true,
+        secure: false, // don't validate SSL/HTTPS
     });
     app.use( transformerProxy(applyESI) );
     app.use( (req, res) => {
