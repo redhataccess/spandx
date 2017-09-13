@@ -50,7 +50,13 @@ function init(confIn) {
 
     function applyESI(data, req, res) {
         return new Promise(function(resolve, reject) {
-            esi.process(data.toString()).then(resolve).catch(reject);
+            const isHTML = res.getHeader('content-type').includes('html');
+            if (isHTML) {
+                esi.process(data.toString()).then(resolve).catch(reject);
+            }
+            else {
+                resolve(data);
+            }
         });
     };
 
