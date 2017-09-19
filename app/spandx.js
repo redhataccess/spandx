@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 
-const browserSync      = require('browser-sync');
 const http             = require('http');
 const url              = require('url');
 const path             = require('path');
+const fs               = require('fs');
+
+const browserSync      = require('browser-sync');
 const connect          = require('connect');
 const httpProxy        = require('http-proxy');
 const transformerProxy = require('transformer-proxy');
+const serveStatic      = require('serve-static');
+const finalhandler     = require('finalhandler');
 const _                = require('lodash');
 const c                = require('print-colors');
 const ESI              = require('nodesi');
@@ -34,11 +38,18 @@ function init(confIn) {
             }
             break;
         default:
-            conf = config.defaultConfig;
+            conf = config.create();
             console.log('configuration: defaults');
     }
 
     const bs = browserSync.create();
+
+    // for each local file path in the conf, create a serveStatic object for
+    // serving that dir
+    const serveLocal = _(conf.routes)
+        .omitBy(_.isObject)
+        .mapValues(dir => serveStatic(resolveHome(dir)))
+        .value();
 
     const esi = new ESI({
         baseUrl: `http://${conf.host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
@@ -72,59 +83,46 @@ function init(confIn) {
         secure: false, // don't validate SSL/HTTPS
     });
     app.use( transformerProxy(applyESI) );
+
+    // app.use(serveStatic('/home/mclayton/projects/chrome/dist'));
+
     app.use( (req, res) => {
         // figure out which target to proxy to based on the requested resource path
-        const route = _.find(conf.routes, (v,r) => _.startsWith(req.url, r));
-        const target = route.host;
-        // if this path has a remote host, proxy to it
-        if (target) {
-            proxy.web(req, res, { target });
+        const routeKey = _.findKey(conf.routes, (v,r) => _.startsWith(req.url, r));
+        const route = conf.routes[routeKey];
+        let target = route.host;
+        let fileExists;
+        const localFile = !target;
+
+        // determine if the URL path maps to a local directory
+        // if it maps to a local directory, and if the file exists, serve it
+        // up.  if the URL path maps to an HTTP server, OR if it maps to a file
+        // but the file doesn't exist, in either case proxy to a remote server.
+        if (localFile) {
+
+            const relativeFilePath = req.url.replace(new RegExp(`^${routeKey}`), '');
+            const absoluteFilePath = resolveHome(path.join(route, relativeFilePath));
+            fileExists = fs.existsSync(absoluteFilePath);
+
+            if (fileExists) {
+                const oldUrl = req.url;
+                req.url = relativeFilePath;
+                serveLocal[routeKey](req, res, finalhandler(req, res));
+                return; // stop here, don't continue to HTTP proxy section
+            }
         }
+
+        if (localFile && !fileExists) {
+            target = conf.routes['/'].host;
+        }
+
+        proxy.web(req, res, { target }, e => {
+            console.error(e);
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end();
+        });
     });
     http.createServer(app).listen(internalProxyPort);
-
-    // separate the local disk routes from the web routes
-    const routeGroups = _(conf.routes)
-        .toPairs()
-        .partition(pair => _.isObject(pair[1])); // filter out URLs, only want local file paths here
-
-    const webRoutes = routeGroups.get(0);
-    const diskRoutes = routeGroups.get(1);
-
-    // transform the local disk route object into the format browser-sync // wants in its 'serveStatic' option.
-    const serveStatic = _(diskRoutes)
-        .map(pair => ({ route: pair[0], dir: path.resolve(__dirname, resolveHome(pair[1]))}))
-        .value();
-
-    // build a list of file paths to watch for auto-reload, by combining the
-    // local disk route paths with the web routes that provided local paths
-    // (web routes can provide an optional path to local files if they want
-    // browser-sync to auto-reload their stuff)
-    const diskRouteFiles = _(diskRoutes)
-        .map(1)
-        .map(filePath => path.resolve(__dirname, resolveHome(filePath)))
-        .value();
-    const otherLocalFiles = _(webRoutes)
-        .map(1)
-        .filter('watch')
-        .map('watch')
-        .map(filePath => path.resolve(__dirname, resolveHome(filePath)))
-        .value();
-
-    const files = _.concat(diskRouteFiles, otherLocalFiles);
-
-    // create a list of browserSync 'rewriteRules' that will modify the
-    // contents of requests coming back from the proxied remote servers.  this
-    // is mainly useful for rewriting links from, say 'www.foo.com' to
-    // 'localhost:1337' so that when you click on a link, you stay in your
-    // spandx'd environment.
-    const rewriteRules = _(webRoutes)
-        .map(1)
-        .map('host')
-        .map(host => ({ match: new RegExp(host, 'g'), replace: `//${conf.host}:${conf.port}`}))
-        .value();
-
-    const spandxUrl = `http://${conf.host}:${conf.port}`;
 
     // output for humans
     if (conf.verbose) {
@@ -133,23 +131,23 @@ function init(confIn) {
 
         console.log('These paths will be routed to the following remote hosts');
         console.log();
-        console.log(_.map(webRoutes, route => `  ${c.fg.l.blue}${spandxUrl}${c.end}${c.fg.l.green}${route[0]}${c.e} will be routed to ${c.fg.l.blue}${route[1].host}${c.e}${c.fg.l.green}${route[0]}${c.e}`).join('\n'));
+        console.log(_.map(conf.webRoutes, route => `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${route[0]}${c.e} will be routed to ${c.fg.l.blue}${route[1].host}${c.e}${c.fg.l.green}${route[0]}${c.e}`).join('\n'));
         console.log();
 
         console.log('These paths will be routed to your local filesystem');
         console.log();
-        console.log(_.map(diskRoutes, route => `  ${c.fg.l.blue}${spandxUrl}${c.end}${c.fg.l.green}${route[0]}${c.end} will be routed to ${c.fg.l.cyan}${path.resolve(__dirname, resolveHome(route[1]))}${c.e}`).join('\n'));
+        console.log(_.map(conf.diskRoutes, route => `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${route[0]}${c.end} will be routed to ${c.fg.l.cyan}${path.resolve(__dirname, resolveHome(route[1]))}${c.e}`).join('\n'));
 
         console.log();
 
         console.log('Your browser will refresh when files change under these paths');
         console.log();
-        console.log(_.map(files, file => `  ${c.fg.l.cyan}${file}${c.e}`).join('\n'));
+        console.log(_.map(conf.files, file => `  ${c.fg.l.cyan}${file}${c.e}`).join('\n'));
         console.log();
 
         console.log('These find/replace rules will be used to fix links in remote server responses');
         console.log();
-        console.log(_.map(rewriteRules, rule => `  ${c.fg.l.pink}${rule.match}${c.e} will be replaced with "${c.fg.d.green}${rule.replace}${c.e}"`).join('\n'));
+        console.log(_.map(conf.rewriteRules, rule => `  ${c.fg.l.pink}${rule.match}${c.e} will be replaced with "${c.fg.d.green}${rule.replace}${c.e}"`).join('\n'));
         console.log();
     }
 
@@ -161,16 +159,16 @@ function init(confIn) {
         cors: true,
         online: false,
         ui: false,
+        injectChanges: false,
         logLevel: conf.verbose ? 'info' : 'silent',
-        files,
-        serveStatic,
+        files: conf.files,
         proxy: {
             target: internalProxyOrigin,
         },
-        rewriteRules,
+        rewriteRules: conf.rewriteRules,
     });
 
-    console.log(`spandx URL:\n\n  ${c.fg.l.blue}${spandxUrl}${c.end}\n`);
+    console.log(`spandx URL:\n\n  ${c.fg.l.blue}${conf.spandxUrl}${c.end}\n`);
 
 }
 
