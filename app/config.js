@@ -15,9 +15,9 @@ const defaultConfig = {
 
 let configState = {};
 
-function create(incomingConfig={}) {
+function create(incomingConfig={}, configDir=__dirname) {
     configState.currentConfig = _.defaults(incomingConfig, defaultConfig);
-    _.extend(configState.currentConfig, process(configState.currentConfig));
+    _.extend(configState.currentConfig, process(configState.currentConfig, configDir));
     return configState.currentConfig;
 }
 
@@ -28,10 +28,11 @@ function get() {
 function fromFile(filePath=`${process.env.HOME}/.spandx`) {
     const fullPath = path.resolve(__dirname, filePath);
     const confObj = require(fullPath);
-    return create(confObj);
+    const conf = create(confObj, path.parse(fullPath).dir);
+    return conf;
 }
 
-function process(conf) {
+function process(conf, configDir=__dirname) {
     // separate the local disk routes from the web routes
     const routeGroups = _(conf.routes)
         .toPairs()
@@ -46,13 +47,13 @@ function process(conf) {
     // browser-sync to auto-reload their stuff)
     const diskRouteFiles = _(diskRoutes)
         .map(1)
-        .map(filePath => path.resolve(__dirname, resolveHome(filePath)))
+        .map(filePath => path.resolve(configDir, resolveHome(filePath)))
         .value();
     const otherLocalFiles = _(webRoutes)
         .map(1)
         .filter('watch')
         .map('watch')
-        .map(filePath => path.resolve(__dirname, resolveHome(filePath)))
+        .map(filePath => path.resolve(configDir, resolveHome(filePath)))
         .value();
 
     const files = _.concat(diskRouteFiles, otherLocalFiles);
@@ -79,6 +80,7 @@ function process(conf) {
         files,
         rewriteRules,
         spandxUrl,
+        configDir,
     };
 }
 
