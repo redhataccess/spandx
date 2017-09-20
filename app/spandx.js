@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const http             = require('http');
-const url              = require('url');
+const URL              = require('url');
 const path             = require('path');
 const fs               = require('fs');
 
@@ -81,17 +81,18 @@ function init(confIn) {
         changeOrigin: true,
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
+        protocolRewrite: 'http',
     });
     app.use( transformerProxy(applyESI) );
 
     // app.use(serveStatic('/home/mclayton/projects/chrome/dist'));
-
-    app.use( (req, res) => {
+    app.use( (req, res, next) => {
         // figure out which target to proxy to based on the requested resource path
         const routeKey = _.findKey(conf.routes, (v,r) => _.startsWith(req.url, r));
         const route = conf.routes[routeKey];
         let target = route.host;
         let fileExists;
+        let needsSlash = false;
         const localFile = !target;
 
         // determine if the URL path maps to a local directory
@@ -100,19 +101,30 @@ function init(confIn) {
         // but the file doesn't exist, in either case proxy to a remote server.
         if (localFile) {
 
-            const relativeFilePath = req.url.replace(new RegExp(`^${routeKey}`), '');
+            const url = URL.parse(req.url);
+            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}`), '') // remove route path (will be replaced with disk path)
             const absoluteFilePath = resolveHome(path.join(route, relativeFilePath));
             fileExists = fs.existsSync(absoluteFilePath);
 
             if (fileExists) {
                 const oldUrl = req.url;
-                req.url = relativeFilePath;
-                serveLocal[routeKey](req, res, finalhandler(req, res));
-                return; // stop here, don't continue to HTTP proxy section
+                const isDir = fs.lstatSync(absoluteFilePath).isDirectory();
+
+                // if we're headed to a directory and there's no trailing
+                // slash, just let the request pass through to the origin
+                // server.
+                if (isDir && _.last(relativeFilePath) !== '/') {
+                    needsSlash = true;
+                }
+                else {
+                    req.url = relativeFilePath;
+                    serveLocal[routeKey](req, res, finalhandler(req, res));
+                    return; // stop here, don't continue to HTTP proxy section
+                }
             }
         }
 
-        if (localFile && !fileExists) {
+        if (localFile && (!fileExists || needsSlash)) {
             target = conf.routes['/'].host;
         }
 
