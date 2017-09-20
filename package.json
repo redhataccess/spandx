@@ -1,6 +1,6 @@
 {
   "name": "spandx",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Develop locally, proxy to prod, browser-sync, and process ESI tags.",
   "main": "app/spandx.js",
   "bin": "app/cli.js",
