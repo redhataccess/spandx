@@ -1,6 +1,6 @@
-# spandex
-Develop locally, proxy to prod, browser-sync, and process ESI tags.
+# spandx
 
+Develop locally, proxy to prod, browser-sync, and process ESI tags.
 
 ## Quick-start
 
