@@ -32,7 +32,7 @@ function fromFile(filePath=`${process.env.HOME}/.spandx`) {
     return conf;
 }
 
-function process(conf, configDir=__dirname) {
+function processConf(conf, configDir=__dirname) {
     // separate the local disk routes from the web routes
     const routeGroups = _(conf.routes)
         .toPairs()
@@ -89,5 +89,5 @@ module.exports = {
     get,
     fromFile,
     defaultConfig,
-    process,
+    process: processConf,
 };
