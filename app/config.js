@@ -1,8 +1,10 @@
 const fs   = require('fs');
 const path = require('path');
+const sys  = require('sys');
 
-const _    = require('lodash');
-const resolveHome      = require('./resolveHome');
+const _           = require('lodash');
+const resolveHome = require('./resolveHome');
+const c           = require('print-colors');
 
 const defaultConfig = {
     host: 'localhost',
@@ -17,7 +19,7 @@ let configState = {};
 
 function create(incomingConfig={}, configDir=__dirname) {
     configState.currentConfig = _.defaults(incomingConfig, defaultConfig);
-    _.extend(configState.currentConfig, process(configState.currentConfig, configDir));
+    _.extend(configState.currentConfig, processConf(configState.currentConfig, configDir));
     return configState.currentConfig;
 }
 
@@ -25,11 +27,17 @@ function get() {
     return configState.currentConfig;
 }
 
-function fromFile(filePath=`${process.env.HOME}/.spandx`) {
+function fromFile(filePath=`${process.cwd()}/spandx.config.js`) {
     const fullPath = path.resolve(__dirname, filePath);
-    const confObj = require(fullPath);
-    const conf = create(confObj, path.parse(fullPath).dir);
-    return conf;
+    try {
+        const confObj = require(fullPath);
+        const conf = create(confObj, path.parse(fullPath).dir);
+        return conf;
+    }
+    catch(e) {
+        console.error(`Tried to open spandx config file ${c.fg.l.cyan}${filePath}${c.end} but couldn't find it, or couldn't access it.`);
+        process.exit(1);
+    }
 }
 
 function processConf(conf, configDir=__dirname) {
