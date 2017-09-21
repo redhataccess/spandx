@@ -102,7 +102,7 @@ function init(confIn) {
         if (localFile) {
 
             const url = URL.parse(req.url);
-            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}/`), '') // remove route path (will be replaced with disk path)
+            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}/?`), '') // remove route path (will be replaced with disk path)
             const absoluteFilePath = path.resolve(conf.configDir, resolveHome(route), relativeFilePath);
             fileExists = fs.existsSync(absoluteFilePath);
 
