@@ -48,7 +48,7 @@ function init(confIn) {
     // serving that dir
     const serveLocal = _(conf.routes)
         .omitBy(_.isObject)
-        .mapValues(dir => serveStatic(path.resolve(conf.configDir, resolveHome(dir))))
+        .mapValues(dir => serveStatic(path.resolve(conf.configDir, resolveHome(dir)), {redirect:true}))
         .value();
 
     const esi = new ESI({
@@ -102,25 +102,17 @@ function init(confIn) {
         if (localFile) {
 
             const url = URL.parse(req.url);
-            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}/?`), '') // remove route path (will be replaced with disk path)
-            const absoluteFilePath = path.resolve(conf.configDir, resolveHome(route), relativeFilePath);
+            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}`), '/') // remove route path (will be replaced with disk path)
+            const absoluteFilePath = path.resolve(conf.configDir, resolveHome(route), relativeFilePath.replace(/^\//, ''));
             fileExists = fs.existsSync(absoluteFilePath);
 
             if (fileExists) {
                 const oldUrl = req.url;
                 const isDir = fs.lstatSync(absoluteFilePath).isDirectory();
 
-                // if we're headed to a directory and there's no trailing
-                // slash, just let the request pass through to the origin
-                // server.
-                if (isDir && _.last(relativeFilePath) !== '/') {
-                    needsSlash = true;
-                }
-                else {
-                    req.url = relativeFilePath;
-                    serveLocal[routeKey](req, res, finalhandler(req, res));
-                    return; // stop here, don't continue to HTTP proxy section
-                }
+                req.url = relativeFilePath; // update the request's url to be relative to the on-disk dir
+                serveLocal[routeKey](req, res, finalhandler(req, res));
+                return; // stop here, don't continue to HTTP proxy section
             }
         }
 
