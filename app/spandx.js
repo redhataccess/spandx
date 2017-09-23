@@ -102,13 +102,17 @@ function init(confIn) {
         if (localFile) {
 
             const url = URL.parse(req.url);
-            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}`), '/') // remove route path (will be replaced with disk path)
+            const relativeFilePath = url.pathname.replace(new RegExp(`^${routeKey}/?`), '/') // remove route path (will be replaced with disk path)
             const absoluteFilePath = path.resolve(conf.configDir, resolveHome(route), relativeFilePath.replace(/^\//, ''));
             fileExists = fs.existsSync(absoluteFilePath);
 
             if (fileExists) {
                 const oldUrl = req.url;
                 const isDir = fs.lstatSync(absoluteFilePath).isDirectory();
+
+                if (conf.verbose) {
+                    console.log(`GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.cyan}${absoluteFilePath}${c.end}`);
+                }
 
                 req.url = relativeFilePath; // update the request's url to be relative to the on-disk dir
                 serveLocal[routeKey](req, res, finalhandler(req, res));
@@ -118,6 +122,10 @@ function init(confIn) {
 
         if (localFile && (!fileExists || needsSlash)) {
             target = conf.routes['/'].host;
+        }
+
+        if (conf.verbose) {
+            console.log(`GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target}${c.end}${c.fg.l.green}${req.url}${c.end}`);
         }
 
         proxy.web(req, res, { target }, e => {
