@@ -1,0 +1,9 @@
+{
+    "host": "localhost",
+    "port": 1337,
+    "silent": true,
+    "routes": {
+        "/assets": "~/projects/my-app/assets",
+        "/": { "host": "http://localhost:4014" }
+    }
+}
