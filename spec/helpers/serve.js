@@ -4,7 +4,7 @@ const finalhandler = require('finalhandler');
 
 function serve(path, requestedPort=null) {
     return new Promise(resolve => {
-        const serve = serveStatic('spec/helpers/website/');
+        const serve = serveStatic(path);
         const server = http.createServer((req, res) => {
             const fh = finalhandler(req, res);
             serve(req, res, fh);

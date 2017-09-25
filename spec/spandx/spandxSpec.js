@@ -1,4 +1,4 @@
-describe('spandx', function() {
+describe('spandx', () => {
     const http = require('http');
     const frisby = require('frisby');
     const connect = require('connect');
@@ -10,11 +10,11 @@ describe('spandx', function() {
     const spandxPath = '../../app/spandx';
     let Spandx;
 
-    beforeEach(function() {
+    beforeEach(() => {
         Spandx = require(spandxPath);
     });
 
-    afterEach(function() {
+    afterEach(() => {
         Spandx.exit();
         // clear require cache so we can pull in a fresh spandx
         delete require.cache[require.resolve(spandxPath)];
@@ -23,8 +23,8 @@ describe('spandx', function() {
     // init from json and sample request works
     // init from object and sample request works
 
-    describe('spandx.init()', function () {
-        it('should accept default configuration', function(done) {
+    describe('spandx.init()', () => {
+        it('should accept default configuration', done => {
             Spandx.init().then(() => {
                 frisby.get('http://localhost:1337')
                     .expect('status', 200)
@@ -33,99 +33,247 @@ describe('spandx', function() {
             });
         });
 
-        it('should accept a js file', function(done) {
+        it('should accept a js file', done => {
             // launch a static file server, then init spandx, make a test
             // request, then close the static file server
-            serve('spec/helpers/website/', 4014)
-                .then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/spandx.config.js').then(() => {
-                        frisby.get('http://localhost:1337/')
-                            .expect('status', 200)
-                            .expect('bodyContains', /INDEX IN ROOT DIR/)
-                            .done(() => {
-                                server.close();
-                                done();
-                            })
-                    });
-                });
+            Spandx.init('../spec/helpers/configs/js-or-json/spandx.config.js').then(() => {
+                frisby.get('http://localhost:1337/')
+                    .expect('status', 200)
+                    .expect('bodyContains', /INDEX/)
+                    .done(done);
+            });
         });
 
-        it('should accept a json file', function(done) {
-            serve('spec/helpers/website/', 4014)
-                .then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/spandx.config.json').then(() => {
-                        frisby.get('http://localhost:1337/')
-                            .expect('status', 200)
-                            .expect('bodyContains', /INDEX IN ROOT DIR/)
-                            .done(() => {
-                                server.close();
-                                done();
-                            })
-                    });
-                });
+        it('should accept a json file', done => {
+            Spandx.init('../spec/helpers/configs/js-or-json/spandx.config.json').then(() => {
+                frisby.get('http://localhost:1337/')
+                    .expect('status', 200)
+                    .expect('bodyContains', /INDEX/)
+                    .done(done);
+            });
         });
 
-        it('should accept a config object', function(done) {
-            serve('spec/helpers/website/', 4014)
-                .then(({server, port}) => {
-                    Spandx.init({
-                        /* config object! */
-                        silent: true,
-                        routes: {
-                            '/': { host: 'http://localhost:4014' },
-                        },
-
-                    }).then(() => {
-                        frisby.get('http://localhost:1337/')
-                            .expect('status', 200)
-                            .expect('bodyContains', /INDEX IN ROOT DIR/)
-                            .done(() => {
-                                server.close();
-                                done();
-                            })
-                    });
+        it('should accept a config object', done => {
+            serve('spec/helpers/configs/js-or-json/', 4014).then(({server, port}) => {
+                Spandx.init({
+                    /* config object! */
+                    silent: true,
+                    routes: {
+                        '/': { host: 'http://localhost:4014' },
+                    },
+                }).then(() => {
+                    frisby.get('http://localhost:1337/')
+                        .expect('status', 200)
+                        .expect('bodyContains', /INDEX/)
+                        .done(() => {
+                            server.close();
+                            done();
+                        })
                 });
+            });
         });
     });
 
-    // describe('when song has been paused', function() {
-    //     beforeEach(function() {
-    //         player.play(song);
-    //         player.pause();
-    //     });
+    describe('trailing slashes', () => {
 
-    //     it('should indicate that the song is currently paused', function() {
-    //         expect(player.isPlaying).toBeFalsy();
+        describe('when routing to local directories', () => {
+            it('should resolve root dir without trailing slash', done => {
+                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337')
+                        .expect('status', 200)
+                        .expect('bodyContains', /INDEX IN ROOT DIR/)
+                        .done(done);
+                });
+            });
+            it('should resolve root dir with trailing slash', done => {
+                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337/')
+                        .expect('status', 200)
+                        .expect('bodyContains', /INDEX IN ROOT DIR/)
+                        .done(done);
+                });
+            });
+            it('should resolve subdir without trailing slash', done => {
+                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337/subdir')
+                        .expect('status', 200)
+                        .expect('bodyContains', /INDEX IN SUBDIR/)
+                        .done(done);
+                });
+            });
+            it('should resolve subdir with trailing slash', done => {
+                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337/subdir/')
+                        .expect('status', 200)
+                        .expect('bodyContains', /INDEX IN SUBDIR/)
+                        .done(done);
+                });
+            });
+        });
 
-    //         // demonstrates use of 'not' with a custom matcher
-    //         expect(player).not.toBePlaying(song);
-    //     });
+        describe('when routing to remote host', () => {
+            it('should resolve root dir without trailing slash', done => {
+                serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337')
+                            .expect('status', 200)
+                            .expect('bodyContains', /INDEX IN ROOT DIR/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+            it('should resolve root dir with trailing slash', done => {
+                serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/')
+                            .expect('status', 200)
+                            .expect('bodyContains', /INDEX IN ROOT DIR/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+            it('should resolve subdir without trailing slash', done => {
+                serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/subdir')
+                            .expect('status', 200)
+                            .expect('bodyContains', /INDEX IN SUBDIR/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+            it('should resolve subdir with trailing slash', done => {
+                serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/subdir/')
+                            .expect('status', 200)
+                            .expect('bodyContains', /INDEX IN SUBDIR/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+        });
+    });
 
-    //     it('should be possible to resume', function() {
-    //         player.resume();
-    //         expect(player.isPlaying).toBeTruthy();
-    //         expect(player.currentlyPlayingSong).toEqual(song);
-    //     });
-    // });
+    describe('esi:include', () => {
 
-    // // demonstrates use of spies to intercept and test method calls
-    // it('tells the current song if the user has made it a favorite', function() {
-    //     spyOn(song, 'persistFavoriteStatus');
+        describe('when routing to local directories', () => {
+            it('should resolve esi:include with absolute paths', done => {
+                Spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337/esi-abs-paths.html')
+                        .expect('status', 200)
+                        .expect('bodyContains', /ESI ABS PATH PARENT/)
+                        .expect('bodyContains', /ABS PATH ROOT SNIPPET/)
+                        .expect('bodyContains', /ABS PATH SUBDIR SNIPPET/)
+                        .done(done);
+                });
+            });
+            it('should resolve esi:include with domain-relative paths', done => {
+                Spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337/esi-domain-rel-paths.html')
+                        .expect('status', 200)
+                        .expect('bodyContains', /ESI DOMAIN REL PATH PARENT/)
+                        .expect('bodyContains', /ABS PATH ROOT SNIPPET/)
+                        .expect('bodyContains', /ABS PATH SUBDIR SNIPPET/)
+                        .done(done);
+                });
+            });
+            it('should resolve esi:include with file-relative paths', done => {
+                Spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
+                    frisby.get('http://localhost:1337/esi-file-rel-paths.html')
+                        .expect('status', 200)
+                        .expect('bodyContains', /ESI FILE REL PATH PARENT/)
+                        .expect('bodyContains', /REL PATH ROOT SNIPPET/)
+                        .expect('bodyContains', /REL PATH SUBDIR SNIPPET/)
+                        .done(done);
+                });
+            });
+        });
 
-    //     player.play(song);
-    //     player.makeFavorite();
+        describe('when routing to remote host', () => {
+            it('should resolve esi:include with absolute paths', done => {
+                serve('spec/helpers/configs/esi-include/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/esi-abs-paths.html')
+                            .expect('status', 200)
+                            .expect('bodyContains', /ESI ABS PATH PARENT/)
+                            .expect('bodyContains', /ABS PATH ROOT SNIPPET/)
+                            .expect('bodyContains', /ABS PATH SUBDIR SNIPPET/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+            it('should resolve esi:include with domain-relative paths', done => {
+                serve('spec/helpers/configs/esi-include/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/esi-domain-rel-paths.html')
+                            .expect('status', 200)
+                            .expect('bodyContains', /ESI DOMAIN REL PATH PARENT/)
+                            .expect('bodyContains', /ABS PATH ROOT SNIPPET/)
+                            .expect('bodyContains', /ABS PATH SUBDIR SNIPPET/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+            it('should resolve esi:include with file-relative paths', done => {
+                serve('spec/helpers/configs/esi-include/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/esi-file-rel-paths.html')
+                            .expect('status', 200)
+                            .expect('bodyContains', /ESI FILE REL PATH PARENT/)
+                            .expect('bodyContains', /REL PATH ROOT SNIPPET/)
+                            .expect('bodyContains', /REL PATH SUBDIR SNIPPET/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+        });
+    });
 
-    //     expect(song.persistFavoriteStatus).toHaveBeenCalledWith(true);
-    // });
-
-    // //demonstrates use of expected exceptions
-    // describe('#resume', function() {
-    //     it('should throw an exception if song is already playing', function() {
-    //         player.play(song);
-
-    //         expect(function() {
-    //             player.resume();
-    //         }).toThrowError('song is already playing');
-    //     });
-    // });
+    describe('URL rewriting', () => {
+        describe('when routing to remote directories', () => {
+            it('should rewrite links to match the spandx origin', done => {
+                serve('spec/helpers/configs/url-rewriting/', 4014).then(({server, port}) => {
+                    Spandx.init('../spec/helpers/configs/url-rewriting/spandx.remote.js').then(() => {
+                        frisby.get('http://localhost:1337/')
+                            .setup({
+                                request: {
+                                    headers: {
+                                        'Accept': 'text/html,*/*'
+                                    }
+                                }
+                            })
+                            .expect('status', 200)
+                            .expect('bodyContains', /URL REWRITING INDEX/)
+                            .expect('bodyContains', '1337')
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+        });
+    });
 });

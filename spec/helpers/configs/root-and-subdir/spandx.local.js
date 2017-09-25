@@ -3,7 +3,7 @@ module.exports = {
     port: 1337,
     silent: true,
     routes: {
-        '/': '../website',
+        '/': './',
     },
 };
 
