@@ -9,6 +9,7 @@ const defaultConfig = {
     host: 'localhost',
     port: 1337,
     verbose: false,
+    silent: false,
     routes: {
         '/': path.resolve(__dirname, 'splash'),
     },
@@ -78,8 +79,12 @@ function processConf(conf, configDir=__dirname) {
 
     const spandxUrl = `http://${conf.host}:${conf.port}`;
 
+    // allow 'silent' to override 'verbose'
+    const verbose = conf.silent ? false : conf.verbose;
+
     return {
         routeGroups,
+        verbose,
         webRoutes,
         diskRoutes,
         diskRouteFiles,

@@ -18,6 +18,9 @@ const ESI              = require('nodesi');
 const config           = require('./config');
 const resolveHome      = require('./resolveHome');
 
+let proxy;
+let internalProxy;
+let bs;
 
 function init(confIn) {
 
@@ -27,22 +30,24 @@ function init(confIn) {
     switch (typeof confIn) {
         case 'string':
             conf = config.fromFile(confIn);
-            if (conf.verbose) {
+            if (conf.verbose && !conf.silent) {
                 console.log(`configuration: ${c.fg.l.cyan}${confIn}${c.end}`);
             }
             break;
         case 'object':
             conf = config.create(confIn);
-            if (conf.verbose) {
+            if (conf.verbose && !conf.silent) {
                 console.log('configuration: custom object');
             }
             break;
         default:
             conf = config.create();
-            console.log('configuration: defaults');
+            if (conf.verbose && !conf.silent) {
+                console.log('configuration: defaults');
+            }
     }
 
-    const bs = browserSync.create();
+    bs = browserSync.create();
 
     // for each local file path in the conf, create a serveStatic object for
     // serving that dir
@@ -77,7 +82,7 @@ function init(confIn) {
     const internalProxyOrigin = `http://${conf.host}:${internalProxyPort}`;
 
     const app = connect();
-    const proxy = httpProxy.createProxyServer({
+    proxy = httpProxy.createProxyServer({
         changeOrigin: true,
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
@@ -134,7 +139,7 @@ function init(confIn) {
             res.end();
         });
     });
-    http.createServer(app).listen(internalProxyPort);
+    internalProxy = http.createServer(app).listen(internalProxyPort);
 
     // output for humans
     if (conf.verbose) {
@@ -165,27 +170,41 @@ function init(confIn) {
 
     // launch!
 
-    bs.init({
-        port: conf.port,
-        open: false,
-        cors: true,
-        online: false,
-        ui: false,
-        injectChanges: false,
-        logLevel: conf.verbose ? 'info' : 'silent',
-        files: conf.files,
-        proxy: {
-            target: internalProxyOrigin,
-        },
-        rewriteRules: conf.rewriteRules,
+    // create a promise that resolves when browsersync is ready
+    const bsReadyPromise = new Promise(resolve => {
+        bs.init({
+            port: conf.port,
+            open: false,
+            cors: true,
+            online: false,
+            ui: false,
+            injectChanges: false,
+            logLevel: conf.verbose ? 'info' : 'silent',
+            files: conf.files,
+            proxy: {
+                target: internalProxyOrigin,
+            },
+            rewriteRules: conf.rewriteRules,
+        }, resolve);
     });
 
-    console.log(`spandx URL:\n\n  ${c.fg.l.blue}${conf.spandxUrl}${c.end}\n`);
 
+    if (!conf.silent) {
+        console.log(`spandx URL:\n\n  ${c.fg.l.blue}${conf.spandxUrl}${c.end}\n`);
+    }
+
+    return bsReadyPromise;
+
+}
+
+function exit() {
+    bs.exit();
+    internalProxy.close();
+    proxy.close();
 }
 
 if (require.main === module) {
     init();
 }
 
-module.exports = { init };
+module.exports = { init, exit };
