@@ -185,7 +185,7 @@ function init(confIn) {
                 target: internalProxyOrigin,
             },
             rewriteRules: conf.rewriteRules,
-        }, resolve);
+        }, () => resolve(bs));
     });
 
 
