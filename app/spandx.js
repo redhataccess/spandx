@@ -90,7 +90,6 @@ function init(confIn) {
     });
     app.use( transformerProxy(applyESI) );
 
-    // app.use(serveStatic('/home/mclayton/projects/chrome/dist'));
     app.use( (req, res, next) => {
         // figure out which target to proxy to based on the requested resource path
         const routeKey = _.findKey(conf.routes, (v,r) => _.startsWith(req.url, r));
@@ -153,7 +152,7 @@ function init(confIn) {
 
         console.log('These paths will be routed to your local filesystem');
         console.log();
-        console.log(_.map(conf.diskRoutes, route => `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${route[0]}${c.end} will be routed to ${c.fg.l.cyan}${path.resolve(__dirname, resolveHome(route[1]))}${c.e}`).join('\n'));
+        console.log(_.map(conf.diskRoutes, route => `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${route[0]}${c.end} will be routed to ${c.fg.l.cyan}${path.resolve(conf.configDir, resolveHome(route[1]))}${c.e}`).join('\n'));
 
         console.log();
 
