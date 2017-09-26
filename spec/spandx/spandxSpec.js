@@ -20,9 +20,6 @@ describe('spandx', () => {
         delete require.cache[require.resolve(spandxPath)];
     });
 
-    // init from json and sample request works
-    // init from object and sample request works
-
     describe('spandx.init()', () => {
         it('should accept default configuration', done => {
             Spandx.init().then(() => {
@@ -296,4 +293,5 @@ describe('spandx', () => {
             });
         });
     });
+
 });
