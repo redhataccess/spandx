@@ -39,8 +39,8 @@ Here are the configuration options accepted by the config file.
 Route all requests to palebluepixel.org (a perfect reverse proxy), *unless* the request falls under `/theme`, in which case look for files in `~/projects/pbp/theme`.
 
     routes: {
-        '/theme : '~/projects/pbp/theme/,
-        '/'       : { host: 'https://palebluepixel.org/' },
+        '/theme' : '~/projects/pbp/theme/,
+        '/'      : { host: 'https://palebluepixel.org/' },
     },
 
 Here's how this configuration would play out.
