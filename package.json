@@ -5,7 +5,8 @@
   "main": "app/spandx.js",
   "bin": "app/cli.js",
   "files": [
-    "app"
+    "app",
+    "spandx.config.js"
   ],
   "scripts": {
     "test": "jasmine",
