@@ -177,7 +177,6 @@ function init(confIn) {
             cors: true,
             online: false,
             ui: false,
-            injectChanges: false,
             logLevel: conf.verbose ? 'info' : 'silent',
             files: conf.files,
             proxy: {
