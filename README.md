@@ -2,6 +2,10 @@
 
 Develop locally, proxy to prod, browser-sync, and process ESI tags.
 
+[![NPM](https://nodei.co/npm/spandx.png)](https://www.npmjs.com/package/spandx)
+[![Build
+Status](https://travis-ci.org/redhataccess/spandx.png?branch=master)](https://travis-ci.org/redhataccess/spandx)
+
 ## Quick-start
 
 The quickest way to get started is by installing spandx as a global package.
