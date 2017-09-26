@@ -18,6 +18,8 @@ Launch!
 
 The `spandx` command automatically looks for a `spandx.config.js` file in the current directory.  If you prefer to use a different name, or keep the file in a different directory, you can pass in the config file path with the `-c` option, as in `spandx -c ../otherdir/spandx.conf.js`.  Also, if you prefer to store your config file in JSON format, that is also accepted.  It's js by default to allow for commenting your configuration choices.
 
+*Note: spandx requires node.js version 6 or higher.*
+
 ## Customizing your configuration
 
 Here are the configuration options accepted by the config file. 
