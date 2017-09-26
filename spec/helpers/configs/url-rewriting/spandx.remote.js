@@ -1,7 +1,7 @@
 module.exports = {
     host: 'localhost',
     port: 1337,
-    verbose: true,
+    silent: true,
     routes: {
         '/': { host: 'http://localhost:4014' },
     },

@@ -252,11 +252,30 @@ describe('spandx', () => {
     });
 
     describe('URL rewriting', () => {
+        describe('when routing to local directories', () => {
+            it('should rewrite links to match the spandx origin', done => {
+                Spandx.init('../spec/helpers/configs/url-rewriting/spandx.local.js').then(() => {
+                    frisby
+                        .setup({
+                            request: {
+                                headers: {
+                                    'Accept': 'text/html,*/*'
+                                }
+                            }
+                        })
+                        .get('http://localhost:1337/')
+                        .expect('status', 200)
+                        .expect('bodyContains', /URL REWRITING INDEX/)
+                        .expect('bodyContains', '1337')
+                        .done(done);
+                });
+            });
+        });
         describe('when routing to remote directories', () => {
             it('should rewrite links to match the spandx origin', done => {
                 serve('spec/helpers/configs/url-rewriting/', 4014).then(({server, port}) => {
                     Spandx.init('../spec/helpers/configs/url-rewriting/spandx.remote.js').then(() => {
-                        frisby.get('http://localhost:1337/')
+                        frisby
                             .setup({
                                 request: {
                                     headers: {
@@ -264,6 +283,7 @@ describe('spandx', () => {
                                     }
                                 }
                             })
+                            .get('http://localhost:1337/')
                             .expect('status', 200)
                             .expect('bodyContains', /URL REWRITING INDEX/)
                             .expect('bodyContains', '1337')
