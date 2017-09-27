@@ -196,9 +196,15 @@ function init(confIn) {
 }
 
 function exit() {
-    bs.exit();
-    internalProxy.close();
-    proxy.close();
+    if (bs && bs.exit) {
+        bs.exit();
+    }
+    if (internalProxy && internalProxy.close) {
+        internalProxy.close();
+    }
+    if (proxy && proxy.close) {
+        proxy.close();
+    }
 }
 
 if (require.main === module) {
