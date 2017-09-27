@@ -1,5 +1,9 @@
 describe('spandx', () => {
     const http = require('http');
+    const fs = require('fs');
+    const path = require('path');
+    const execSync = require('child_process').execSync;
+    const exec = require('child_process').exec;
     const frisby = require('frisby');
     const connect = require('connect');
     const serveStatic = require('serve-static');
@@ -8,21 +12,20 @@ describe('spandx', () => {
     const serve = require('../helpers/serve');
 
     const spandxPath = '../../app/spandx';
-    let Spandx;
+    let spandx;
 
     beforeEach(() => {
-        Spandx = require(spandxPath);
+        spandx = require(spandxPath);
     });
 
     afterEach(() => {
-        Spandx.exit();
-        // clear require cache so we can pull in a fresh spandx
+        spandx.exit();
         delete require.cache[require.resolve(spandxPath)];
     });
 
     describe('spandx.init()', () => {
         it('should accept default configuration', done => {
-            Spandx.init().then(() => {
+            spandx.init().then(() => {
                 frisby.get('http://localhost:1337')
                     .expect('status', 200)
                     .expect('bodyContains', /spandx/)
@@ -33,7 +36,7 @@ describe('spandx', () => {
         it('should accept a js file', done => {
             // launch a static file server, then init spandx, make a test
             // request, then close the static file server
-            Spandx.init('../spec/helpers/configs/js-or-json/spandx.config.js').then(() => {
+            spandx.init('../spec/helpers/configs/js-or-json/spandx.config.js').then(() => {
                 frisby.get('http://localhost:1337/')
                     .expect('status', 200)
                     .expect('bodyContains', /INDEX/)
@@ -42,7 +45,7 @@ describe('spandx', () => {
         });
 
         it('should accept a json file', done => {
-            Spandx.init('../spec/helpers/configs/js-or-json/spandx.config.json').then(() => {
+            spandx.init('../spec/helpers/configs/js-or-json/spandx.config.json').then(() => {
                 frisby.get('http://localhost:1337/')
                     .expect('status', 200)
                     .expect('bodyContains', /INDEX/)
@@ -52,7 +55,7 @@ describe('spandx', () => {
 
         it('should accept a config object', done => {
             serve('spec/helpers/configs/js-or-json/', 4014).then(({server, port}) => {
-                Spandx.init({
+                spandx.init({
                     /* config object! */
                     silent: true,
                     routes: {
@@ -75,7 +78,7 @@ describe('spandx', () => {
 
         describe('when routing to local directories', () => {
             it('should resolve root dir without trailing slash', done => {
-                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337')
                         .expect('status', 200)
                         .expect('bodyContains', /INDEX IN ROOT DIR/)
@@ -83,7 +86,7 @@ describe('spandx', () => {
                 });
             });
             it('should resolve root dir with trailing slash', done => {
-                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337/')
                         .expect('status', 200)
                         .expect('bodyContains', /INDEX IN ROOT DIR/)
@@ -91,7 +94,7 @@ describe('spandx', () => {
                 });
             });
             it('should resolve subdir without trailing slash', done => {
-                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337/subdir')
                         .expect('status', 200)
                         .expect('bodyContains', /INDEX IN SUBDIR/)
@@ -99,7 +102,7 @@ describe('spandx', () => {
                 });
             });
             it('should resolve subdir with trailing slash', done => {
-                Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/root-and-subdir/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337/subdir/')
                         .expect('status', 200)
                         .expect('bodyContains', /INDEX IN SUBDIR/)
@@ -111,7 +114,7 @@ describe('spandx', () => {
         describe('when routing to remote host', () => {
             it('should resolve root dir without trailing slash', done => {
                 serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337')
                             .expect('status', 200)
                             .expect('bodyContains', /INDEX IN ROOT DIR/)
@@ -124,7 +127,7 @@ describe('spandx', () => {
             });
             it('should resolve root dir with trailing slash', done => {
                 serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337/')
                             .expect('status', 200)
                             .expect('bodyContains', /INDEX IN ROOT DIR/)
@@ -137,7 +140,7 @@ describe('spandx', () => {
             });
             it('should resolve subdir without trailing slash', done => {
                 serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337/subdir')
                             .expect('status', 200)
                             .expect('bodyContains', /INDEX IN SUBDIR/)
@@ -150,7 +153,7 @@ describe('spandx', () => {
             });
             it('should resolve subdir with trailing slash', done => {
                 serve('spec/helpers/configs/root-and-subdir/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/root-and-subdir/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337/subdir/')
                             .expect('status', 200)
                             .expect('bodyContains', /INDEX IN SUBDIR/)
@@ -168,7 +171,7 @@ describe('spandx', () => {
 
         describe('when routing to local directories', () => {
             it('should resolve esi:include with absolute paths', done => {
-                Spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337/esi-abs-paths.html')
                         .expect('status', 200)
                         .expect('bodyContains', /ESI ABS PATH PARENT/)
@@ -178,7 +181,7 @@ describe('spandx', () => {
                 });
             });
             it('should resolve esi:include with domain-relative paths', done => {
-                Spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337/esi-domain-rel-paths.html')
                         .expect('status', 200)
                         .expect('bodyContains', /ESI DOMAIN REL PATH PARENT/)
@@ -188,7 +191,7 @@ describe('spandx', () => {
                 });
             });
             it('should resolve esi:include with file-relative paths', done => {
-                Spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/esi-include/spandx.local.js').then(() => {
                     frisby.get('http://localhost:1337/esi-file-rel-paths.html')
                         .expect('status', 200)
                         .expect('bodyContains', /ESI FILE REL PATH PARENT/)
@@ -202,7 +205,7 @@ describe('spandx', () => {
         describe('when routing to remote host', () => {
             it('should resolve esi:include with absolute paths', done => {
                 serve('spec/helpers/configs/esi-include/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337/esi-abs-paths.html')
                             .expect('status', 200)
                             .expect('bodyContains', /ESI ABS PATH PARENT/)
@@ -217,7 +220,7 @@ describe('spandx', () => {
             });
             it('should resolve esi:include with domain-relative paths', done => {
                 serve('spec/helpers/configs/esi-include/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337/esi-domain-rel-paths.html')
                             .expect('status', 200)
                             .expect('bodyContains', /ESI DOMAIN REL PATH PARENT/)
@@ -232,7 +235,7 @@ describe('spandx', () => {
             });
             it('should resolve esi:include with file-relative paths', done => {
                 serve('spec/helpers/configs/esi-include/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/esi-include/spandx.remote.js').then(() => {
                         frisby.get('http://localhost:1337/esi-file-rel-paths.html')
                             .expect('status', 200)
                             .expect('bodyContains', /ESI FILE REL PATH PARENT/)
@@ -251,7 +254,7 @@ describe('spandx', () => {
     describe('URL rewriting', () => {
         describe('when routing to local directories', () => {
             it('should rewrite links to match the spandx origin', done => {
-                Spandx.init('../spec/helpers/configs/url-rewriting/spandx.local.js').then(() => {
+                spandx.init('../spec/helpers/configs/url-rewriting/spandx.local.js').then(() => {
                     frisby
                         .setup({
                             request: {
@@ -271,7 +274,7 @@ describe('spandx', () => {
         describe('when routing to remote directories', () => {
             it('should rewrite links to match the spandx origin', done => {
                 serve('spec/helpers/configs/url-rewriting/', 4014).then(({server, port}) => {
-                    Spandx.init('../spec/helpers/configs/url-rewriting/spandx.remote.js').then(() => {
+                    spandx.init('../spec/helpers/configs/url-rewriting/spandx.remote.js').then(() => {
                         frisby
                             .setup({
                                 request: {
@@ -290,6 +293,68 @@ describe('spandx', () => {
                             })
                     });
                 });
+            });
+        });
+    });
+
+    describe('command-line flags and output', () => {
+        const configPathRel = './spandx.config.js';
+        it('init should generate a sample config', () => {
+            const sampleConfig = fs.readFileSync('spandx.config.js').toString();
+            const stdout = execSync('spandx init').toString();
+            // ensure `spandx init` output matches the sample config file
+            expect(stdout.trim() === sampleConfig.trim()).toBeTruthy();
+        });
+        it('-c should accept a relative config file path', done => {
+            // launch spandx and scan the output for desired strings
+            const shell = exec(`spandx -c ${configPathRel}`);
+            let urlPrompted = false;
+            let urlPrinted = false;
+            shell.stdout.on('data', data => {
+                // these ifs look weird, but since the stdout is available only
+                // in chunks, we need to check if this is the right chunk
+                // before expect()ing it toContain() the strings we're looking
+                // for.
+                if (!urlPrompted && data.includes('spandx URL')) {
+                    urlPrompted = true;
+                    expect(data).toContain('spandx URL');
+                }
+                if (!urlPrinted && data.includes('http://localhost:1337')) {
+                    urlPrinted = true;
+                    expect(data).toContain('http://localhost:1337');
+                }
+                if (urlPrompted && urlPrinted) {
+                    done();
+                }
+            });
+            shell.stderr.on('data', err => {
+                fail(err);
+            });
+        });
+        it('-c should accept a absolute config file path', done => {
+            // launch spandx and scan the output for desired strings
+            const shell = exec(`spandx -c ${path.resolve(__dirname, '../../', configPathRel)}`);
+            let urlPrompted = false;
+            let urlPrinted = false;
+            shell.stdout.on('data', data => {
+                // these ifs look weird, but since the stdout is available only
+                // in chunks, we need to check if this is the right chunk
+                // before expect()ing it toContain() the strings we're looking
+                // for.
+                if (!urlPrompted && data.includes('spandx URL')) {
+                    urlPrompted = true;
+                    expect(data).toContain('spandx URL');
+                }
+                if (!urlPrinted && data.includes('http://localhost:1337')) {
+                    urlPrinted = true;
+                    expect(data).toContain('http://localhost:1337');
+                }
+                if (urlPrompted && urlPrinted) {
+                    done();
+                }
+            });
+            shell.stderr.on('data', err => {
+                fail(err);
             });
         });
     });
