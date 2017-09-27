@@ -324,6 +324,7 @@ describe('spandx', () => {
                     expect(data).toContain('http://localhost:1337');
                 }
                 if (urlPrompted && urlPrinted) {
+                    shell.kill();
                     done();
                 }
             });
@@ -350,6 +351,7 @@ describe('spandx', () => {
                     expect(data).toContain('http://localhost:1337');
                 }
                 if (urlPrompted && urlPrinted) {
+                    shell.kill();
                     done();
                 }
             });
@@ -376,6 +378,7 @@ describe('spandx', () => {
                     expect(data).toContain('http://localhost:1337');
                 }
                 if (urlPrompted && urlPrinted) {
+                    shell.kill();
                     done();
                 }
             });
