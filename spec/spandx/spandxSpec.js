@@ -305,6 +305,32 @@ describe('spandx', () => {
             // ensure `spandx init` output matches the sample config file
             expect(stdout.trim() === sampleConfig.trim()).toBeTruthy();
         });
+        it('can be executed with no arguments', done => {
+            // launch spandx and scan the output for desired strings
+            const shell = exec(`node app/cli.js`);
+            let urlPrompted = false;
+            let urlPrinted = false;
+            shell.stdout.on('data', data => {
+                // these ifs look weird, but since the stdout is available only
+                // in chunks, we need to check if this is the right chunk
+                // before expect()ing it toContain() the strings we're looking
+                // for.
+                if (!urlPrompted && data.includes('spandx URL')) {
+                    urlPrompted = true;
+                    expect(data).toContain('spandx URL');
+                }
+                if (!urlPrinted && data.includes('http://localhost:1337')) {
+                    urlPrinted = true;
+                    expect(data).toContain('http://localhost:1337');
+                }
+                if (urlPrompted && urlPrinted) {
+                    done();
+                }
+            });
+            shell.stderr.on('data', err => {
+                fail(err);
+            });
+        });
         it('-c should accept a relative config file path', done => {
             // launch spandx and scan the output for desired strings
             const shell = exec(`node app/cli.js -c ${configPathRel}`);
