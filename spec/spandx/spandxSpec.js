@@ -301,13 +301,13 @@ describe('spandx', () => {
         const configPathRel = './spandx.config.js';
         it('init should generate a sample config', () => {
             const sampleConfig = fs.readFileSync('spandx.config.js').toString();
-            const stdout = execSync('spandx init').toString();
+            const stdout = execSync('node app/cli.js init').toString();
             // ensure `spandx init` output matches the sample config file
             expect(stdout.trim() === sampleConfig.trim()).toBeTruthy();
         });
         it('-c should accept a relative config file path', done => {
             // launch spandx and scan the output for desired strings
-            const shell = exec(`spandx -c ${configPathRel}`);
+            const shell = exec(`node app/cli.js -c ${configPathRel}`);
             let urlPrompted = false;
             let urlPrinted = false;
             shell.stdout.on('data', data => {
@@ -333,7 +333,7 @@ describe('spandx', () => {
         });
         it('-c should accept a absolute config file path', done => {
             // launch spandx and scan the output for desired strings
-            const shell = exec(`spandx -c ${path.resolve(__dirname, '../../', configPathRel)}`);
+            const shell = exec(`node app/cli.js -c ${path.resolve(__dirname, '../../', configPathRel)}`);
             let urlPrompted = false;
             let urlPrinted = false;
             shell.stdout.on('data', data => {
