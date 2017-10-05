@@ -3,7 +3,7 @@ describe('spandx', () => {
     const fs = require('fs');
     const path = require('path');
     const execSync = require('child_process').execSync;
-    const exec = require('child_process').exec;
+    const execFile = require('child_process').execFile;
     const frisby = require('frisby');
     const connect = require('connect');
     const serveStatic = require('serve-static');
@@ -307,7 +307,7 @@ describe('spandx', () => {
         });
         it('can be executed with no arguments', done => {
             // launch spandx and scan the output for desired strings
-            const shell = exec(`node app/cli.js`);
+            const shell = execFile(`app/cli.js`);
             let urlPrompted = false;
             let urlPrinted = false;
             shell.stdout.on('data', data => {
@@ -334,7 +334,7 @@ describe('spandx', () => {
         });
         it('-c should accept a relative config file path', done => {
             // launch spandx and scan the output for desired strings
-            const shell = exec(`node app/cli.js -c ${configPathRel}`);
+            const shell = execFile(`app/cli.js`, [`-c` ,`${configPathRel}`]);
             let urlPrompted = false;
             let urlPrinted = false;
             shell.stdout.on('data', data => {
@@ -361,7 +361,7 @@ describe('spandx', () => {
         });
         it('-c should accept a absolute config file path', done => {
             // launch spandx and scan the output for desired strings
-            const shell = exec(`node app/cli.js -c ${path.resolve(__dirname, '../../', configPathRel)}`);
+            const shell = execFile(`app/cli.js`, [`-c` ,`${path.resolve(__dirname, '../../', configPathRel)}`]);
             let urlPrompted = false;
             let urlPrinted = false;
             shell.stdout.on('data', data => {
