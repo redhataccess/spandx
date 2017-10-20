@@ -266,7 +266,24 @@ describe('spandx', () => {
                         .get('http://localhost:1337/')
                         .expect('status', 200)
                         .expect('bodyContains', /URL REWRITING INDEX/)
-                        .expect('bodyContains', '1337')
+                        .expect('bodyContains', '//localhost:1337')
+                        .done(done);
+                });
+            });
+            it('should rewrite links within ESI fragments to match the spandx origin', done => {
+                spandx.init('../spec/helpers/configs/url-rewriting/spandx.local.js').then(() => {
+                    frisby
+                        .setup({
+                            request: {
+                                headers: {
+                                    'Accept': 'text/html,*/*'
+                                }
+                            }
+                        })
+                        .get('http://localhost:1337/index-esi.html')
+                        .expect('status', 200)
+                        .expect('bodyContains', /URL REWRITING INDEX/)
+                        .expect('bodyContains', '//localhost:1337')
                         .done(done);
                 });
             });
@@ -286,7 +303,29 @@ describe('spandx', () => {
                             .get('http://localhost:1337/')
                             .expect('status', 200)
                             .expect('bodyContains', /URL REWRITING INDEX/)
-                            .expect('bodyContains', '1337')
+                            .expect('bodyContains', '//localhost:1337')
+                            .done(() => {
+                                server.close();
+                                done();
+                            })
+                    });
+                });
+            });
+            it('should rewrite links within ESI fragments to match the spandx origin', done => {
+                serve('spec/helpers/configs/url-rewriting/', 4014).then(({server, port}) => {
+                    spandx.init('../spec/helpers/configs/url-rewriting/spandx.remote.js').then(() => {
+                        frisby
+                            .setup({
+                                request: {
+                                    headers: {
+                                        'Accept': 'text/html,*/*'
+                                    }
+                                }
+                            })
+                            .get('http://localhost:1337/index-esi.html')
+                            .expect('status', 200)
+                            .expect('bodyContains', /URL REWRITING INDEX/)
+                            .expect('bodyContains', '//localhost:1337')
                             .done(() => {
                                 server.close();
                                 done();
