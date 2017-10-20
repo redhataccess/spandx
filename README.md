@@ -2,9 +2,9 @@
 
 Develop locally, proxy to prod, browser-sync, and process ESI tags.
 
-[![NPM](https://nodei.co/npm/spandx.png)](https://www.npmjs.com/package/spandx)
+[![NPM][npm-img]][npm]
 [![Build
-Status](https://travis-ci.org/redhataccess/spandx.png?branch=master)](https://travis-ci.org/redhataccess/spandx)
+Status][build-img]][build]
 
 ## Quick-start
 
@@ -72,3 +72,22 @@ Then edit your `package.json` and add a `start` script which launches spandx.
     }
 
 Now you and your fellow contributors can run `npm start` without having to install or even understand spandx!
+
+## Known issues
+
+### cURLing spandx
+
+The URL-rewriting feature is powered by browserSync's rewriteRules.  However, browserSync will only perform the rewrites if `text/html` is present in the request's `Accept` header.  Web browsers include it by default, but if you're using [cURL][curl], you'll need to add that header in order for URLs to be rewritten.
+
+For example:
+
+    curl -H 'Accept: text/html' localhost:1337
+
+All other spandx features work with or without `text/html` in the `Accept` header.
+    
+
+[curl]: https://curl.haxx.se/
+[npm]: https://www.npmjs.com/package/spandx
+[npm-img]: https://nodei.co/npm/spandx.png
+[build-img]: https://travis-ci.org/redhataccess/spandx.png?branch=master
+[build]: https://travis-ci.org/redhataccess/spandx
