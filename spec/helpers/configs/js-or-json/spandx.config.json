@@ -1,8 +1,8 @@
 {
-    "host": "localhost",
-    "port": 1337,
-    "silent": true,
-    "routes": {
-        "/": "./"
-    }
+  "host": "localhost",
+  "port": 1337,
+  "silent": true,
+  "routes": {
+    "/": "./"
+  }
 }

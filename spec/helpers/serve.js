@@ -1,8 +1,8 @@
-const http = require('http');
-const serveStatic = require('serve-static');
-const finalhandler = require('finalhandler');
+const http = require("http");
+const serveStatic = require("serve-static");
+const finalhandler = require("finalhandler");
 
-function serve(path, requestedPort=null) {
+function serve(path, requestedPort = null) {
     return new Promise(resolve => {
         const serve = serveStatic(path);
         const server = http.createServer((req, res) => {

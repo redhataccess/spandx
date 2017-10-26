@@ -1,26 +1,29 @@
-const fs   = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const _           = require('lodash');
-const resolveHome = require('./resolveHome');
-const c           = require('print-colors');
+const _ = require("lodash");
+const resolveHome = require("./resolveHome");
+const c = require("print-colors");
 
 const defaultConfig = {
-    host: 'localhost',
+    host: "localhost",
     port: 1337,
     verbose: false,
     silent: false,
     routes: {
-        '/': path.resolve(__dirname, 'splash'),
+        "/": path.resolve(__dirname, "splash")
     },
     bs: {}
 };
 
 let configState = {};
 
-function create(incomingConfig={}, configDir=__dirname) {
+function create(incomingConfig = {}, configDir = __dirname) {
     configState.currentConfig = _.defaults(incomingConfig, defaultConfig);
-    _.extend(configState.currentConfig, processConf(configState.currentConfig, configDir));
+    _.extend(
+        configState.currentConfig,
+        processConf(configState.currentConfig, configDir)
+    );
     return configState.currentConfig;
 }
 
@@ -28,20 +31,22 @@ function get() {
     return configState.currentConfig;
 }
 
-function fromFile(filePath=`${process.cwd()}/spandx.config.js`) {
+function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
     const fullPath = path.resolve(__dirname, filePath);
     try {
         const confObj = require(fullPath);
         const conf = create(confObj, path.parse(fullPath).dir);
         return conf;
-    }
-    catch(e) {
-        console.error(`Tried to open spandx config file ${c.fg.l.cyan}${filePath}${c.end} but couldn't find it, or couldn't access it.`);
+    } catch (e) {
+        console.error(
+            `Tried to open spandx config file ${c.fg.l
+                .cyan}${filePath}${c.end} but couldn't find it, or couldn't access it.`
+        );
         process.exit(1);
     }
 }
 
-function processConf(conf, configDir=__dirname) {
+function processConf(conf, configDir = __dirname) {
     // separate the local disk routes from the web routes
     const routeGroups = _(conf.routes)
         .toPairs()
@@ -60,8 +65,8 @@ function processConf(conf, configDir=__dirname) {
         .value();
     const otherLocalFiles = _(webRoutes)
         .map(1)
-        .filter('watch')
-        .map('watch')
+        .filter("watch")
+        .map("watch")
         .map(filePath => path.resolve(configDir, resolveHome(filePath)))
         .value();
 
@@ -74,8 +79,11 @@ function processConf(conf, configDir=__dirname) {
     // spandx'd environment.
     const rewriteRules = _(webRoutes)
         .map(1)
-        .map('host')
-        .map(host => ({ match: new RegExp(host, 'g'), replace: `//${conf.host}:${conf.port}`}))
+        .map("host")
+        .map(host => ({
+            match: new RegExp(host, "g"),
+            replace: `//${conf.host}:${conf.port}`
+        }))
         .value();
 
     const spandxUrl = `http://${conf.host}:${conf.port}`;
@@ -93,7 +101,7 @@ function processConf(conf, configDir=__dirname) {
         files,
         rewriteRules,
         spandxUrl,
-        configDir,
+        configDir
     };
 }
 
@@ -102,5 +110,5 @@ module.exports = {
     get,
     fromFile,
     defaultConfig,
-    process: processConf,
+    process: processConf
 };
