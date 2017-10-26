@@ -240,9 +240,9 @@ function init(confIn) {
                 proxy: {
                     target: internalProxyOrigin
                 },
-                rewriteRules: conf.rewriteRules
+                rewriteRules: _.concat(conf.rewriteRules, conf.bs.rewriteRules)
             },
-            conf.bs
+            _.omit(conf.bs, "rewriteRules")
         );
         bs.init(bsOptions, () => resolve(bs));
     });
