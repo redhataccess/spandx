@@ -13,6 +13,7 @@ const defaultConfig = {
     routes: {
         '/': path.resolve(__dirname, 'splash'),
     },
+    bs: {}
 };
 
 let configState = {};

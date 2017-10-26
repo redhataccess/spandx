@@ -171,19 +171,23 @@ function init(confIn) {
 
     // create a promise that resolves when browsersync is ready
     const bsReadyPromise = new Promise(resolve => {
-        bs.init({
-            port: conf.port,
-            open: false,
-            cors: true,
-            online: false,
-            ui: false,
-            logLevel: conf.verbose ? 'info' : 'silent',
-            files: conf.files,
-            proxy: {
-                target: internalProxyOrigin,
+        const bsOptions = _.defaultsDeep(
+            {
+                port: conf.port,
+                open: false,
+                cors: true,
+                online: false,
+                ui: false,
+                logLevel: conf.verbose ? "info" : "silent",
+                files: conf.files,
+                proxy: {
+                    target: internalProxyOrigin
+                },
+                rewriteRules: conf.rewriteRules
             },
-            rewriteRules: conf.rewriteRules,
-        }, () => resolve(bs));
+            conf.bs
+        );
+        bs.init(bsOptions, () => resolve(bs));
     });
 
 
