@@ -85,6 +85,18 @@ describe("spandx", () => {
                     });
             });
         });
+
+        it("should allow overriding browserSync settings", done => {
+            spandx
+                .init("../spec/helpers/configs/bs-override/spandx.config.js")
+                .then(bs => {
+                    const opts = bs.getOption("ghostMode");
+                    expect(opts.get("clicks")).toEqual(false);
+                    expect(opts.get("scroll")).toEqual(false);
+                    expect(opts.get("location")).toEqual(false);
+                    done();
+                });
+        });
     });
 
     describe("trailing slashes", () => {
