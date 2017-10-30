@@ -34,6 +34,7 @@ Here are the configuration options accepted by the config file.
   - **startPath** - what URL path to open, ex: `"/site"` (string)
   - **verbose** - display English summary of configuration settings and display browserSync logs, or not (boolean)
   - **routes** - define where to send requests for any number of URL paths, best explained by example in the following section (object)
+  - **bs** - a [browserSync config object][bs-options], in case you need to further customize spandx's browserSync instance (object)
     
 
 ### Routes by example
@@ -93,3 +94,4 @@ All other spandx features work with or without `text/html` in the `Accept` heade
 [npm-img]: https://nodei.co/npm/spandx.png
 [build-img]: https://travis-ci.org/redhataccess/spandx.png?branch=master
 [build]: https://travis-ci.org/redhataccess/spandx
+[bs-options]: https://browsersync.io/docs/options
