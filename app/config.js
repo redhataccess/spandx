@@ -6,6 +6,7 @@ const resolveHome = require("./resolveHome");
 const c = require("print-colors");
 
 const defaultConfig = {
+    protocol: "http:",
     host: "localhost",
     port: 1337,
     verbose: false,
@@ -42,6 +43,7 @@ function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
             `Tried to open spandx config file ${c.fg.l
                 .cyan}${filePath}${c.end} but couldn't find it, or couldn't access it.`
         );
+        console.error(e);
         process.exit(1);
     }
 }
@@ -86,7 +88,9 @@ function processConf(conf, configDir = __dirname) {
         }))
         .value();
 
-    const spandxUrl = `http://${conf.host}:${conf.port}`;
+    const protocol = conf.bs.https ? "https:" : "http:";
+    const startPath = conf.startPath || "";
+    const spandxUrl = `${protocol}//${conf.host}:${conf.port}${startPath}`;
 
     // allow 'silent' to override 'verbose'
     const verbose = conf.silent ? false : conf.verbose;
@@ -100,7 +104,9 @@ function processConf(conf, configDir = __dirname) {
         otherLocalFiles,
         files,
         rewriteRules,
+        protocol,
         spandxUrl,
+        startPath,
         configDir
     };
 }

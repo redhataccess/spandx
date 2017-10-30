@@ -30,6 +30,8 @@ Here are the configuration options accepted by the config file.
 
   - **host** - the hostname spandx is running on, usually "localhost", but you can add custom hostnames (ie, `/etc/hosts` entries pointing to 127.0.0.1) if you, for example, need a certain domain suffix to satisfy CORS-enabled services (string)
   - **port** - the port for spandx to listen on (number)
+  - **open** - whether to open a browser tab when spandx is launched (boolean)
+  - **startPath** - what URL path to open, ex: `"/site"` (string)
   - **verbose** - display English summary of configuration settings and display browserSync logs, or not (boolean)
   - **routes** - define where to send requests for any number of URL paths, best explained by example in the following section (object)
     

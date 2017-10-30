@@ -93,7 +93,7 @@ function init(confIn) {
         changeOrigin: true,
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
-        protocolRewrite: "http"
+        protocolRewrite: conf.protocol.replace(":", "")
     });
     app.use(transformerProxy(applyESI));
 
@@ -231,7 +231,8 @@ function init(confIn) {
         const bsOptions = _.defaultsDeep(
             {
                 port: conf.port,
-                open: false,
+                open: !!conf.open,
+                startPath: conf.startPath,
                 cors: true,
                 online: false,
                 ui: false,

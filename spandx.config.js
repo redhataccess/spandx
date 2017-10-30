@@ -1,6 +1,8 @@
 module.exports = {
     host: "localhost",
     port: 1337,
+    open: true,
+    startPath: "/",
     verbose: true,
     routes: {
         // Here are some routing examples to get started.
@@ -17,5 +19,5 @@ module.exports = {
         // This is most useful for putting a local development at a certain
         // path on your spandx server.  Includes browser-sync auto-reloading.
         // '/': { host: 'http://localhost:8080/', watch: '~/projects/my-app' },
-    },
+    }
 };
