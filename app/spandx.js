@@ -14,6 +14,7 @@ const finalhandler = require("finalhandler");
 const _ = require("lodash");
 const c = require("print-colors");
 const ESI = require("nodesi");
+const opn = require("opn");
 
 const config = require("./config");
 const resolveHome = require("./resolveHome");
@@ -231,7 +232,7 @@ function init(confIn) {
         const bsOptions = _.defaultsDeep(
             {
                 port: conf.port,
-                open: !!conf.open,
+                open: false,
                 startPath: conf.startPath,
                 cors: true,
                 online: false,
@@ -245,7 +246,12 @@ function init(confIn) {
             },
             _.omit(conf.bs, "rewriteRules")
         );
-        bs.init(bsOptions, () => resolve(bs));
+        bs.init(bsOptions, () => {
+            if (conf.open) {
+                opn(conf.spandxUrl);
+            }
+            resolve(bs);
+        });
     });
 
     if (!conf.silent) {
