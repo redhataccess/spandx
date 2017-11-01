@@ -76,6 +76,13 @@ Then edit your `package.json` and add a `start` script which launches spandx.
 
 Now you and your fellow contributors can run `npm start` without having to install or even understand spandx!
 
+## Miscellaneous commands
+
+Get the current version.
+
+    spandx --version
+    spandx -v
+
 ## Known issues
 
 ### cURLing spandx

@@ -8,6 +8,12 @@ const argv = require("yargs").argv;
 const spandx = require("./spandx");
 const config = require("./config");
 
+if (argv.v || argv.version) {
+    const package = require("../package.json");
+    console.log(package.version);
+    process.exit(0);
+}
+
 if (argv._.includes("init")) {
     const sampleConfigPath = path.resolve(__dirname, "../spandx.config.js");
     const sampleConfig = fs.readFileSync(sampleConfigPath);
