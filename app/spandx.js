@@ -132,8 +132,9 @@ function init(confIn) {
 
                 if (conf.verbose) {
                     console.log(
-                        `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l
-                            .cyan}${absoluteFilePath}${c.end}`
+                        `GET ${c.fg.l.green}${req.url}${c.end} from ${
+                            c.fg.l.cyan
+                        }${absoluteFilePath}${c.end}`
                     );
                 }
 
@@ -149,8 +150,9 @@ function init(confIn) {
 
         if (conf.verbose) {
             console.log(
-                `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l
-                    .blue}${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
+                `GET ${c.fg.l.green}${req.url}${c.end} from ${
+                    c.fg.l.blue
+                }${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
             );
         }
 
@@ -173,10 +175,11 @@ function init(confIn) {
             _.map(
                 conf.webRoutes,
                 route =>
-                    `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l
-                        .green}${route[0]}${c.e} will be routed to ${c.fg.l
-                        .blue}${route[1].host}${c.e}${c.fg.l
-                        .green}${route[0]}${c.e}`
+                    `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${
+                        route[0]
+                    }${c.e} will be routed to ${c.fg.l.blue}${route[1].host}${
+                        c.e
+                    }${c.fg.l.green}${route[0]}${c.e}`
             ).join("\n")
         );
         console.log();
@@ -187,9 +190,9 @@ function init(confIn) {
             _.map(
                 conf.diskRoutes,
                 route =>
-                    `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l
-                        .green}${route[0]}${c.end} will be routed to ${c.fg.l
-                        .cyan}${path.resolve(
+                    `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${
+                        route[0]
+                    }${c.end} will be routed to ${c.fg.l.cyan}${path.resolve(
                         conf.configDir,
                         resolveHome(route[1])
                     )}${c.e}`
@@ -217,9 +220,11 @@ function init(confIn) {
             _.map(
                 conf.rewriteRules,
                 rule =>
-                    `  ${c.fg.l
-                        .pink}${rule.match}${c.e} will be replaced with "${c.fg
-                        .d.green}${rule.replace}${c.e}"`
+                    `  ${c.fg.l.pink}${rule.match}${
+                        c.e
+                    } will be replaced with "${c.fg.d.green}${rule.replace}${
+                        c.e
+                    }"`
             ).join("\n")
         );
         console.log();
