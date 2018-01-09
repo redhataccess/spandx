@@ -4,6 +4,7 @@ const http = require("http");
 const URL = require("url");
 const path = require("path");
 const fs = require("fs");
+const https = require("https");
 
 const browserSync = require("browser-sync");
 const connect = require("connect");
@@ -47,6 +48,9 @@ function init(confIn) {
             }
     }
 
+    // since this is a local development tool, allow self-signed ssl certificates.
+    https.globalAgent.options.rejectUnauthorized = false;
+
     bs = browserSync.create();
 
     // for each local file path in the conf, create a serveStatic object for
@@ -61,7 +65,7 @@ function init(confIn) {
         .value();
 
     const esi = new ESI({
-        baseUrl: `http://${conf.host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
+        baseUrl: `${conf.protocol}//${conf.host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
         onError: (src, error) => {
             console.error(error);
         },

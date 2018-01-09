@@ -61,29 +61,28 @@ describe("spandx", () => {
         });
 
         it("should accept a config object", done => {
-            serve(
-                "spec/helpers/configs/js-or-json/",
-                4014
-            ).then(({ server, port }) => {
-                spandx
-                    .init({
-                        /* config object! */
-                        silent: true,
-                        routes: {
-                            "/": { host: "http://localhost:4014" }
-                        }
-                    })
-                    .then(() => {
-                        frisby
-                            .get("http://localhost:1337/")
-                            .expect("status", 200)
-                            .expect("bodyContains", /INDEX/)
-                            .done(() => {
-                                server.close();
-                                done();
-                            });
-                    });
-            });
+            serve("spec/helpers/configs/js-or-json/", 4014).then(
+                ({ server, port }) => {
+                    spandx
+                        .init({
+                            /* config object! */
+                            silent: true,
+                            routes: {
+                                "/": { host: "http://localhost:4014" }
+                            }
+                        })
+                        .then(() => {
+                            frisby
+                                .get("http://localhost:1337/")
+                                .expect("status", 200)
+                                .expect("bodyContains", /INDEX/)
+                                .done(() => {
+                                    server.close();
+                                    done();
+                                });
+                        });
+                }
+            );
         });
 
         it("should allow overriding browserSync settings", done => {
@@ -157,88 +156,84 @@ describe("spandx", () => {
 
         describe("when routing to remote host", () => {
             it("should resolve root dir without trailing slash", done => {
-                serve(
-                    "spec/helpers/configs/root-and-subdir/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get("http://localhost:1337")
-                                .expect("status", 200)
-                                .expect("bodyContains", /INDEX IN ROOT DIR/)
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/root-and-subdir/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get("http://localhost:1337")
+                                    .expect("status", 200)
+                                    .expect("bodyContains", /INDEX IN ROOT DIR/)
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
             it("should resolve root dir with trailing slash", done => {
-                serve(
-                    "spec/helpers/configs/root-and-subdir/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get("http://localhost:1337/")
-                                .expect("status", 200)
-                                .expect("bodyContains", /INDEX IN ROOT DIR/)
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/root-and-subdir/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get("http://localhost:1337/")
+                                    .expect("status", 200)
+                                    .expect("bodyContains", /INDEX IN ROOT DIR/)
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
             it("should resolve subdir without trailing slash", done => {
-                serve(
-                    "spec/helpers/configs/root-and-subdir/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get("http://localhost:1337/subdir")
-                                .expect("status", 200)
-                                .expect("bodyContains", /INDEX IN SUBDIR/)
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/root-and-subdir/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get("http://localhost:1337/subdir")
+                                    .expect("status", 200)
+                                    .expect("bodyContains", /INDEX IN SUBDIR/)
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
             it("should resolve subdir with trailing slash", done => {
-                serve(
-                    "spec/helpers/configs/root-and-subdir/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get("http://localhost:1337/subdir/")
-                                .expect("status", 200)
-                                .expect("bodyContains", /INDEX IN SUBDIR/)
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/root-and-subdir/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/root-and-subdir/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get("http://localhost:1337/subdir/")
+                                    .expect("status", 200)
+                                    .expect("bodyContains", /INDEX IN SUBDIR/)
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
         });
     });
@@ -295,92 +290,144 @@ describe("spandx", () => {
 
         describe("when routing to remote host", () => {
             it("should resolve esi:include with absolute paths", done => {
-                serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/esi-include/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get("http://localhost:1337/esi-abs-paths.html")
-                                .expect("status", 200)
-                                .expect("bodyContains", /ESI ABS PATH PARENT/)
-                                .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                                .expect(
-                                    "bodyContains",
-                                    /ABS PATH SUBDIR SNIPPET/
-                                )
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/esi-include/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/esi-include/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get(
+                                        "http://localhost:1337/esi-abs-paths.html"
+                                    )
+                                    .expect("status", 200)
+                                    .expect(
+                                        "bodyContains",
+                                        /ESI ABS PATH PARENT/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /ABS PATH ROOT SNIPPET/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /ABS PATH SUBDIR SNIPPET/
+                                    )
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
             it("should resolve esi:include with domain-relative paths", done => {
-                serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/esi-include/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get(
-                                    "http://localhost:1337/esi-domain-rel-paths.html"
-                                )
-                                .expect("status", 200)
-                                .expect(
-                                    "bodyContains",
-                                    /ESI DOMAIN REL PATH PARENT/
-                                )
-                                .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                                .expect(
-                                    "bodyContains",
-                                    /ABS PATH SUBDIR SNIPPET/
-                                )
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/esi-include/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/esi-include/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get(
+                                        "http://localhost:1337/esi-domain-rel-paths.html"
+                                    )
+                                    .expect("status", 200)
+                                    .expect(
+                                        "bodyContains",
+                                        /ESI DOMAIN REL PATH PARENT/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /ABS PATH ROOT SNIPPET/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /ABS PATH SUBDIR SNIPPET/
+                                    )
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
             it("should resolve esi:include with file-relative paths", done => {
-                serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/esi-include/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .get(
-                                    "http://localhost:1337/esi-file-rel-paths.html"
-                                )
-                                .expect("status", 200)
-                                .expect(
-                                    "bodyContains",
-                                    /ESI FILE REL PATH PARENT/
-                                )
-                                .expect("bodyContains", /REL PATH ROOT SNIPPET/)
-                                .expect(
-                                    "bodyContains",
-                                    /REL PATH SUBDIR SNIPPET/
-                                )
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                serve("spec/helpers/configs/esi-include/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/esi-include/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get(
+                                        "http://localhost:1337/esi-file-rel-paths.html"
+                                    )
+                                    .expect("status", 200)
+                                    .expect(
+                                        "bodyContains",
+                                        /ESI FILE REL PATH PARENT/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /REL PATH ROOT SNIPPET/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /REL PATH SUBDIR SNIPPET/
+                                    )
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
+            });
+            it("should resolve esi:include relative paths over https if https: true", done => {
+                // this test covers the case where the esi:include src points
+                // to a host with a self-signed cert, and the bug where an
+                // esi:include src with a relative path would get routed to
+                // http://host/path even if https is true.
+                serve("spec/helpers/configs/esi-include/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/esi-include/spandx.https.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .get(
+                                        "https://localhost:1337/esi-domain-rel-paths.html"
+                                    )
+                                    .expect("status", 200)
+                                    .expect(
+                                        "bodyContains",
+                                        /ESI DOMAIN REL PATH PARENT/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /ABS PATH ROOT SNIPPET/
+                                    )
+                                    .expect(
+                                        "bodyContains",
+                                        /ABS PATH SUBDIR SNIPPET/
+                                    )
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    })
+                                    .catch(err => {
+                                        server.close();
+                                        fail(err);
+                                    });
+                            });
+                    }
+                );
             });
         });
     });
@@ -432,62 +479,66 @@ describe("spandx", () => {
         });
         describe("when routing to remote directories", () => {
             it("should rewrite links to match the spandx origin", done => {
-                serve(
-                    "spec/helpers/configs/url-rewriting/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/url-rewriting/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .setup({
-                                    request: {
-                                        headers: {
-                                            Accept: "text/html,*/*"
+                serve("spec/helpers/configs/url-rewriting/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/url-rewriting/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .setup({
+                                        request: {
+                                            headers: {
+                                                Accept: "text/html,*/*"
+                                            }
                                         }
-                                    }
-                                })
-                                .get("http://localhost:1337/")
-                                .expect("status", 200)
-                                .expect("bodyContains", /URL REWRITING INDEX/)
-                                .expect("bodyContains", "//localhost:1337")
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                                    })
+                                    .get("http://localhost:1337/")
+                                    .expect("status", 200)
+                                    .expect(
+                                        "bodyContains",
+                                        /URL REWRITING INDEX/
+                                    )
+                                    .expect("bodyContains", "//localhost:1337")
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
             it("should rewrite links within ESI fragments to match the spandx origin", done => {
-                serve(
-                    "spec/helpers/configs/url-rewriting/",
-                    4014
-                ).then(({ server, port }) => {
-                    spandx
-                        .init(
-                            "../spec/helpers/configs/url-rewriting/spandx.remote.js"
-                        )
-                        .then(() => {
-                            frisby
-                                .setup({
-                                    request: {
-                                        headers: {
-                                            Accept: "text/html,*/*"
+                serve("spec/helpers/configs/url-rewriting/", 4014).then(
+                    ({ server, port }) => {
+                        spandx
+                            .init(
+                                "../spec/helpers/configs/url-rewriting/spandx.remote.js"
+                            )
+                            .then(() => {
+                                frisby
+                                    .setup({
+                                        request: {
+                                            headers: {
+                                                Accept: "text/html,*/*"
+                                            }
                                         }
-                                    }
-                                })
-                                .get("http://localhost:1337/index-esi.html")
-                                .expect("status", 200)
-                                .expect("bodyContains", /URL REWRITING INDEX/)
-                                .expect("bodyContains", "//localhost:1337")
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                });
+                                    })
+                                    .get("http://localhost:1337/index-esi.html")
+                                    .expect("status", 200)
+                                    .expect(
+                                        "bodyContains",
+                                        /URL REWRITING INDEX/
+                                    )
+                                    .expect("bodyContains", "//localhost:1337")
+                                    .done(() => {
+                                        server.close();
+                                        done();
+                                    });
+                            });
+                    }
+                );
             });
         });
     });
