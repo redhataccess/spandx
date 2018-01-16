@@ -25,6 +25,9 @@ function create(incomingConfig = {}, configDir = __dirname) {
         configState.currentConfig,
         processConf(configState.currentConfig, configDir)
     );
+
+    validateHosts(configState.currentConfig);
+
     return configState.currentConfig;
 }
 
@@ -40,15 +43,71 @@ function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
         return conf;
     } catch (e) {
         console.error(
-            `Tried to open spandx config file ${c.fg.l
-                .cyan}${filePath}${c.end} but couldn't find it, or couldn't access it.`
+            `Tried to open spandx config file ${c.fg.l.cyan}${filePath}${
+                c.end
+            } but couldn't find it, or couldn't access it.`
         );
         console.error(e);
         process.exit(1);
     }
 }
 
+function isSingleHost(conf) {
+    const singleHost = _.isString(conf.host);
+    const multiHost = _.isPlainObject(conf.host);
+
+    if (singleHost === multiHost) {
+        throw new Error(
+            "'host' is the wrong type, must be either string or object"
+        );
+    }
+
+    return singleHost;
+}
+
+function validateHosts(conf) {
+    const routeHostMaps = _(conf.routes)
+        .filter(_.isPlainObject) // only look at routes that are object, not strings (strings indicate local file paths)
+        .map("host") // grab the host vaule
+        .filter(_.isPlainObject); // grab any host values that are object
+
+    // ERROR if any route hosts have maps with different keys than the spandx host map
+    if (!validateEnvsMatch(conf, routeHostMaps)) {
+        throw new Error(
+            `spandx is configured for multi-host mode ('host' is an object map), but one or more routes have environment names that don't match the names from 'host'`
+        );
+    }
+
+    return true;
+}
+
+function validateEnvsMatch(conf, routeHostMaps) {
+    const sortKeys = obj =>
+        _(obj)
+            .keys()
+            .sortBy()
+            .value();
+
+    const hasSameKeys = _.curry((envs1, envs2) =>
+        _.isEqual(sortKeys(envs1), sortKeys(envs2))
+    );
+
+    const spandxHosts = sortKeys(conf.host);
+
+    const matchesSpandxHosts = hasSameKeys(spandxHosts);
+
+    const allEnvsMatch = routeHostMaps
+        .map(h => sortKeys(h))
+        .filter(envs => !matchesSpandxHosts(envs)) // filter *out* the ones that match spandx hosts
+        .isEmpty(); // if empty, then every single route host matched
+
+    return allEnvsMatch;
+}
+
 function processConf(conf, configDir = __dirname) {
+    // add a conf entry indicating whetehr spandx is running in multi-host mode
+    conf.multiHost = !isSingleHost(conf);
+
     // separate the local disk routes from the web routes
     const routeGroups = _(conf.routes)
         .toPairs()
@@ -56,6 +115,31 @@ function processConf(conf, configDir = __dirname) {
 
     const webRoutes = routeGroups.get(0);
     const diskRoutes = routeGroups.get(1);
+
+    const webRouteHosts = _(webRoutes)
+        .map(1) // get route value
+        .filter(r => _.isString(r.host)); // only select routes with strings for their host; at this point it should be ALL of them, but playing it safe anyway
+
+    // convert any simplified host values into explicit host config (ie,
+    // convert from a string like "localhost" to an object like
+    // { default: "localhost" }
+    if (conf.multiHost) {
+        // multi host mode
+
+        // for any web routes that have a single host, change them into a
+        // multi-host entry where each env points to the same place
+        webRouteHosts.forEach(r => {
+            const routeHost = r.host;
+            r.host = _({})
+                .extend(conf.host)
+                .mapValues(v => routeHost)
+                .value();
+        });
+    } else {
+        // single host mode
+        conf.host = { default: conf.host };
+        webRouteHosts.forEach(r => (r.host = { default: r.host })); // convert host string to object
+    }
 
     // build a list of file paths to watch for auto-reload, by combining the
     // local disk route paths with the web routes that provided local paths
@@ -80,17 +164,22 @@ function processConf(conf, configDir = __dirname) {
     // 'localhost:1337' so that when you click on a link, you stay in your
     // spandx'd environment.
     const rewriteRules = _(webRoutes)
-        .map(1)
-        .map("host")
-        .map(host => ({
-            match: new RegExp(host, "g"),
-            replace: `//${conf.host}:${conf.port}`
-        }))
+        .map("1.host")
+        .map(h =>
+            _.map(h, (v, env) => ({
+                match: new RegExp(v, "g"),
+                replace: `//${conf.host[env]}:${conf.port}`
+            }))
+        )
+        .flatten()
         .value();
 
     const protocol = conf.bs.https ? "https:" : "http:";
     const startPath = conf.startPath || "";
-    const spandxUrl = `${protocol}//${conf.host}:${conf.port}${startPath}`;
+    const spandxUrl = _.map(
+        conf.host,
+        host => `${protocol}//${host}:${conf.port}${startPath}`
+    );
 
     // allow 'silent' to override 'verbose'
     const verbose = conf.silent ? false : conf.verbose;

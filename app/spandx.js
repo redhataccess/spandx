@@ -64,21 +64,29 @@ function init(confIn) {
         )
         .value();
 
-    const esi = new ESI({
-        baseUrl: `${conf.protocol}//${conf.host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
-        onError: (src, error) => {
-            console.error(error);
-        },
-        cache: false
-    });
+    const esi = _(conf.host)
+        .mapValues((host, env) => {
+            return new ESI({
+                baseUrl: `${conf.protocol}//${host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
+                onError: (src, error) => {
+                    console.error(
+                        `An error occurred while resolving an ESI tag for the ${env} host`
+                    );
+                    console.error(error);
+                },
+                cache: false
+            });
+        })
+        .value();
 
     function applyESI(data, req, res) {
         return new Promise(function(resolve, reject) {
+            const env = req.headers["x-spandx-env"];
             const isHTML = (res.getHeader("content-type") || "").includes(
                 "html"
             );
             if (isHTML) {
-                esi
+                esi[env]
                     .process(data.toString())
                     .then(resolve)
                     .catch(reject);
@@ -91,24 +99,37 @@ function init(confIn) {
     // connect server w/ proxy
 
     const internalProxyPort = conf.port + 1;
-    const internalProxyOrigin = `http://${conf.host}:${internalProxyPort}`;
+    const internalProxyOrigin = `http://localhost:${internalProxyPort}`;
 
     const app = connect();
+
     proxy = httpProxy.createProxyServer({
         changeOrigin: true,
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
         protocolRewrite: conf.protocol.replace(":", "")
     });
+
+    //
+    app.use((req, res, next) => {
+        next();
+    });
+
+    // apply ESI
     app.use(transformerProxy(applyESI));
 
+    // dynamically proxy to local filesystem or remote webserver
     app.use((req, res, next) => {
         // figure out which target to proxy to based on the requested resource path
         const routeKey = _.findKey(conf.routes, (v, r) =>
             _.startsWith(req.url, r)
         );
+        const env = req.headers["x-spandx-env"];
         const route = conf.routes[routeKey];
-        let target = route.host;
+        let target = route.host && route.host[env];
+        // console.log(`env: ${env}`);
+        // console.log(`route: ${route}`);
+        // console.log(`target: ${target}`);
         let fileExists;
         let needsSlash = false;
         const localFile = !target;
@@ -138,7 +159,7 @@ function init(confIn) {
                     console.log(
                         `GET ${c.fg.l.green}${req.url}${c.end} from ${
                             c.fg.l.cyan
-                        }${absoluteFilePath}${c.end}`
+                        }${absoluteFilePath}${c.end} ${env}`
                     );
                 }
 
@@ -160,11 +181,16 @@ function init(confIn) {
             );
         }
 
-        proxy.web(req, res, { target }, e => {
-            console.error(e);
-            res.writeHead(200, { "Content-Type": "text/plain" });
+        if (target) {
+            proxy.web(req, res, { target }, e => {
+                console.error(e);
+                res.writeHead(200, { "Content-Type": "text/plain" });
+                res.end();
+            });
+        } else {
+            res.writeHead(404);
             res.end();
-        });
+        }
     });
     internalProxy = http.createServer(app).listen(internalProxyPort);
 
@@ -176,31 +202,41 @@ function init(confIn) {
         console.log("These paths will be routed to the following remote hosts");
         console.log();
         console.log(
-            _.map(
-                conf.webRoutes,
-                route =>
-                    `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${
-                        route[0]
-                    }${c.e} will be routed to ${c.fg.l.blue}${route[1].host}${
-                        c.e
-                    }${c.fg.l.green}${route[0]}${c.e}`
-            ).join("\n")
+            _.map(conf.webRoutes, route => {
+                return conf.spandxUrl
+                    .map(
+                        url =>
+                            `  ${c.fg.l.blue}${url.replace(/\/$/, "")}${c.end}${
+                                c.fg.l.green
+                            }${route[0]}${c.e} will be routed to ${
+                                c.fg.l.blue
+                            }${route[1].host}${c.e}${c.fg.l.green}${route[0]}${
+                                c.e
+                            }`
+                    )
+                    .join("\n");
+            }).join("\n")
         );
         console.log();
 
         console.log("These paths will be routed to your local filesystem");
         console.log();
         console.log(
-            _.map(
-                conf.diskRoutes,
-                route =>
-                    `  ${c.fg.l.blue}${conf.spandxUrl}${c.end}${c.fg.l.green}${
-                        route[0]
-                    }${c.end} will be routed to ${c.fg.l.cyan}${path.resolve(
-                        conf.configDir,
-                        resolveHome(route[1])
-                    )}${c.e}`
-            ).join("\n")
+            _.map(conf.diskRoutes, route => {
+                return conf.spandxUrl
+                    .map(
+                        url =>
+                            `  ${c.fg.l.blue}${url.replace(/\/$/, "")}${c.end}${
+                                c.fg.l.green
+                            }${route[0]}${c.end} will be routed to ${
+                                c.fg.l.cyan
+                            }${path.resolve(
+                                conf.configDir,
+                                resolveHome(route[1])
+                            )}${c.e}`
+                    )
+                    .join("\n");
+            }).join("\n")
         );
 
         console.log();
@@ -249,7 +285,21 @@ function init(confIn) {
                 logLevel: conf.verbose ? "info" : "silent",
                 files: conf.files,
                 proxy: {
-                    target: internalProxyOrigin
+                    target: internalProxyOrigin,
+                    proxyReq: [
+                        function(proxyReq, proxyRes) {
+                            // find and set a header to keep track of the spandx origin
+                            const origin = proxyRes.headers.host.split(":")[0];
+                            proxyReq.setHeader("X-Spandx-Origin", origin);
+
+                            // find and set a header to keep track of the spandx env
+                            const env = _.findKey(
+                                conf.host,
+                                host => host === origin
+                            );
+                            proxyReq.setHeader("X-Spandx-Env", env);
+                        }
+                    ]
                 },
                 rewriteRules: _.concat(conf.rewriteRules, conf.bs.rewriteRules)
             },
@@ -257,7 +307,7 @@ function init(confIn) {
         );
         bs.init(bsOptions, () => {
             if (conf.open) {
-                opn(conf.spandxUrl);
+                opn(conf.spandxUrl[0]);
             }
             resolve(bs);
         });
@@ -265,7 +315,11 @@ function init(confIn) {
 
     if (!conf.silent) {
         console.log(
-            `spandx URL:\n\n  ${c.fg.l.blue}${conf.spandxUrl}${c.end}\n`
+            `spandx URL${
+                conf.spandxUrl.length > 1 ? "s" : ""
+            }:\n\n${conf.spandxUrl
+                .map(url => `  ${c.fg.l.blue}${url}${c.end}`)
+                .join("\n")}\n`
         );
     }
 

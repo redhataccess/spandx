@@ -1,3 +1,5 @@
+const hush = require("../helpers/hush");
+
 describe("spandx", () => {
     const http = require("http");
     const fs = require("fs");
@@ -16,11 +18,13 @@ describe("spandx", () => {
 
     beforeEach(() => {
         spandx = require(spandxPath);
+        hush.yourMouth();
     });
 
     afterEach(() => {
         spandx.exit();
         delete require.cache[require.resolve(spandxPath)];
+        hush.restore();
     });
 
     describe("spandx.init()", () => {
@@ -83,6 +87,106 @@ describe("spandx", () => {
                         });
                 }
             );
+        });
+
+        it("should accept single-host config", done => {
+            serve("spec/helpers/configs/js-or-json/", 4014).then(
+                ({ server, port }) => {
+                    spandx
+                        .init({
+                            /* config object! */
+                            silent: true,
+                            routes: {
+                                "/": { host: "http://localhost:4014" }
+                            }
+                        })
+                        .then(() => {
+                            frisby
+                                .get("http://localhost:1337/")
+                                .expect("status", 200)
+                                .expect("bodyContains", /INDEX/)
+                                .done(() => {
+                                    server.close();
+                                    done();
+                                });
+                        });
+                }
+            );
+        });
+
+        it("should accept multi-host config", done => {
+            // serve prod dir, then serve dev dir on a different port
+            serve("spec/helpers/configs/single-multi/prod", 4015).then(
+                ({ server: devServer, port: devPort }) => {
+                    serve("spec/helpers/configs/single-multi/dev", 4014).then(
+                        ({ server: prodServer, port: prodPort }) => {
+                            // launch spandx with two 'environments', dev and
+                            // prod.  accessing spandx by localhost should
+                            // route requests to '/' route's 'dev' host, and
+                            // prod should go to the prod host.
+                            spandx
+                                .init({
+                                    host: {
+                                        dev: "localhost",
+                                        prod: "127.0.0.1"
+                                    },
+                                    port: 1337,
+                                    silent: true,
+                                    routes: {
+                                        "/": {
+                                            host: {
+                                                dev: "http://localhost:4014",
+                                                prod: "http://localhost:4015"
+                                            }
+                                        }
+                                    }
+                                })
+                                .then(() => {
+                                    const devReq = frisby
+                                        .get("http://localhost:1337/")
+                                        .expect("status", 200)
+                                        .expect("bodyContains", /DEV/);
+
+                                    const prodReq = frisby
+                                        .get("http://127.0.0.1:1337/")
+                                        .expect("status", 200)
+                                        .expect("bodyContains", /PROD/);
+
+                                    // wait for both request's promises to
+                                    // resolve, then close up shop
+                                    Promise.all([
+                                        devReq._fetch,
+                                        prodReq._fetch
+                                    ]).then(values => {
+                                        devServer.close();
+                                        prodServer.close();
+                                        done();
+                                    });
+                                });
+                        }
+                    );
+                }
+            );
+        });
+
+        it("should reject invalid multi-host configs", () => {
+            expect(() =>
+                spandx.init({
+                    host: {
+                        dev: "localhost"
+                    },
+                    port: 1337,
+                    silent: true,
+                    routes: {
+                        "/": {
+                            host: {
+                                dev: "http://localhost:4014",
+                                prod: "http://localhost:4015"
+                            }
+                        }
+                    }
+                })
+            ).toThrowError();
         });
 
         it("should allow overriding browserSync settings", done => {
