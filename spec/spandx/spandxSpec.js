@@ -647,6 +647,53 @@ describe("spandx", () => {
         });
     });
 
+    describe("remote fallback", () => {
+        it("if a file is not found on a local route, attempt to fetch it from the '/' remote route", done => {
+            serve(
+                "spec/helpers/configs/remote-fallback/remote-files",
+                4014
+            ).then(({ server, port }) => {
+                spandx
+                    .init(
+                        "../spec/helpers/configs/remote-fallback/spandx.config.js"
+                    )
+                    .then(() => {
+                        frisby
+                            .get(
+                                "http://localhost:1337/subdir/remote-only.html"
+                            )
+                            .expect("status", 200)
+                            .expect("bodyContains", /REMOTE ONLY/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            });
+                    });
+            });
+        });
+        it("if a file exists in both a local route and a remote '/' route, serve the local one", done => {
+            serve(
+                "spec/helpers/configs/remote-fallback/remote-files",
+                4014
+            ).then(({ server, port }) => {
+                spandx
+                    .init(
+                        "../spec/helpers/configs/remote-fallback/spandx.config.js"
+                    )
+                    .then(() => {
+                        frisby
+                            .get("http://localhost:1337/subdir/index.html")
+                            .expect("status", 200)
+                            .expect("bodyContains", /LOCAL SUBDIR INDEX/)
+                            .done(() => {
+                                server.close();
+                                done();
+                            });
+                    });
+            });
+        });
+    });
+
     describe("command-line flags and output", () => {
         const configPathRel = "./spandx.config.js";
         it("init should generate a sample config", () => {

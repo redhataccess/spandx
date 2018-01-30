@@ -170,7 +170,7 @@ function init(confIn) {
         }
 
         if (localFile && (!fileExists || needsSlash)) {
-            target = conf.routes["/"].host;
+            target = conf.routes["/"].host[env];
         }
 
         if (conf.verbose) {
