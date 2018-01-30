@@ -10,10 +10,10 @@ function yourMouth() {
     console.error = noop;
 }
 
-function restore() {
+function speakUp() {
     console.log = log;
     console.warn = warn;
     console.error = error;
 }
 
-module.exports = { yourMouth, restore };
+module.exports = { yourMouth, speakUp };

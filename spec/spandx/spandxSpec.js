@@ -24,7 +24,7 @@ describe("spandx", () => {
     afterEach(() => {
         spandx.exit();
         delete require.cache[require.resolve(spandxPath)];
-        hush.restore();
+        hush.speakUp();
     });
 
     describe("spandx.init()", () => {
