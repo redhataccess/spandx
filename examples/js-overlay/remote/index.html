@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>spandx multi-host example</title>
+        <style type="text/css" media="screen">
+            code { font-size: 2em; background-color: #f1f1f1; padding: 20px; margin-top: 20px; }
+            body { display: flex; flex-direction: column }
+        </style>
+    </head>
+    <body>
+
+        <h1>spandx JS overlay example</h1>
+
+        <p>This example demonstrates using <a
+                href="https://github.com/redhataccess/spandx">spandx</a> to
+            overlay local JavaScript files onto a remote environment.  Test in
+            production. :]</p>
+
+        <h2>Currently using...</h2>
+
+        <code id="msg"></code>
+
+        <p>Switch to...</p>
+
+        <ul>
+            <li> <a href="http://localhost:1337">Dev server</a> </li>
+            <li> <a href="http://127.0.0.1:8081">Prod server</a> </li>
+        </ul>
+
+        <script src="js/main.js"></script>
+    </body>
+</html>
