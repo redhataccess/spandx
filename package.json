@@ -14,7 +14,12 @@
         "precommit": "lint-staged"
     },
     "lint-staged": {
-        "*.{js,json}": ["prettier --write", "npm test", "git add"]
+        "{app,spec}/**/*.{js,json}": [
+            "prettier --write",
+            "npm test",
+            "git add"
+        ],
+        "examples/**/*.{js,json}": ["prettier --write", "git add"]
     },
     "repository": {
         "type": "git",
@@ -40,6 +45,7 @@
     },
     "devDependencies": {
         "frisby": "^2.0.5",
+        "http-server": "^0.11.1",
         "husky": "^0.14.3",
         "jasmine": "^2.8.0",
         "jasmine-spec-reporter": "^4.2.1",
