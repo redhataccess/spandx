@@ -163,18 +163,18 @@ function processConf(conf, configDir = __dirname) {
     // is mainly useful for rewriting links from, say 'www.foo.com' to
     // 'localhost:1337' so that when you click on a link, you stay in your
     // spandx'd environment.
+    const protocol = conf.bs.https ? "https:" : "http:";
     const rewriteRules = _(webRoutes)
         .map("1.host")
         .map(h =>
             _.map(h, (v, env) => ({
                 match: new RegExp(v, "g"),
-                replace: `//${conf.host[env]}:${conf.port}`
+                replace: `${protocol}//${conf.host[env]}:${conf.port}`
             }))
         )
         .flatten()
         .value();
 
-    const protocol = conf.bs.https ? "https:" : "http:";
     const startPath = conf.startPath || "";
     const spandxUrl = _.map(
         conf.host,
