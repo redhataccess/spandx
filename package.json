@@ -1,11 +1,13 @@
 {
     "name": "spandx",
-    "version": "0.2.1",
-    "description":
-        "Develop locally, proxy to prod, browser-sync, and process ESI tags.",
+    "version": "0.2.2",
+    "description": "Develop locally, proxy to prod, browser-sync, and process ESI tags.",
     "main": "app/spandx.js",
     "bin": "app/cli.js",
-    "files": ["app", "spandx.config.js"],
+    "files": [
+        "app",
+        "spandx.config.js"
+    ],
     "scripts": {
         "test": "jasmine",
         "start": "node app/spandx.js",
@@ -19,13 +21,20 @@
             "npm test",
             "git add"
         ],
-        "examples/**/*.{js,json}": ["prettier --write", "git add"]
+        "examples/**/*.{js,json}": [
+            "prettier --write",
+            "git add"
+        ]
     },
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/redhataccess/spandx.git"
     },
-    "keywords": ["proxy", "esi", "local"],
+    "keywords": [
+        "proxy",
+        "esi",
+        "local"
+    ],
     "license": "GPL-3.0",
     "bugs": {
         "url": "https://github.com/redhataccess/spandx/issues"
