@@ -210,9 +210,9 @@ function init(confIn) {
                                 c.fg.l.green
                             }${route[0]}${c.e} will be routed to ${
                                 c.fg.l.blue
-                            }${route[1].host}${c.e}${c.fg.l.green}${route[0]}${
-                                c.e
-                            }`
+                            }${route[1].host.default || route[1].host}${c.e}${
+                                c.fg.l.green
+                            }${route[0]}${c.e}`
                     )
                     .join("\n");
             }).join("\n")
