@@ -66,7 +66,7 @@ function init(confIn) {
 
     const esi = _(conf.host)
         .mapValues((host, env) => {
-            const esiconf = {
+            const esiconfDefaults = {
                 baseUrl: `${conf.protocol}//${host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
                 onError: (src, error) => {
                     console.error(
@@ -77,11 +77,7 @@ function init(confIn) {
                 cache: false
             };
 
-            if (conf.esiAllowedHosts) {
-                esiconf.allowedHosts = conf.esiAllowedHosts;
-            }
-
-            return new ESI(esiconf);
+            return new ESI(_.defaultsDeep(conf.esi, esiconfDefaults));
         })
         .value();
 
