@@ -46,7 +46,7 @@
         "finalhandler": "^1.0.5",
         "http-proxy": "^1.16.2",
         "lodash": "^4.17.4",
-        "nodesi": "^1.6.0",
+        "nodesi": "^1.7.1",
         "print-colors": "^1.0.1",
         "serve-static": "^1.12.4",
         "transformer-proxy": "^0.3.4",
