@@ -4,6 +4,7 @@ const path = require("path");
 const _ = require("lodash");
 const resolveHome = require("./resolveHome");
 const c = require("print-colors");
+const porty = require("porty");
 
 const defaultConfig = {
     protocol: "http:",
@@ -19,8 +20,13 @@ const defaultConfig = {
 
 let configState = {};
 
-function create(incomingConfig = {}, configDir = __dirname) {
+async function create(incomingConfig = {}, configDir = __dirname) {
     configState.currentConfig = _.defaults(incomingConfig, defaultConfig);
+
+    if (incomingConfig.port === "auto") {
+        incomingConfig.port = await porty.find();
+    }
+
     _.extend(
         configState.currentConfig,
         processConf(configState.currentConfig, configDir)
@@ -35,11 +41,11 @@ function get() {
     return configState.currentConfig;
 }
 
-function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
+async function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
     const fullPath = path.resolve(__dirname, filePath);
     try {
         const confObj = require(fullPath);
-        const conf = create(confObj, path.parse(fullPath).dir);
+        const conf = await create(confObj, path.parse(fullPath).dir);
         return conf;
     } catch (e) {
         console.error(

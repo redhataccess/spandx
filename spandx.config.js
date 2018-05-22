@@ -1,7 +1,7 @@
 module.exports = {
     host: "localhost",
-    port: 1337,
-    open: true,
+    port: "auto",
+    open: !true,
     startPath: "/",
     verbose: true,
     routes: {

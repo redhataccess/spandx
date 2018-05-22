@@ -24,25 +24,25 @@ let proxy;
 let internalProxy;
 let bs;
 
-function init(confIn) {
+async function init(confIn) {
     // if initialized with a string, assume it's a file path to a config file
     // if initialized with an object, assume it's a configuration object
     // if initialized with no arguments, use default configuration
     switch (typeof confIn) {
         case "string":
-            conf = config.fromFile(confIn);
+            conf = await config.fromFile(confIn);
             if (conf.verbose && !conf.silent) {
                 console.log(`configuration: ${c.fg.l.cyan}${confIn}${c.end}`);
             }
             break;
         case "object":
-            conf = config.create(confIn);
+            conf = await config.create(confIn);
             if (conf.verbose && !conf.silent) {
                 console.log("configuration: custom object");
             }
             break;
         default:
-            conf = config.create();
+            conf = await config.create();
             if (conf.verbose && !conf.silent) {
                 console.log("configuration: defaults");
             }
