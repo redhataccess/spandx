@@ -7,9 +7,6 @@ describe("spandx", () => {
     const execSync = require("child_process").execSync;
     const execFile = require("child_process").execFile;
     const frisby = require("frisby");
-    const connect = require("connect");
-    const serveStatic = require("serve-static");
-    const finalhandler = require("finalhandler");
 
     const serve = require("../helpers/serve");
 
