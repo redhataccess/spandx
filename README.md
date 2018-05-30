@@ -85,6 +85,14 @@ Get the current version.
     spandx --version
     spandx -v
 
+## Running specific tests
+
+When writing a test, or debugging a failing test, you may want to run *only* that test instead of the entire suite.  To do that, you can filter by the name of the test.  Just be specific enough to target only the test (or tests) you want to run.
+
+For example, to run the test named "should reject invalid multi-host configs":
+
+    npm test -- --filter="invalid"
+
 ## Known issues
 
 ### cURLing spandx
