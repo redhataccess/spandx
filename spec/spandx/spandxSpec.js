@@ -64,29 +64,27 @@ describe("spandx", () => {
                 });
         });
 
-        it("should accept a config object", done => {
-            serve("spec/helpers/configs/js-or-json/", 4014).then(
-                ({ server, port }) => {
-                    spandx
-                        .init({
-                            /* config object! */
-                            silent: true,
-                            routes: {
-                                "/": { host: "http://localhost:4014" }
-                            }
-                        })
-                        .then(() => {
-                            frisby
-                                .get("http://localhost:1337/")
-                                .expect("status", 200)
-                                .expect("bodyContains", /INDEX/)
-                                .done(() => {
-                                    server.close();
-                                    done();
-                                });
-                        });
-                }
+        it("should accept a config object", async done => {
+            const { server, port } = await serve(
+                "spec/helpers/configs/js-or-json/",
+                4014
             );
+            await spandx.init({
+                /* config object! */
+                silent: true,
+                routes: {
+                    "/": { host: "http://localhost:4014" }
+                }
+            });
+
+            frisby
+                .get("http://localhost:1337/")
+                .expect("status", 200)
+                .expect("bodyContains", /INDEX/)
+                .done(() => {
+                    server.close();
+                    done();
+                });
         });
 
         it("should accept single-host config", done => {
