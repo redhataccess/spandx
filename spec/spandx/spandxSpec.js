@@ -169,9 +169,9 @@ describe("spandx", () => {
             );
         });
 
-        it("should reject invalid multi-host configs", () => {
-            expect(() =>
-                spandx.init({
+        it("should reject invalid multi-host configs", done => {
+            spandx
+                .init({
                     host: {
                         dev: "localhost"
                     },
@@ -186,7 +186,8 @@ describe("spandx", () => {
                         }
                     }
                 })
-            ).toThrowError();
+                .then(fail)
+                .catch(done);
         });
 
         it("should allow overriding browserSync settings", done => {
@@ -716,9 +717,9 @@ describe("spandx", () => {
                     urlPrompted = true;
                     expect(data).toContain("spandx URL");
                 }
-                if (!urlPrinted && data.includes("http://localhost:1337")) {
+                if (!urlPrinted && data.includes("http://localhost:")) {
                     urlPrinted = true;
-                    expect(data).toContain("http://localhost:1337");
+                    expect(data).toContain("http://localhost:");
                 }
                 if (urlPrompted && urlPrinted) {
                     shell.kill();
@@ -727,6 +728,7 @@ describe("spandx", () => {
             });
             shell.stderr.on("data", err => {
                 fail(err);
+                done();
             });
         });
         it("-c should accept a relative config file path", done => {
@@ -743,9 +745,9 @@ describe("spandx", () => {
                     urlPrompted = true;
                     expect(data).toContain("spandx URL");
                 }
-                if (!urlPrinted && data.includes("http://localhost:1337")) {
+                if (!urlPrinted && data.includes("http://localhost:")) {
                     urlPrinted = true;
-                    expect(data).toContain("http://localhost:1337");
+                    expect(data).toContain("http://localhost:");
                 }
                 if (urlPrompted && urlPrinted) {
                     shell.kill();
@@ -773,9 +775,9 @@ describe("spandx", () => {
                     urlPrompted = true;
                     expect(data).toContain("spandx URL");
                 }
-                if (!urlPrinted && data.includes("http://localhost:1337")) {
+                if (!urlPrinted && data.includes("http://localhost:")) {
                     urlPrinted = true;
-                    expect(data).toContain("http://localhost:1337");
+                    expect(data).toContain("http://localhost:");
                 }
                 if (urlPrompted && urlPrinted) {
                     shell.kill();
