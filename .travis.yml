@@ -9,7 +9,7 @@ os:
     - osx
 matrix:
     exclude:
-        - os: osx
+        - os: osx # skip this because on Travis, node.js segfaults on osx+node 9
           node_js: "9"
 cache:
     directories:
