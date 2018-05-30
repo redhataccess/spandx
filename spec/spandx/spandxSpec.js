@@ -166,23 +166,9 @@ describe("spandx", () => {
 
         it("should reject invalid multi-host configs", done => {
             spandx
-                .init({
-                    host: {
-                        dev: "localhost"
-                    },
-                    port: 1337,
-                    silent: true,
-                    routes: {
-                        "/": {
-                            host: {
-                                dev: "http://localhost:4014",
-                                prod: "http://localhost:4015"
-                            }
-                        }
-                    }
-                })
-                .then(fail)
-                .catch(done);
+                .init("../spec/helpers/configs/multi-host/spandx.config.js")
+                .then(() => fail())
+                .catch(() => done());
         });
 
         it("should allow overriding browserSync settings", done => {

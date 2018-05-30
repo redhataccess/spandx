@@ -42,20 +42,20 @@ function get() {
 }
 
 async function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
+    let confObj;
     const fullPath = path.resolve(__dirname, filePath);
     try {
-        const confObj = require(fullPath);
-        const conf = await create(confObj, path.parse(fullPath).dir);
-        return conf;
+        confObj = require(fullPath);
     } catch (e) {
-        console.error(
+        throw new Error(
             `Tried to open spandx config file ${c.fg.l.cyan}${filePath}${
                 c.end
             } but couldn't find it, or couldn't access it.`
         );
-        console.error(e);
         process.exit(1);
     }
+    const conf = await create(confObj, path.parse(fullPath).dir);
+    return conf;
 }
 
 function isSingleHost(conf) {
