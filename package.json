@@ -42,26 +42,26 @@
     "homepage": "https://github.com/redhataccess/spandx#readme",
     "dependencies": {
         "browser-sync": "^2.18.13",
-        "connect": "^3.6.3",
-        "finalhandler": "^1.0.5",
-        "http-proxy": "^1.16.2",
-        "lodash": "^4.17.4",
+        "connect": "^3.6.6",
+        "finalhandler": "^1.1.1",
+        "http-proxy": "^1.17.0",
+        "lodash": "^4.17.10",
         "nodesi": "^1.7.1",
         "porty": "^3.1.1",
         "print-colors": "^1.0.1",
-        "serve-static": "^1.12.4",
+        "serve-static": "^1.13.2",
         "transformer-proxy": "^0.3.4",
-        "yargs": "^8.0.2"
+        "yargs": "^11.0.0"
     },
     "devDependencies": {
-        "frisby": "^2.0.5",
+        "frisby": "^2.0.16",
         "http-server": "^0.11.1",
         "husky": "^0.14.3",
-        "jasmine": "^2.8.0",
+        "jasmine": "^3.1.0",
         "jasmine-spec-reporter": "^4.2.1",
-        "lint-staged": "^4.3.0",
-        "nodemon": "^1.11.0",
-        "opn": "^5.1.0",
-        "prettier": "^1.9.2"
+        "lint-staged": "^7.1.2",
+        "nodemon": "^1.17.5",
+        "opn": "^5.3.0",
+        "prettier": "^1.13.2"
     }
 }
