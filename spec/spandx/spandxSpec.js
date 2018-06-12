@@ -109,20 +109,19 @@ describe("spandx", () => {
         });
 
         it("should accept multi-host config", async done => {
-            // serve prod dir, then serve dev dir on a different port
-            const { server: devServer, port: devPort } = await serve(
-                "spec/helpers/configs/single-multi/prod",
-                4015
-            );
+            // serve prod dir and dev dir on different ports
             const { server: prodServer, port: prodPort } = await serve(
                 "spec/helpers/configs/single-multi/dev",
                 4014
             );
+            const { server: devServer, port: devPort } = await serve(
+                "spec/helpers/configs/single-multi/prod",
+                4015
+            );
 
-            // launch spandx with two 'environments', dev and
-            // prod.  accessing spandx by localhost should
-            // route requests to '/' route's 'dev' host, and
-            // prod should go to the prod host.
+            // launch spandx with two 'environments', dev and prod.  accessing
+            // spandx by localhost should route requests to the 'dev' host, and
+            // accessing spandx by 127.0.0.1 should route to the prod host.
             await spandx.init({
                 host: {
                     dev: "localhost",
@@ -169,7 +168,7 @@ describe("spandx", () => {
             }
         });
 
-        it("should allow overriding browserSync settings", async done => {
+        it("should accept overriding browserSync settings", async done => {
             const bs = await spandx.init(
                 "../spec/helpers/configs/bs-override/spandx.config.js"
             );
@@ -178,6 +177,20 @@ describe("spandx", () => {
             expect(opts.get("scroll")).toEqual(false);
             expect(opts.get("location")).toEqual(false);
             done();
+        });
+
+        it("should support port: 'auto'", async done => {
+            const bs = await spandx.init(
+                "../spec/helpers/configs/port-auto/spandx.config.js"
+            );
+
+            const port = bs.getOption("port");
+
+            const devReq = frisby
+                .get(`http://localhost:${port}/`)
+                .expect("status", 200)
+                .expect("bodyContains", /INDEX/)
+                .done(done);
         });
     });
 
@@ -427,7 +440,7 @@ describe("spandx", () => {
 
     describe("URL rewriting", () => {
         describe("when routing to local directories", () => {
-            it("should rewrite links to match the spandx origin", async done => {
+            it("should rewrite URLs to match the spandx origin", async done => {
                 await spandx.init(
                     "../spec/helpers/configs/url-rewriting/spandx.local.js"
                 );
@@ -445,7 +458,7 @@ describe("spandx", () => {
                     .expect("bodyContains", "//localhost:1337")
                     .done(done);
             });
-            it("should rewrite links within ESI fragments to match the spandx origin", async done => {
+            it("should rewrite URLs within ESI fragments to match the spandx origin", async done => {
                 await spandx.init(
                     "../spec/helpers/configs/url-rewriting/spandx.local.js"
                 );
@@ -465,7 +478,7 @@ describe("spandx", () => {
             });
         });
         describe("when routing to remote directories", () => {
-            it("should rewrite links to match the spandx origin", async done => {
+            it("should rewrite URLs to match the spandx origin", async done => {
                 const { server, port } = await serve(
                     "spec/helpers/configs/url-rewriting/",
                     4014
@@ -490,7 +503,7 @@ describe("spandx", () => {
                         done();
                     });
             });
-            it("should rewrite links within ESI fragments to match the spandx origin", async done => {
+            it("should rewrite URLs within ESI fragments to match the spandx origin", async done => {
                 const { server, port } = await serve(
                     "spec/helpers/configs/url-rewriting/",
                     4014
@@ -514,6 +527,68 @@ describe("spandx", () => {
                         server.close();
                         done();
                     });
+            });
+            it("should rewrite URLs when using multi-host", async done => {
+                // serve prod dir and dev dir on different ports
+                const { server: prodServer, port: prodPort } = await serve(
+                    "spec/helpers/configs/single-multi/dev",
+                    4014
+                );
+                const { server: devServer, port: devPort } = await serve(
+                    "spec/helpers/configs/single-multi/prod",
+                    4015
+                );
+
+                // launch spandx with two 'environments', dev and prod.  accessing
+                // spandx by localhost should route requests to the 'dev' host, and
+                // accessing spandx by 127.0.0.1 should route to the prod host.
+                await spandx.init({
+                    host: {
+                        dev: "localhost",
+                        prod: "127.0.0.1"
+                    },
+                    port: 1337,
+                    silent: true,
+                    routes: {
+                        "/": {
+                            host: {
+                                dev: "http://localhost:4014",
+                                prod: "http://localhost:4015"
+                            }
+                        }
+                    }
+                });
+
+                const devReq = frisby
+                    .setup({
+                        request: {
+                            headers: {
+                                Accept: "text/html,*/*"
+                            }
+                        }
+                    })
+                    .get("http://localhost:1337/")
+                    .expect("status", 200)
+                    .expect("bodyContains", /localhost/);
+
+                const prodReq = frisby
+                    .setup({
+                        request: {
+                            headers: {
+                                Accept: "text/html,*/*"
+                            }
+                        }
+                    })
+                    .get("http://127.0.0.1:1337/")
+                    .expect("status", 200)
+                    .expect("bodyContains", /127\.0\.0\.1/);
+
+                // wait for both request's promises to
+                // resolve, then close up shop
+                await Promise.all([devReq._fetch, prodReq._fetch]);
+                devServer.close();
+                prodServer.close();
+                done();
             });
         });
     });
