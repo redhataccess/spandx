@@ -21,9 +21,15 @@ module.exports = (conf, proxy) => {
         .value();
     return (req, res, next) => {
         // figure out which target to proxy to based on the requested resource path
-        const routeKey = _.findKey(conf.routes, (v, r) =>
-            _.startsWith(req.url, r)
+        const sortedRoutes = _(conf.routes)
+            .toPairs()
+            .sortBy(v => -v[0].length)
+            .value();
+        const routeIndex = _.findKey(sortedRoutes, v =>
+            _.startsWith(req.url, v[0])
         );
+        const routeKey = sortedRoutes[routeIndex][0];
+
         const env = req.headers["x-spandx-env"];
         const route = conf.routes[routeKey];
         let target = route.host && route.host[env];

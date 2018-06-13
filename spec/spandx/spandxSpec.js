@@ -630,6 +630,37 @@ describe("spandx", () => {
         });
     });
 
+    describe("routing order", () => {
+        it("should pick longer routes over shorter routes", async done => {
+            const { server, port } = await serve(
+                "spec/helpers/configs/route-order/",
+                4014
+            );
+
+            await spandx.init(
+                "../spec/helpers/configs/route-order/spandx.config.js"
+            );
+
+            frisby
+                .get("http://localhost:1337/")
+                .expect("status", 200)
+                .expect("bodyContains", /^\//)
+                .get("http://localhost:1337/a")
+                .expect("status", 200)
+                .expect("bodyContains", /^\/a/)
+                .get("http://localhost:1337/a/b")
+                .expect("status", 200)
+                .expect("bodyContains", /^\/a\/b/)
+                .get("http://localhost:1337/a/b/c")
+                .expect("status", 200)
+                .expect("bodyContains", /^\/a\/b\/c/)
+                .done(() => {
+                    server.close();
+                    done();
+                });
+        });
+    });
+
     describe("command-line flags and output", () => {
         const configPathRel = "./spandx.config.js";
         it("init should generate a sample config", () => {
