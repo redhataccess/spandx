@@ -1,6 +1,6 @@
 {
     "name": "spandx",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Develop locally, proxy to prod, browser-sync, and process ESI tags.",
     "main": "app/spandx.js",
     "bin": "app/cli.js",
@@ -9,7 +9,7 @@
         "spandx.config.js"
     ],
     "scripts": {
-        "test": "jasmine",
+        "test": "jasmine spec/spandx/spandxSpec.js",
         "start": "node app/spandx.js",
         "dev": "nodemon spandx.js",
         "debug": "node-debug spandx.js",

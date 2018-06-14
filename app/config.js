@@ -27,6 +27,11 @@ async function create(incomingConfig = {}, configDir = __dirname) {
         incomingConfig.port = await porty.find();
     }
 
+    // choose a port for the internal proxy, avoiding the external port just chosen
+    incomingConfig.internalPort = await porty.find({
+        avoids: [incomingConfig.port]
+    });
+
     _.extend(
         configState.currentConfig,
         processConf(configState.currentConfig, configDir)
