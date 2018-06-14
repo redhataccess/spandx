@@ -86,7 +86,7 @@ async function init(confIn) {
 
     // connect server w/ proxy
 
-    const internalProxyPort = conf.port + 1;
+    const internalProxyPort = conf.internalPort;
     const internalProxyOrigin = `http://localhost:${internalProxyPort}`;
 
     const app = connect();
