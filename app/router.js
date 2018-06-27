@@ -73,7 +73,9 @@ module.exports = (conf, proxy) => {
         }
 
         if (localFile && (!fileExists || needsSlash)) {
-            target = conf.routes["/"].host[env];
+            target = conf.routes["/"].host
+                ? conf.routes["/"].host[env]
+                : undefined;
         }
 
         if (conf.verbose) {
