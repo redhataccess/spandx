@@ -192,6 +192,20 @@ describe("spandx", () => {
                 .expect("bodyContains", /INDEX/)
                 .done(done);
         });
+
+        it("should send requests to an unconfigured hostname to the default hostname", async done => {
+            const bs = await spandx.init(
+                "../spec/helpers/configs/unconfigured-hostname/spandx.config.js"
+            );
+
+            const port = bs.getOption("port");
+
+            frisby
+                .get(`http://127.0.0.1:${port}/`)
+                .expect("status", 200)
+                .expect("bodyContains", /INDEX/)
+                .done(done);
+        });
     });
 
     describe("trailing slashes", () => {
