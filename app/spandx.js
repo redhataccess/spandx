@@ -222,7 +222,17 @@ async function init(confIn) {
                                 conf.host,
                                 host => host === origin
                             );
-                            proxyReq.setHeader("X-Spandx-Env", env);
+                            proxyReq.setHeader(
+                                "X-Spandx-Env",
+                                env || "default"
+                            );
+                            if (typeof env === "undefined") {
+                                if (!config.silent) {
+                                    console.warn(
+                                        `WARN request received at ${origin} which is not in the spandx config`
+                                    );
+                                }
+                            }
                         }
                     ]
                 },
