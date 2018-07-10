@@ -4,7 +4,12 @@ Here are some examples of spandx configurations.  Many more can be found in the 
 
 All examples have `verbose: true` so you can see where each request is being routed.
 
-## running examples
+## List of examples
+
+ - [JavaScript Overlay](./js-overlay): overlaying your local JavaScript files on top of a remote env
+ - [Multi-host](./multi-host): change remote env based on current hostname (very useful for pointing at dev, qa, stage, and prod servers)
+
+## Running the examples
 
 To launch an example, simply `cd` to the example that interests you and run the `./start.sh` script.
 
@@ -12,3 +17,4 @@ To launch an example, simply `cd` to the example that interests you and run the 
     ./start.sh
 
 In the case of `js-overlay`, the start script will launch an HTTP Server that we'll call the "remote" server.  Imagine this is your production server.  It has an `index.html` and a `main.js`.  If you view this directly, you'll see "PROD JS!".  If you view it through spandx instead, you'll see the same `index.html`, but the development copy of `main.js` is run instead of the prod version.
+
