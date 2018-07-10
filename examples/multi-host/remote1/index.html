@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>spandx multi-host example</title>
+        <style type="text/css" media="screen">
+            pre code { display: block; padding: 20px }
+            code { background-color: #f1f1f1; }
+            body { display: flex; justify-content: center; font-family: sans-serif }
+            main { display: flex; flex-direction: column; max-width: 800px; }
+        </style>
+    </head>
+    <body>
+        <main>
+
+        <h1>spandx mult-host example</h1>
+
+        <p>This example demonstrates using <a
+                href="https://github.com/redhataccess/spandx">spandx</a> to
+            point at different remote environments based on the current local hostname.
+        </p>
+
+        <p>
+            For example, visiting <a
+                href="http://localhost:1337">localhost:1337</a> will cause
+            spandx to proxy to Remote Server 1, and visiting <a
+                href="http://127.0.0.1:1337">127.0.0.1:1337</a> will cause
+            spandx to proxy to Remote Server 2.
+        </p>
+
+        <h2>Currently remote environment... <code>REMOTE SERVER 1</code></h2>
+
+        <p>Switch to...</p>
+
+        <ul>
+            <li> spandx proxying to <a href="http://localhost:1337">Remote Server 1</a> </li>
+            <li> spandx proxying to <a href="http://127.0.0.1:1337">Remote Server 2</a> </li>
+        </ul>
+
+        <h2>Using multi-host in your own project</h2>
+
+        <p>This example is a very simplified version, using localhost and 127.0.0.1 because they work out of the box.  To fully utilize this feature in your own project, please read on.</p>
+
+        <p>
+            This feature is most useful when paired with <kbd>/etc/hosts</kbd> to create custom local hostnames.  If you work on the website for Foo, Inc, which has these environments:
+        </p>
+
+        <ul>
+            <li> dev.foo.com </li>
+            <li> qa.foo.com </li>
+            <li> stage.foo.com </li>
+            <li> www.foo.com </li>
+        </ul>
+
+        <p>
+            You may want to use spandx to test your JS/CSS/images on each environment before deploying.  To do that, you could maintain four spandx config files, which point to each of the four envs.  Or, you can utilize mult-host routing.
+
+        </p>
+
+        Create local hostnames for each remote environment by adding this to /etc/hosts:
+
+<pre><code>dev-local.foo.com   127.0.0.1
+qa-local.foo.com    127.0.0.1
+stage-local.foo.com 127.0.0.1
+www-local.foo.com   127.0.0.1</code></pre>
+
+        Now visiting any of the new hostnames will simply point to localhost.  Perfect.  Now update your spandx config (only 'host' and 'routes' properties included for clarity).
+
+        Before:
+
+<pre><code>module.exports = {
+    host: "localhost",
+    routes: {
+        "/": {
+            host: "http://localhost:8081"
+        }
+    }
+};</code></pre>
+
+        After:
+
+<pre><code>module.exports = {
+    host: {
+        dev: "dev-local.foo.com",
+        qa: "qa-local.foo.com"
+ +--->  stage: "stage-local.foo.com"
+ |      production: "wwww-local.foo.com"
+ |  },
+ |  routes: {
+ |      "/": {
+ |          host: {
+ |              dev: "http://dev.foo.com",
+ |              qa: "http://qa.foo.com",
+ +----------->  stage: "http://stage.foo.com",
+                production: "http://www.foo.com",
+            }
+        }
+    }
+};</code></pre>
+
+<p>The ASCII arrow is drawn to show how the name "stage" (and similarly dev,
+    qa, and production), links the local hostname to the remote URL.  It can be
+    read as "If you visit spandx via stage-local.foo.com, then proxy to the 'stage' host, which lives at http://stage.foo.com".
+</p>
+<p>
+    These names can be a string of your choice, they are not hard-coded.
+</p>
+
+        </main>
+    </body>
+</html>

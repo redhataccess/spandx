@@ -4,7 +4,6 @@
 
 Develop locally, proxy to prod, browser-sync, and process ESI tags.
 
-[![NPM][npm-img]][npm]
 [![Build
 Status][build-img]][build]
 
@@ -22,7 +21,7 @@ Launch!
 
     spandx
 
-The `spandx` command automatically looks for a `spandx.config.js` file in the current directory.  If you prefer to use a different name, or keep the file in a different directory, you can pass in the config file path with the `-c` option, as in `spandx -c ../otherdir/spandx.conf.js`.  Also, if you prefer to store your config file in JSON format, that is also accepted.  It's js by default to allow for commenting your configuration choices.
+The `spandx` command automatically looks for a `spandx.config.js` file in the current directory.  If you prefer to use a different name, or keep the file in a different directory, you can pass in the config file path with the `-c` option, as in `spandx -c ../otherdir/spandx.conf.js`.  Also, if you prefer to store your config file in JSON format, that is also accepted.  JS is the default to allow for commenting your configuration choices.
 
 *Note: spandx requires node.js version 6 or higher.*
 
@@ -30,22 +29,23 @@ The `spandx` command automatically looks for a `spandx.config.js` file in the cu
 
 Here are the configuration options accepted by the config file. 
 
-  - **host** - the hostname spandx is running on, usually "localhost", but you can add custom hostnames (ie, `/etc/hosts` entries pointing to 127.0.0.1) if you, for example, need a certain domain suffix to satisfy CORS-enabled services (string)
-  - **port** - the port for spandx to listen on (number)
-  - **open** - whether to open a browser tab when spandx is launched (boolean)
-  - **startPath** - what URL path to open, ex: `"/site"` (string)
-  - **verbose** - display English summary of configuration settings and display browserSync logs, or not (boolean)
-  - **routes** - define where to send requests for any number of URL paths, best explained by example in the following section (object)
-  - **bs** - a [browserSync config object][bs-options], in case you need to further customize spandx's browserSync instance (object)
-    
+option | description | type
+---|---|---
+`host` | the hostname spandx is running on, usually "localhost", or a [multi-host](#multi-host-routing) object | string or object
+`port` | the port for spandx to listen on, or "auto"  | number or string
+`open` | whether to open a browser tab when spandx is launched  | boolean
+`startPath` | the URL path to open, if `open` is true. ex: `"/site"`  | string
+`verbose` | display English summary of configuration settings and display browserSync logs, or not  | boolean
+`routes` | define where to send requests for any number of URL paths, best explained by example in the following section  | object
+`bs` | a [browserSync config object][bs-options], in case you need to further customize spandx's browserSync instance  | object
 
 ### Routes by example
 
 Route all requests to palebluepixel.org (a perfect reverse proxy), *unless* the request falls under `/theme`, in which case look for files in `~/projects/pbp/theme`.
 
     routes: {
-        '/theme' : '~/projects/pbp/theme/,
-        '/'      : { host: 'https://palebluepixel.org/' },
+        "/theme" : "~/projects/pbp/theme/",
+        "/"      : { host: "https://palebluepixel.org/" },
     },
 
 Here's how this configuration would play out.
@@ -57,6 +57,31 @@ Here's how this configuration would play out.
 This effectively overlays a local directory of static files on top of a remote server.  Test in production!
 
 In addition, because `~/projects/pbp/theme` is a local directory, changes to files inside it will trigger a browserSync refresh.
+
+#### Multi-host routing
+
+spandx allows you to "overlay" local static files on top of a remote webserver.  Many projects have multiple remote webservers, for example a dev server, qa, staging, and production.  To simplify dealing with multiple remotes, spandx offers multi-host routing, whether the local hostname determines which remote host to proxy to.  Here's an example config.
+
+
+```js
+module.exports = {
+    host: {
+ +---<  dev: "dev-local.foo.com",
+ |      prod: "prod-local.foo.com"
+ |  },
+ |  routes: {
+ |      "/": {
+ |          host: {
+ +----------->  dev: "http://dev.foo.com",
+                prod: "http://www.foo.com"
+            }
+        }
+    }
+};
+```
+
+In this case, dev-local.foo.com and prod-local.foo.com should be entered in `/etc/hosts`, pointing to `127.0.0.1`.  Then, when spandx is visited at dev-local.foo.com, spandx knows it's the "dev" host and proxies to dev.foo.com.  The names "dev" and "prod" can be any names you choose.  See the [examples](examples) dir for a working example.
+
 
 ## Installing as a local package in your project
 
@@ -108,7 +133,6 @@ All other spandx features work with or without `text/html` in the `Accept` heade
 
 [curl]: https://curl.haxx.se/
 [npm]: https://www.npmjs.com/package/spandx
-[npm-img]: https://nodei.co/npm/spandx.png
 [build-img]: https://travis-ci.org/redhataccess/spandx.png?branch=master
 [build]: https://travis-ci.org/redhataccess/spandx
 [bs-options]: https://browsersync.io/docs/options

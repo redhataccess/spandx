@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>spandx multi-host example</title>
+        <style type="text/css" media="screen">
+            pre code { display: block; padding: 20px }
+            code { background-color: #f1f1f1; }
+            body { display: flex; justify-content: center; font-family: sans-serif }
+            main { display: flex; flex-direction: column; max-width: 800px; }
+        </style>
+    </head>
+    <body>
+        <main>
+
+        <h1>spandx mult-host example</h1>
+
+        <p>This example demonstrates using <a
+                href="https://github.com/redhataccess/spandx">spandx</a> to
+            point at different remote environments based on the current local hostname.
+        </p>
+
+        <p>
+            For example, visiting <a
+                href="http://localhost:1337">localhost:1337</a> will cause
+            spandx to proxy to Remote Server 1, and visiting <a
+                href="http://127.0.0.1:1337">127.0.0.1:1337</a> will cause
+            spandx to proxy to Remote Server 2.
+        </p>
+
+        <h2>Currently remote environment... <code>REMOTE SERVER 2</code></h2>
+
+        <p>Switch to...</p>
+
+        <ul>
+            <li> spandx proxying to <a href="http://localhost:1337">Remote Server 1</a> </li>
+            <li> spandx proxying to <a href="http://127.0.0.1:1337">Remote Server 2</a> </li>
+        </ul>
+
+        </main>
+    </body>
+</html>
