@@ -4,7 +4,7 @@ module.exports = {
         localip: "127.0.0.1"
     },
     port: 1337,
-    open: false,
+    open: true,
     startPath: "/",
     verbose: true,
     routes: {
