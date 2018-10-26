@@ -9,7 +9,7 @@
         "spandx.config.js"
     ],
     "scripts": {
-        "test": "jasmine spec/spandx/spandxSpec.js",
+        "test": "jasmine spec/spandx/*.js",
         "start": "node app/spandx.js",
         "dev": "nodemon spandx.js",
         "debug": "node-debug spandx.js",

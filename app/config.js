@@ -6,6 +6,22 @@ const resolveHome = require("./resolveHome");
 const c = require("print-colors");
 const porty = require("porty");
 
+class ConfigProcessError extends Error {
+    constructor(...args) {
+        super(...args);
+        this.name = this.constructor.name;
+        Error.captureStackTrace(this, ConfigProcessError);
+    }
+}
+
+class ConfigOpenError extends Error {
+    constructor(...args) {
+        super(...args);
+        this.name = this.constructor.name;
+        Error.captureStackTrace(this, ConfigOpenError);
+    }
+}
+
 const defaultConfig = {
     protocol: "http:",
     host: "localhost",
@@ -52,11 +68,20 @@ async function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
     try {
         confObj = require(fullPath);
     } catch (e) {
-        throw new Error(
-            `Tried to open spandx config file ${c.fg.l.cyan}${filePath}${
-                c.end
-            } but couldn't find it, or couldn't access it.`
-        );
+        if (e.toString().indexOf("Error: Cannot find module") === 0) {
+            throw new ConfigOpenError(
+                `Tried to open spandx config file ${c.fg.l.cyan}${filePath}${
+                    c.end
+                } but couldn't find it, or couldn't access it.`
+            );
+        } else {
+            throw new ConfigProcessError(
+                `Tried to process spandx config file ${c.fg.l.cyan}${filePath}${
+                    c.end
+                } ` + `but. Got an exception loading the config: ${e}`
+            );
+        }
+
         process.exit(1);
     }
     const conf = await create(confObj, path.parse(fullPath).dir);
