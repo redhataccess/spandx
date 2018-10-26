@@ -86,15 +86,23 @@ module.exports = (conf, proxy) => {
             );
         }
 
-        if (target) {
-            proxy.web(req, res, { target }, e => {
-                console.error(e);
-                res.writeHead(200, { "Content-Type": "text/plain" });
+        const doProxy = function () {
+            if (target) {
+                proxy.web(req, res, { target }, e => {
+                    console.error(e);
+                    res.writeHead(200, { "Content-Type": "text/plain" });
+                    res.end();
+                });
+            } else {
+                res.writeHead(404);
                 res.end();
-            });
+            }
+        };
+
+        if (conf.hasOwnProperty('routerPlugin') && typeof conf.routerPlugin === 'function') {
+            conf.routerPlugin(req, res).then(doProxy);
         } else {
-            res.writeHead(404);
-            res.end();
+            doProxy();
         }
     };
 };
