@@ -20,12 +20,6 @@
             "prettier --write",
             "git add"
         ],
-        "spec/spandx/*[sS]pec.js": [
-            "npm test"
-        ],
-        "{app,spec}/**/*.{js,json}": [
-            "git add"
-        ],
         "examples/**/*.{js,json}": [
             "prettier --write",
             "git add"
