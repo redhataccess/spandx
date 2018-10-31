@@ -20,7 +20,7 @@ describe("fromFile", () => {
 
     it("should throw ConfigProcessError on syntax error file", () => {
         return config
-            .fromFile("../invalid/syntax.js")
+            .fromFile("../spec/helpers/configs/invalid/syntax.js")
             .then(shouldNotResolve)
             .catch(e => {
                 catchSpecificError(e, "ConfigProcessError");

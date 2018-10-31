@@ -18,7 +18,12 @@
     "lint-staged": {
         "{app,spec}/**/*.{js,json}": [
             "prettier --write",
-            "npm test",
+            "git add"
+        ],
+        "spec/spandx/*[sS]pec.js": [
+            "npm test"
+        ],
+        "{app,spec}/**/*.{js,json}": [
             "git add"
         ],
         "examples/**/*.{js,json}": [
