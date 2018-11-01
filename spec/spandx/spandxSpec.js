@@ -16,7 +16,7 @@ describe("spandx", () => {
     beforeEach(() => {
         process.env.NODE_ENV = "test";
         spandx = require(spandxPath);
-        // hush.yourMouth();
+        hush.yourMouth();
     });
 
     afterEach(() => {
@@ -26,7 +26,7 @@ describe("spandx", () => {
     });
 
     describe("spandx.priv.buildEsiMap()", () => {
-        fit("should properly set ESI baseUrls when conf.esi is not set", () => {
+        it("should properly set ESI baseUrls when conf.esi is not set", () => {
             const map = spandx.priv.buildEsiMap({
                 protocol: "https:",
                 port: 1337,
@@ -53,7 +53,7 @@ describe("spandx", () => {
             }
         });
 
-        fit("should properly set ESI baseUrls even when conf.esi is set", () => {
+        it("should properly set ESI baseUrls even when conf.esi is set", () => {
             const map = spandx.priv.buildEsiMap({
                 esi: { allowedHosts: [/^https:\/\/access.*.redhat.com$/] },
                 protocol: "https:",
