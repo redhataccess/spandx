@@ -17,9 +17,36 @@ const router = require("./router.js");
 const config = require("./config");
 const resolveHome = require("./resolveHome");
 
+const priv = {};
 let proxy;
 let internalProxy;
 let bs;
+
+priv.buildEsiMap = conf => {
+    return _(conf.host)
+        .mapValues((host, env) => {
+            const esiconfDefaults = {
+                baseUrl: `${conf.protocol}//${host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
+                onError: (src, error) => {
+                    console.error(
+                        `An error occurred while resolving an ESI tag for the ${env} host`
+                    );
+                    console.error(error);
+                },
+                cache: false
+            };
+
+            const config = _.defaultsDeep(esiconfDefaults, conf.esi);
+            const esi = new ESI(config);
+
+            // why? we want to be able to inspect the config
+            // used to build the ESI in test
+            esi.spandxGeneratedConfig = config;
+
+            return esi;
+        })
+        .value();
+};
 
 async function init(confIn) {
     // if initialized with a string, assume it's a file path to a config file
@@ -50,22 +77,7 @@ async function init(confIn) {
 
     bs = browserSync.create();
 
-    const esi = _(conf.host)
-        .mapValues((host, env) => {
-            const esiconfDefaults = {
-                baseUrl: `${conf.protocol}//${host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
-                onError: (src, error) => {
-                    console.error(
-                        `An error occurred while resolving an ESI tag for the ${env} host`
-                    );
-                    console.error(error);
-                },
-                cache: false
-            };
-
-            return new ESI(_.defaultsDeep(esiconfDefaults, conf.esi));
-        })
-        .value();
+    const esi = priv.buildEsiMap(conf);
 
     function applyESI(data, req, res) {
         return new Promise(function(resolve, reject) {
@@ -281,3 +293,6 @@ if (require.main === module) {
 }
 
 module.exports = { init, exit };
+if (process.env.NODE_ENV === "test") {
+    module.exports.priv = priv;
+}
