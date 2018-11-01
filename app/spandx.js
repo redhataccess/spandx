@@ -63,7 +63,7 @@ async function init(confIn) {
                 cache: false
             };
 
-            return new ESI(_.defaultsDeep(conf.esi, esiconfDefaults));
+            return new ESI(_.defaultsDeep(esiconfDefaults, conf.esi));
         })
         .value();
 
