@@ -5,8 +5,35 @@ const c = require("print-colors");
 const _ = require("lodash");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
-
 const resolveHome = require("./resolveHome");
+const priv = {};
+
+priv.tryPlugin = (plugin, req, res, target, cb) => {
+    if (typeof plugin === "function") {
+        plugin(req, res, target).then(t => {
+            // Plugin may have sent back a new target
+            // if they did use it
+            t = t || target;
+            cb(t);
+        }); // TODO what to do if the plugin Promise fails ??
+    } else {
+        // Run with the default target
+        cb(target);
+    }
+};
+
+priv.doProxy = (proxy, req, res, target) => {
+    if (target) {
+        proxy.web(req, res, { target }, e => {
+            console.error(e);
+            res.writeHead(200, { "Content-Type": "text/plain" });
+            res.end();
+        });
+    } else {
+        res.writeHead(404);
+        res.end();
+    }
+};
 
 module.exports = (conf, proxy) => {
     // for each local file path in the conf, create a serveStatic object for
@@ -86,15 +113,13 @@ module.exports = (conf, proxy) => {
             );
         }
 
-        if (target) {
-            proxy.web(req, res, { target }, e => {
-                console.error(e);
-                res.writeHead(200, { "Content-Type": "text/plain" });
-                res.end();
-            });
-        } else {
-            res.writeHead(404);
-            res.end();
-        }
+        priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
+            priv.doProxy(proxy, req, res, t);
+        });
     };
 };
+
+if (process.env.NODE_ENV === "test") {
+    // only leak in test
+    module.exports.priv = priv;
+}
