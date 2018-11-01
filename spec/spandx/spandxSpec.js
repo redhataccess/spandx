@@ -16,7 +16,7 @@ describe("spandx", () => {
     beforeEach(() => {
         process.env.NODE_ENV = "test";
         spandx = require(spandxPath);
-        hush.yourMouth();
+        // hush.yourMouth();
     });
 
     afterEach(() => {
@@ -26,7 +26,34 @@ describe("spandx", () => {
     });
 
     describe("spandx.priv.buildEsiMap()", () => {
-        it("should let users override the ESI baseUrls even when conf.esi is set", () => {
+        fit("should properly set ESI baseUrls when conf.esi is not set", () => {
+            const map = spandx.priv.buildEsiMap({
+                protocol: "https:",
+                port: 1337,
+                host: {
+                    "ci.foo.redhat.com": "ci.foo.redhat.com",
+                    "qa.foo.redhat.com": "qa.foo.redhat.com",
+                    "stage.foo.redhat.com": "stage.foo.redhat.com",
+                    "prod.foo.redhat.com": "prod.foo.redhat.com"
+                }
+            });
+
+            for (const env of [
+                "ci.foo.redhat.com",
+                "qa.foo.redhat.com",
+                "stage.foo.redhat.com",
+                "prod.foo.redhat.com"
+            ]) {
+                expect(map[env]).toBeDefined();
+                expect(map[env].spandxGeneratedConfig).toBeDefined();
+                expect(map[env].spandxGeneratedConfig.baseUrl).toBeDefined();
+                expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
+                    `https://${env}:1337`
+                );
+            }
+        });
+
+        fit("should properly set ESI baseUrls even when conf.esi is set", () => {
             const map = spandx.priv.buildEsiMap({
                 esi: { allowedHosts: [/^https:\/\/access.*.redhat.com$/] },
                 protocol: "https:",

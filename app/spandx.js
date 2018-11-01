@@ -36,7 +36,10 @@ priv.buildEsiMap = conf => {
                 cache: false
             };
 
-            const config = _.defaultsDeep(esiconfDefaults, conf.esi);
+            const config = _.defaultsDeep(
+                _.cloneDeep(conf.esi),
+                esiconfDefaults
+            );
             const esi = new ESI(config);
 
             // why? we want to be able to inspect the config
