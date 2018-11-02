@@ -53,10 +53,10 @@
         "yargs": "^12.0.0"
     },
     "devDependencies": {
-        "frisby": "2.0.16",
+        "frisby": "2.1.0",
         "http-server": "0.11.1",
         "husky": "1.1.2",
-        "jasmine": "3.1.0",
+        "jasmine": "3.3.0",
         "jasmine-spec-reporter": "4.2.1",
         "lint-staged": "7.3.0",
         "nodemon": "1.17.5",
