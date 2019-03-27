@@ -50,7 +50,7 @@
         "print-colors": "^1.0.1",
         "serve-static": "^1.13.2",
         "transformer-proxy": "^0.3.4",
-        "yargs": "^12.0.0"
+        "yargs": "^13.0.0"
     },
     "devDependencies": {
         "frisby": "2.1.0",
