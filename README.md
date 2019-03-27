@@ -2,7 +2,7 @@
 
 # spandx
 
-Develop locally, proxy to prod, browser-sync, and process ESI tags.
+Develop locally, proxy to prod, browser-sync, and inject Portal Chrome.
 
 [![Build
 Status][build-img]][build]

@@ -10,12 +10,12 @@ const httpProxy = require("http-proxy");
 const transformerProxy = require("transformer-proxy");
 const _ = require("lodash");
 const c = require("print-colors");
-const ESI = require("nodesi");
 const opn = require("opn");
 
 const router = require("./router.js");
 const config = require("./config");
 const resolveHome = require("./resolveHome");
+const chromeMiddleware = require("./chromeMiddleware");
 
 let proxy;
 let internalProxy;
@@ -50,40 +50,6 @@ async function init(confIn) {
 
     bs = browserSync.create();
 
-    const esi = _(conf.host)
-        .mapValues((host, env) => {
-            const esiconfDefaults = {
-                baseUrl: `${conf.protocol}//${host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
-                onError: (src, error) => {
-                    console.error(
-                        `An error occurred while resolving an ESI tag for the ${env} host`
-                    );
-                    console.error(error);
-                },
-                cache: false
-            };
-
-            return new ESI(_.defaultsDeep(conf.esi, esiconfDefaults));
-        })
-        .value();
-
-    function applyESI(data, req, res) {
-        return new Promise(function(resolve, reject) {
-            const env = req.headers["x-spandx-env"];
-            const isHTML = (res.getHeader("content-type") || "").includes(
-                "html"
-            );
-            if (isHTML) {
-                esi[env]
-                    .process(data.toString())
-                    .then(resolve)
-                    .catch(reject);
-            } else {
-                resolve(data);
-            }
-        });
-    }
-
     // connect server w/ proxy
 
     const internalProxyPort = conf.internalPort;
@@ -103,8 +69,10 @@ async function init(confIn) {
     //     next();
     // });
 
-    // apply ESI
-    app.use(transformerProxy(applyESI));
+    // if configuration says to, replace Drupal SPA comments for chroming
+    if (_.get(conf, "portalChrome.resolveSPAComments")) {
+        app.use(transformerProxy(chromeMiddleware.SPACommentResolver(conf)));
+    }
 
     // dynamically proxy to local filesystem or remote webserver
     app.use(router(conf, proxy));
@@ -118,51 +86,45 @@ async function init(confIn) {
         console.log("These paths will be routed to the following remote hosts");
         console.log();
         console.log(
-            _
-                .map(conf.webRoutes, route => {
-                    return conf.spandxUrl
-                        .map(
-                            url =>
-                                `  ${c.fg.l.blue}${url
-                                    .replace(/\/$/, "")
-                                    .replace(
-                                        new RegExp(`${conf.startPath}$`),
-                                        ""
-                                    )}${c.end}${c.fg.l.green}${route[0]}${
-                                    c.e
-                                } will be routed to ${c.fg.l.blue}${route[1]
-                                    .host.default || route[1].host}${c.e}${
-                                    c.fg.l.green
-                                }${route[0]}${c.e}`
-                        )
-                        .join("\n");
-                })
-                .join("\n")
+            _.map(conf.webRoutes, route => {
+                return conf.spandxUrl
+                    .map(
+                        url =>
+                            `  ${c.fg.l.blue}${url
+                                .replace(/\/$/, "")
+                                .replace(
+                                    new RegExp(`${conf.startPath}$`),
+                                    ""
+                                )}${c.end}${c.fg.l.green}${route[0]}${
+                                c.e
+                            } will be routed to ${c.fg.l.blue}${route[1].host
+                                .default || route[1].host}${c.e}${
+                                c.fg.l.green
+                            }${route[0]}${c.e}`
+                    )
+                    .join("\n");
+            }).join("\n")
         );
         console.log();
 
         console.log("These paths will be routed to your local filesystem");
         console.log();
         console.log(
-            _
-                .map(conf.diskRoutes, route => {
-                    return conf.spandxUrl
-                        .map(
-                            url =>
-                                `  ${c.fg.l.blue}${url.replace(/\/$/, "")}${
-                                    c.end
-                                }${c.fg.l.green}${route[0]}${
-                                    c.end
-                                } will be routed to ${
-                                    c.fg.l.cyan
-                                }${path.resolve(
-                                    conf.configDir,
-                                    resolveHome(route[1])
-                                )}${c.e}`
-                        )
-                        .join("\n");
-                })
-                .join("\n")
+            _.map(conf.diskRoutes, route => {
+                return conf.spandxUrl
+                    .map(
+                        url =>
+                            `  ${c.fg.l.blue}${url.replace(/\/$/, "")}${c.end}${
+                                c.fg.l.green
+                            }${route[0]}${c.end} will be routed to ${
+                                c.fg.l.cyan
+                            }${path.resolve(
+                                conf.configDir,
+                                resolveHome(route[1])
+                            )}${c.e}`
+                    )
+                    .join("\n");
+            }).join("\n")
         );
 
         console.log();
@@ -172,9 +134,9 @@ async function init(confIn) {
         );
         console.log();
         console.log(
-            _
-                .map(conf.files, file => `  ${c.fg.l.cyan}${file}${c.e}`)
-                .join("\n")
+            _.map(conf.files, file => `  ${c.fg.l.cyan}${file}${c.e}`).join(
+                "\n"
+            )
         );
         console.log();
 
@@ -183,17 +145,15 @@ async function init(confIn) {
         );
         console.log();
         console.log(
-            _
-                .map(
-                    conf.rewriteRules,
-                    rule =>
-                        `  ${c.fg.l.pink}${rule.match}${
-                            c.e
-                        } will be replaced with "${c.fg.d.green}${
-                            rule.replace
-                        }${c.e}"`
-                )
-                .join("\n")
+            _.map(
+                conf.rewriteRules,
+                rule =>
+                    `  ${c.fg.l.pink}${rule.match}${
+                        c.e
+                    } will be replaced with "${c.fg.d.green}${rule.replace}${
+                        c.e
+                    }"`
+            ).join("\n")
         );
         console.log();
     }
