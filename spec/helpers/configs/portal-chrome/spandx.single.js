@@ -2,10 +2,11 @@ module.exports = {
     host: "localhost",
     port: 1337,
     silent: true,
-    routes: {
-        "/": { host: "http://localhost:4014" }
+    portalChrome: {
+        resolveSPAComments: true
     },
-    bs: {
-        https: true
+    routes: {
+        "/services/chrome/": "./mock-chrome",
+        "/": { host: "http://localhost:4014" }
     }
 };

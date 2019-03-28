@@ -324,131 +324,181 @@ describe("spandx", () => {
         });
     });
 
-    describe("esi:include", () => {
-        describe("when routing to local directories", () => {
-            it("should resolve esi:include with absolute paths", async done => {
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.local.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-abs-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI ABS PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(done);
-            });
-            it("should resolve esi:include with domain-relative paths", async done => {
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.local.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-domain-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(done);
-            });
-            it("should resolve esi:include with file-relative paths", async done => {
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.local.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-file-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI FILE REL PATH PARENT/)
-                    .expect("bodyContains", /REL PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
-                    .done(done);
-            });
-        });
+    describe("portal chrome", () => {
+        it("should resolve SPA comments into Portal Chrome on local routes", async done => {
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.local.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://localhost:1337/test-page.html");
 
-        describe("when routing to remote host", () => {
-            it("should resolve esi:include with absolute paths", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.remote.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-abs-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI ABS PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
-            });
-            it("should resolve esi:include with domain-relative paths", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.remote.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-domain-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
-            });
-            it("should resolve esi:include with file-relative paths", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.remote.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-file-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI FILE REL PATH PARENT/)
-                    .expect("bodyContains", /REL PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
-            });
-            it("should resolve esi:include relative paths over https if https: true", async done => {
-                // this test covers the case where the esi:include src points
-                // to a host with a self-signed cert, and the bug where an
-                // esi:include src with a relative path would get routed to
-                // http://host/path even if https is true.
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.https.js"
-                );
-                frisby
-                    .get("https://localhost:1337/esi-domain-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    })
-                    .catch(err => {
-                        server.close();
-                        fail(err);
-                    });
-            });
+            expect(res.body).toMatch(/HEAD CONTENT/);
+            expect(res.body).toMatch(/HEADER CONTENT/);
+            expect(res.body).toMatch(/FOOTER CONTENT/);
+
+            done();
+        });
+        it("should resolve SPA comments into Portal Chrome on single host routes", async done => {
+            const { server, port } = await serve(
+                "spec/helpers/configs/portal-chrome/",
+                4014
+            );
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.single.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).toMatch(/HEAD CONTENT/);
+            expect(res.body).toMatch(/HEADER CONTENT/);
+            expect(res.body).toMatch(/FOOTER CONTENT/);
+
+            server.close();
+            done();
+        });
+        it("should resolve SPA comments into Portal Chrome on multi host routes", async done => {
+            const { server: server1 } = await serve(
+                "spec/helpers/configs/portal-chrome/",
+                4014
+            );
+            const { server: server2 } = await serve(
+                "spec/helpers/configs/portal-chrome/",
+                4015
+            );
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.single.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).toMatch(/HEAD CONTENT/);
+            expect(res.body).toMatch(/HEADER CONTENT/);
+            expect(res.body).toMatch(/FOOTER CONTENT/);
+
+            const res2 = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://127.0.0.1:1337/test-page.html");
+
+            expect(res2.body).toMatch(/HEAD CONTENT/);
+            expect(res2.body).toMatch(/HEADER CONTENT/);
+            expect(res2.body).toMatch(/FOOTER CONTENT/);
+
+            server1.close();
+            server2.close();
+            done();
+        });
+        it("should rewrite URLs within Portal Chrome snippets, on single host routes", async done => {
+            const { server, port } = await serve(
+                "spec/helpers/configs/portal-chrome/",
+                4014
+            );
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.single.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).toMatch(/localhost:1337/);
+            expect(res.body).not.toMatch(/localhost:4014/);
+
+            server.close();
+            done();
+        });
+        it("should rewrite URLs within Portal Chrome snippets, on multi host routes", async done => {
+            const { server: server1 } = await serve(
+                "spec/helpers/configs/portal-chrome/",
+                4014
+            );
+            const { server: server2 } = await serve(
+                "spec/helpers/configs/portal-chrome/",
+                4015
+            );
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.multi.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).toMatch(/localhost:1337/);
+            expect(res.body).not.toMatch(/localhost:4014/);
+
+            const res2 = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://127.0.0.1:1337/test-page.html");
+
+            expect(res2.body).toMatch(/localhost:1337/);
+            expect(res2.body).not.toMatch(/localhost:4015/);
+
+            server1.close();
+            server2.close();
+            done();
+        });
+        it("should not resolve SPA comments into Portal Chrome when config says not to", async done => {
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.chrome-off.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            Accept: "text/html,*/*"
+                        }
+                    }
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).not.toMatch(/HEAD CONTENT/);
+            expect(res.body).not.toMatch(/HEADER CONTENT/);
+            expect(res.body).not.toMatch(/FOOTER CONTENT/);
+
+            done();
         });
     });
 
@@ -467,24 +517,6 @@ describe("spandx", () => {
                         }
                     })
                     .get("http://localhost:1337/")
-                    .expect("status", 200)
-                    .expect("bodyContains", /URL REWRITING INDEX/)
-                    .expect("bodyContains", "//localhost:1337")
-                    .done(done);
-            });
-            it("should rewrite URLs within ESI fragments to match the spandx origin", async done => {
-                await spandx.init(
-                    "../spec/helpers/configs/url-rewriting/spandx.local.js"
-                );
-                frisby
-                    .setup({
-                        request: {
-                            headers: {
-                                Accept: "text/html,*/*"
-                            }
-                        }
-                    })
-                    .get("http://localhost:1337/index-esi.html")
                     .expect("status", 200)
                     .expect("bodyContains", /URL REWRITING INDEX/)
                     .expect("bodyContains", "//localhost:1337")
@@ -509,31 +541,6 @@ describe("spandx", () => {
                         }
                     })
                     .get("http://localhost:1337/")
-                    .expect("status", 200)
-                    .expect("bodyContains", /URL REWRITING INDEX/)
-                    .expect("bodyContains", "//localhost:1337")
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
-            });
-            it("should rewrite URLs within ESI fragments to match the spandx origin", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/url-rewriting/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/url-rewriting/spandx.remote.js"
-                );
-                frisby
-                    .setup({
-                        request: {
-                            headers: {
-                                Accept: "text/html,*/*"
-                            }
-                        }
-                    })
-                    .get("http://localhost:1337/index-esi.html")
                     .expect("status", 200)
                     .expect("bodyContains", /URL REWRITING INDEX/)
                     .expect("bodyContains", "//localhost:1337")

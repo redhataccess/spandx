@@ -2,7 +2,7 @@
 
 # spandx
 
-Develop locally, proxy to prod, browser-sync, and process ESI tags.
+Develop locally, proxy to prod, browser-sync, and inject Portal Chrome.
 
 [![Build
 Status][build-img]][build]
@@ -36,8 +36,9 @@ option | description | type
 `open` | whether to open a browser tab when spandx is launched  | boolean
 `startPath` | the URL path to open, if `open` is true. ex: `"/site"`  | string
 `verbose` | display English summary of configuration settings and display browserSync logs, or not  | boolean
-`routes` | define where to send requests for any number of URL paths, best explained by example in the following section  | object
+`routes` | define where to send requests for any number of URL paths, best explained in [routes by example](#routes-by-example) | object
 `bs` | a [browserSync config object][bs-options], in case you need to further customize spandx's browserSync instance  | object
+`portalChrome` | setting related to Portal Chrome, see [Portal Chrome settings](#portal-chrome-settings) | object
 
 ### Routes by example
 
@@ -81,6 +82,39 @@ module.exports = {
 ```
 
 In this case, dev-local.foo.com and prod-local.foo.com should be entered in `/etc/hosts`, pointing to `127.0.0.1`.  Then, when spandx is visited at dev-local.foo.com, spandx knows it's the "dev" host and proxies to dev.foo.com.  The names "dev" and "prod" can be any names you choose.  See the [examples](examples) dir for a working example.
+
+### Portal Chrome settings
+
+Portal Chrome settings live in your spandx config file under the `portalChrome` property.  It currently only supports one property, `resolveSPAComments`, but more settings may arise in the future.
+
+```js
+module.exports = {
+    portalChrome: {
+        resolveSPAComments: true
+    }
+};
+```
+
+If `resolveSPAComments` is true, spandx will inject Portal Chrome into any `text/html` request that passes through.  It looks for the following placeholder comments and will replace them with the corresponding chrome part.
+
+
+comment | location | description 
+---|---|---
+`<!-- SPA_HEAD -->` | within your `<head>` tag | will be replaced with the contents of `/services/chrome/head`
+`<!-- SPA_HEADER -->` | just after `<body>` | will be replaced with the contents of `/services/chrome/header`
+`<!-- SPA_FOOTER -->` | just before `</body>` | will be replaced with the contents of `/services/chrome/footer`
+
+This setting involves making requests to `/services/chrome/*`, which brings up the question of which host to fetch the chroming from.  To make this as easy as possible, this feature taps into your existing spandx routes.  In short, if you can hit `/services/chrome/head` from your spandx host, you'll be fine.
+
+For example, if you're routing `/app` to your local application and everything else to the Customer Portal, spandx will be able to resolve `/services/chrome/*` just fine.
+
+```js
+routes: {
+    '/app' : { host: "http://localhost:8080" },
+    '/'    : { host: 'https://access.redhat.com' }
+}
+```
+
 
 
 ## Installing as a local package in your project
