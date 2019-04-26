@@ -22,10 +22,18 @@ class ConfigOpenError extends Error {
     }
 }
 
+class PortUnavailableError extends Error {
+    constructor(...args) {
+        super(...args);
+        this.name = this.constructor.name;
+        Error.captureStackTrace(this, PortUnavailableError);
+    }
+}
+
 const defaultConfig = {
     protocol: "http:",
     host: "localhost",
-    port: 1337,
+    port: "auto",
     verbose: false,
     silent: false,
     routes: {
@@ -41,6 +49,10 @@ async function create(incomingConfig = {}, configDir = __dirname) {
 
     if (incomingConfig.port === "auto") {
         incomingConfig.port = await porty.find();
+    } else if (!(await porty.test(incomingConfig.port))) {
+        throw new PortUnavailableError(
+            `port ${incomingConfig.port} is already in use.`
+        );
     }
 
     // choose a port for the internal proxy, avoiding the external port just chosen
