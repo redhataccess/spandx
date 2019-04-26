@@ -79,8 +79,7 @@ describe("spandx", () => {
                 .expect("status", 200)
                 .expect("bodyContains", /INDEX/)
                 .done(() => {
-                    server.close();
-                    done();
+                    server.close(done);
                 });
         });
 
@@ -103,8 +102,7 @@ describe("spandx", () => {
                 .expect("status", 200)
                 .expect("bodyContains", /INDEX/)
                 .done(() => {
-                    server.close();
-                    done();
+                    server.close(done);
                 });
         });
 
@@ -152,9 +150,9 @@ describe("spandx", () => {
             // wait for both request's promises to
             // resolve, then close up shop
             await Promise.all([devReq._fetch, prodReq._fetch]);
-            devServer.close();
-            prodServer.close();
-            done();
+            let runningServers = 2;
+            devServer.close(() => --runningServers == 0 && done());
+            prodServer.close(() => --runningServers == 0 && done());
         });
 
         it("should reject invalid multi-host configs", async done => {
@@ -266,8 +264,7 @@ describe("spandx", () => {
                     .expect("status", 200)
                     .expect("bodyContains", /INDEX IN ROOT DIR/)
                     .done(() => {
-                        server.close();
-                        done();
+                        server.close(done);
                     });
             });
             it("should resolve root dir with trailing slash", async done => {
@@ -283,8 +280,7 @@ describe("spandx", () => {
                     .expect("status", 200)
                     .expect("bodyContains", /INDEX IN ROOT DIR/)
                     .done(() => {
-                        server.close();
-                        done();
+                        server.close(done);
                     });
             });
             it("should resolve subdir without trailing slash", async done => {
@@ -300,8 +296,7 @@ describe("spandx", () => {
                     .expect("status", 200)
                     .expect("bodyContains", /INDEX IN SUBDIR/)
                     .done(() => {
-                        server.close();
-                        done();
+                        server.close(done);
                     });
             });
             it("should resolve subdir with trailing slash", async done => {
@@ -317,8 +312,7 @@ describe("spandx", () => {
                     .expect("status", 200)
                     .expect("bodyContains", /INDEX IN SUBDIR/)
                     .done(() => {
-                        server.close();
-                        done();
+                        server.close(done);
                     });
             });
         });
@@ -367,8 +361,7 @@ describe("spandx", () => {
             expect(res.body).toMatch(/HEADER CONTENT/);
             expect(res.body).toMatch(/FOOTER CONTENT/);
 
-            server.close();
-            done();
+            server.close(done);
         });
         it("should resolve SPA comments into Portal Chrome on multi host routes", async done => {
             const { server: server1 } = await serve(
@@ -410,9 +403,9 @@ describe("spandx", () => {
             expect(res2.body).toMatch(/HEADER CONTENT/);
             expect(res2.body).toMatch(/FOOTER CONTENT/);
 
-            server1.close();
-            server2.close();
-            done();
+            let runningServers = 2;
+            server1.close(() => --runningServers == 0 && done());
+            server2.close(() => --runningServers == 0 && done());
         });
         it("should rewrite URLs within Portal Chrome snippets, on single host routes", async done => {
             const { server, port } = await serve(
@@ -435,8 +428,7 @@ describe("spandx", () => {
             expect(res.body).toMatch(/localhost:1337/);
             expect(res.body).not.toMatch(/localhost:4014/);
 
-            server.close();
-            done();
+            server.close(done);
         });
         it("should rewrite URLs within Portal Chrome snippets, on multi host routes", async done => {
             const { server: server1 } = await serve(
@@ -476,9 +468,9 @@ describe("spandx", () => {
             expect(res2.body).toMatch(/localhost:1337/);
             expect(res2.body).not.toMatch(/localhost:4015/);
 
-            server1.close();
-            server2.close();
-            done();
+            let runningServers = 2;
+            server1.close(() => --runningServers == 0 && done());
+            server2.close(() => --runningServers == 0 && done());
         });
         it("should not resolve SPA comments into Portal Chrome when config says not to", async done => {
             await spandx.init(
@@ -545,8 +537,7 @@ describe("spandx", () => {
                     .expect("bodyContains", /URL REWRITING INDEX/)
                     .expect("bodyContains", "//localhost:1337")
                     .done(() => {
-                        server.close();
-                        done();
+                        server.close(done);
                     });
             });
             it("should rewrite URLs when using multi-host", async done => {
@@ -607,9 +598,9 @@ describe("spandx", () => {
                 // wait for both request's promises to
                 // resolve, then close up shop
                 await Promise.all([devReq._fetch, prodReq._fetch]);
-                devServer.close();
-                prodServer.close();
-                done();
+                let runningServers = 2;
+                devServer.close(() => --runningServers == 0 && done());
+                prodServer.close(() => --runningServers == 0 && done());
             });
         });
     });
@@ -628,8 +619,7 @@ describe("spandx", () => {
                 .expect("status", 200)
                 .expect("bodyContains", /REMOTE ONLY/)
                 .done(() => {
-                    server.close();
-                    done();
+                    server.close(done);
                 });
         });
         it("if a file exists in both a local route and a remote '/' route, serve the local one", async done => {
@@ -645,8 +635,7 @@ describe("spandx", () => {
                 .expect("status", 200)
                 .expect("bodyContains", /LOCAL SUBDIR INDEX/)
                 .done(() => {
-                    server.close();
-                    done();
+                    server.close(done);
                 });
         });
     });
@@ -676,8 +665,7 @@ describe("spandx", () => {
                 .expect("status", 200)
                 .expect("bodyContains", /^\/a\/b\/c/)
                 .done(() => {
-                    server.close();
-                    done();
+                    server.close(done);
                 });
         });
     });
