@@ -206,6 +206,25 @@ describe("spandx", () => {
                 .expect("bodyContains", /INDEX/)
                 .done(done);
         });
+
+        it("should fail when port is already in use", async done => {
+            try {
+                await spandx.init({
+                    host: "localhost",
+                    port: 1337,
+                    silent: true,
+                    routes: { "/": "./" }
+                });
+                await spandx.init({
+                    host: "localhost",
+                    port: 1337,
+                    silent: true,
+                    routes: { "/": "./" }
+                });
+            } catch (e) {
+                done();
+            }
+        });
     });
 
     describe("trailing slashes", () => {
