@@ -33,7 +33,7 @@ class PortUnavailableError extends Error {
 const defaultConfig = {
     protocol: "http:",
     host: "localhost",
-    port: "auto",
+    port: 1337,
     verbose: false,
     silent: false,
     routes: {
