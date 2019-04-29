@@ -114,11 +114,14 @@ async function init(confIn) {
                 return conf.spandxUrl
                     .map(
                         url =>
-                            `  ${c.fg.l.blue}${url.replace(/\/$/, "")}${c.end}${
-                                c.fg.l.green
-                            }${route[0]}${c.end} will be routed to ${
-                                c.fg.l.cyan
-                            }${path.resolve(
+                            `  ${c.fg.l.blue}${url
+                                .replace(/\/$/, "")
+                                .replace(
+                                    new RegExp(`${conf.startPath}$`),
+                                    ""
+                                )}${c.end}${c.fg.l.green}${route[0]}${
+                                c.end
+                            } will be routed to ${c.fg.l.cyan}${path.resolve(
                                 conf.configDir,
                                 resolveHome(route[1])
                             )}${c.e}`
