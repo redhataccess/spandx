@@ -1,6 +1,6 @@
 {
     "name": "spandx",
-    "version": "2.0.0-prerelease.0",
+    "version": "2.0.0-prerelease.2",
     "description": "Develop locally, proxy to prod, browser-sync, inject Portal Chrome.",
     "main": "app/spandx.js",
     "bin": "app/cli.js",

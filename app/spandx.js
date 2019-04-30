@@ -88,20 +88,21 @@ async function init(confIn) {
         console.log(
             _.map(conf.webRoutes, route => {
                 return conf.spandxUrl
-                    .map(
-                        url =>
-                            `  ${c.fg.l.blue}${url
-                                .replace(/\/$/, "")
-                                .replace(
-                                    new RegExp(`${conf.startPath}$`),
-                                    ""
-                                )}${c.end}${c.fg.l.green}${route[0]}${
-                                c.e
-                            } will be routed to ${c.fg.l.blue}${route[1].host
-                                .default || route[1].host}${c.e}${
-                                c.fg.l.green
-                            }${route[0]}${c.e}`
-                    )
+                    .map(url => {
+                        const env = _.findKey(conf.host, host =>
+                            new RegExp(`${host}`).test(url)
+                        );
+
+                        return `  ${c.fg.l.blue}${url
+                            .replace(/\/$/, "")
+                            .replace(new RegExp(`${conf.startPath}$`), "")}${
+                            c.end
+                        }${c.fg.l.green}${route[0]}${c.e} will be routed to ${
+                            c.fg.l.blue
+                        }${route[1].host[env] || route[1].host}${c.e}${
+                            c.fg.l.green
+                        }${route[0]}${c.e}`;
+                    })
                     .join("\n");
             }).join("\n")
         );
@@ -114,11 +115,14 @@ async function init(confIn) {
                 return conf.spandxUrl
                     .map(
                         url =>
-                            `  ${c.fg.l.blue}${url.replace(/\/$/, "")}${c.end}${
-                                c.fg.l.green
-                            }${route[0]}${c.end} will be routed to ${
-                                c.fg.l.cyan
-                            }${path.resolve(
+                            `  ${c.fg.l.blue}${url
+                                .replace(/\/$/, "")
+                                .replace(
+                                    new RegExp(`${conf.startPath}$`),
+                                    ""
+                                )}${c.end}${c.fg.l.green}${route[0]}${
+                                c.end
+                            } will be routed to ${c.fg.l.cyan}${path.resolve(
                                 conf.configDir,
                                 resolveHome(route[1])
                             )}${c.e}`
