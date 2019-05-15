@@ -173,6 +173,7 @@ async function init(confIn) {
                 startPath: conf.startPath,
                 cors: true,
                 online: false,
+                ghostMode: false,
                 ui: false,
                 logLevel: conf.verbose ? "info" : "silent",
                 files: conf.files,
