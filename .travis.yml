@@ -12,3 +12,5 @@ matrix:
     exclude:
         - os: osx # skip this because on Travis, node.js segfaults on osx+node 9
           node_js: "9"
+        - os: osx # skip this because on Travis, node.js segfaults on osx+node 11
+          node_js: "11"
