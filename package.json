@@ -57,7 +57,7 @@
         "husky": "2.1.0",
         "jasmine": "3.4.0",
         "jasmine-spec-reporter": "4.2.1",
-        "lint-staged": "8.1.5",
+        "lint-staged": "9.2.0",
         "nodemon": "1.18.11",
         "opn": "5.5.0",
         "prettier": "1.17.0"
