@@ -59,6 +59,7 @@ async function init(confIn) {
 
     proxy = httpProxy.createProxyServer({
         changeOrigin: true,
+        preserveHeaderKeyCase: true,
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
         protocolRewrite: conf.protocol.replace(":", "")
