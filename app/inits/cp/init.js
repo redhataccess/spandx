@@ -73,8 +73,15 @@ async function writeHosts() {
             `Added ${c.fg.l.cyan}cp${c.end} hostnames to ${hostile.HOSTS}`
         );
     } catch (e) {
-        console.error(`Unable to write ${hostile.HOSTS}.  Try sudo?`);
-        console.error(e.message);
+        console.error(
+            `Unable to write ${
+                hostile.HOSTS
+            }.  Either try again with sudo, or copy the following into your ${
+                hostile.HOSTS
+            } file.
+            `
+        );
+        console.error(`127.0.0.1 ${hostnames.join(" ")}`);
     }
 }
 
