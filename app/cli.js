@@ -7,23 +7,22 @@ const argv = require("yargs").argv;
 
 const spandx = require("./spandx");
 const config = require("./config");
+const init = require("./init");
 
-if (argv.v || argv.version) {
-    const package = require("../package.json");
-    console.log(package.version);
-    process.exit(0);
+async function handleCli() {
+    if (argv.v || argv.version) {
+        // spandx -v --veresion
+        const package = require("../package.json");
+        console.log(package.version);
+    } else if (argv._[0] === "init") {
+        // spandx init
+        await init(argv);
+    } else {
+        // spandx
+        const confArg = argv.c || argv.config || "spandx.config.js";
+        const confFile = path.resolve(process.cwd(), confArg);
+        await spandx.init(confFile);
+    }
 }
 
-if (argv._.includes("init")) {
-    const sampleConfigPath = path.resolve(__dirname, "../spandx.config.js");
-    const sampleConfig = fs.readFileSync(sampleConfigPath);
-    console.log(sampleConfig.toString());
-    process.exit(0);
-}
-
-const confArg = argv.c || argv.config || "spandx.config.js";
-
-// resolve the file path relative to the current working directory
-const confFile = path.resolve(process.cwd(), confArg);
-
-spandx.init(confFile);
+handleCli();
