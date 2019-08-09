@@ -185,9 +185,7 @@ async function writeConfig() {
             default: "dist",
             message:
                 "What is the path to your dist directory?  It should be relative to your project root (where package.json is).",
-            when: answers => answers.location === "dir",
-            validate: answer =>
-                fs.existsSync(answer) || `Dir at ${answer} does not exist`
+            when: answers => answers.location === "dir"
         }
     ]);
 
