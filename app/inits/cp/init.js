@@ -32,6 +32,7 @@ function generateConfig(answers) {
         codeSync: ${answers.livereload || true}
     },
     routes: {${
+        /* sorry about this formatting... */
         answers.location === "dir"
             ? `
         "${answers.path}": "${answers.dir}",
