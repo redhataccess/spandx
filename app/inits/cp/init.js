@@ -201,6 +201,11 @@ async function writeConfig() {
     }
 
     console.log(`Created spandx.config.js`);
+    console.log(
+        "One last step to enable resolving local hostnames like 'stage.foo.redhat.com'"
+    );
+    console.log();
+    console.log("  spandx init cp addhosts");
 }
 
 module.exports = async function initCP(argv) {
