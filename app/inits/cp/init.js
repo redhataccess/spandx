@@ -199,7 +199,7 @@ async function writeConfig() {
         process.exit(1);
     }
 
-    console.log(``);
+    console.log(`Created spandx.config.js`);
 }
 
 module.exports = async function initCP(argv) {
