@@ -29,12 +29,23 @@ function generateConfig(answers) {
     },
     bs: {
         https: true,
-        codeSync: ${answers.livereload}
+        codeSync: ${answers.livereload || true}
     },
-    routes: {
+    routes: {${
+        answers.location === "dir"
+            ? `
+        "${answers.path}": "${answers.dir}",
+`
+            : ""
+    }${
+        answers.location === "server"
+            ? `
         "${answers.path}": {
             host: "${answers.host}"
         },
+`
+            : ""
+    }
         "/": {
             host: {
                 dev: "https://access.devgssci.devlab.phx1.redhat.com",
