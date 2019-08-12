@@ -25,7 +25,7 @@ npx spandx init cp addhosts
 
 ## Portal Chrome settings
 
-This section described the Portal Chrome-specific settings in more detail.  The `spandx init cp` command sets all the defaults you should need, but if you need to customize the settings, read on.
+This section describes the Portal Chrome-specific settings in more detail.  The `spandx init cp` command sets good defaults for Customer Portal work, but if you need to customize the settings, read on.
 
 Portal Chrome settings live in your spandx config file under the `portalChrome` property.  It currently only supports one property, `resolveSPAComments`, but more settings may arise in the future.
 
