@@ -225,6 +225,134 @@ describe("spandx", () => {
         });
     });
 
+    describe("esi:include", () => {
+        describe("when routing to local directories", () => {
+            it("should resolve esi:include with absolute paths", async done => {
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.local.js"
+                );
+                frisby
+                    .get("http://localhost:1337/esi-abs-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI ABS PATH PARENT/)
+                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                    .done(done);
+            });
+            it("should resolve esi:include with domain-relative paths", async done => {
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.local.js"
+                );
+                frisby
+                    .get("http://localhost:1337/esi-domain-rel-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
+                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                    .done(done);
+            });
+            it("should resolve esi:include with file-relative paths", async done => {
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.local.js"
+                );
+                frisby
+                    .get("http://localhost:1337/esi-file-rel-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI FILE REL PATH PARENT/)
+                    .expect("bodyContains", /REL PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
+                    .done(done);
+            });
+        });
+
+        describe("when routing to remote host", () => {
+            it("should resolve esi:include with absolute paths", async done => {
+                const { server, port } = await serve(
+                    "spec/helpers/configs/esi-include/",
+                    4014
+                );
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.remote.js"
+                );
+                frisby
+                    .get("http://localhost:1337/esi-abs-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI ABS PATH PARENT/)
+                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                    .done(() => {
+                        server.close();
+                        done();
+                    });
+            });
+            it("should resolve esi:include with domain-relative paths", async done => {
+                const { server, port } = await serve(
+                    "spec/helpers/configs/esi-include/",
+                    4014
+                );
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.remote.js"
+                );
+                frisby
+                    .get("http://localhost:1337/esi-domain-rel-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
+                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                    .done(() => {
+                        server.close();
+                        done();
+                    });
+            });
+            it("should resolve esi:include with file-relative paths", async done => {
+                const { server, port } = await serve(
+                    "spec/helpers/configs/esi-include/",
+                    4014
+                );
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.remote.js"
+                );
+                frisby
+                    .get("http://localhost:1337/esi-file-rel-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI FILE REL PATH PARENT/)
+                    .expect("bodyContains", /REL PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
+                    .done(() => {
+                        server.close();
+                        done();
+                    });
+            });
+            it("should resolve esi:include relative paths over https if https: true", async done => {
+                // this test covers the case where the esi:include src points
+                // to a host with a self-signed cert, and the bug where an
+                // esi:include src with a relative path would get routed to
+                // http://host/path even if https is true.
+                const { server, port } = await serve(
+                    "spec/helpers/configs/esi-include/",
+                    4014
+                );
+                await spandx.init(
+                    "../spec/helpers/configs/esi-include/spandx.https.js"
+                );
+                frisby
+                    .get("https://localhost:1337/esi-domain-rel-paths.html")
+                    .expect("status", 200)
+                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
+                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                    .done(() => {
+                        server.close();
+                        done();
+                    })
+                    .catch(err => {
+                        server.close();
+                        fail(err);
+                    });
+            });
+        });
+    });
+
     describe("trailing slashes", () => {
         describe("when routing to local directories", () => {
             it("should resolve root dir without trailing slash", async done => {

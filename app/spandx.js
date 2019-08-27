@@ -11,6 +11,7 @@ const transformerProxy = require("transformer-proxy");
 const _ = require("lodash");
 const c = require("print-colors");
 const opn = require("opn");
+const ESI = require("nodesi");
 
 const router = require("./router.js");
 const config = require("./config");
@@ -65,6 +66,43 @@ async function init(confIn) {
         protocolRewrite: conf.protocol.replace(":", "")
     });
 
+    /* ESI */
+    const esi = _(conf.host)
+        .mapValues((host, env) => {
+            const esiconfDefaults = {
+                baseUrl: `${conf.protocol}//${host}:${conf.port}`, // baseUrl enables relative paths in esi:include tags
+                onError: (src, error) => {
+                    console.error(
+                        `An error occurred while resolving an ESI tag for the ${env} host`
+                    );
+                    console.error(error);
+                },
+                cache: false
+            };
+
+            return new ESI(_.defaultsDeep(conf.esi, esiconfDefaults));
+        })
+        .value();
+
+    function applyESI(data, req, res) {
+        return new Promise(function(resolve, reject) {
+            const env = req.headers["x-spandx-env"];
+            const isHTML = (res.getHeader("content-type") || "").includes(
+                "html"
+            );
+            if (isHTML) {
+                esi[env]
+                    .process(data.toString())
+                    .then(data => Buffer.from(data))
+                    .then(resolve)
+                    .catch(reject);
+            } else {
+                resolve(data);
+            }
+        });
+    }
+    /* /ESI*/
+
     //
     // app.use((req, res, next) => {
     //     next();
@@ -74,6 +112,8 @@ async function init(confIn) {
     if (_.get(conf, "portalChrome.resolveSPAComments")) {
         app.use(transformerProxy(chromeMiddleware.SPACommentResolver(conf)));
     }
+
+    app.use(transformerProxy(applyESI));
 
     // dynamically proxy to local filesystem or remote webserver
     app.use(router(conf, proxy));
@@ -153,11 +193,7 @@ async function init(confIn) {
             _.map(
                 conf.rewriteRules,
                 rule =>
-                    `  ${c.fg.l.pink}${rule.match}${
-                        c.e
-                    } will be replaced with "${c.fg.d.green}${rule.replace}${
-                        c.e
-                    }"`
+                    `  ${c.fg.l.pink}${rule.match}${c.e} will be replaced with "${c.fg.d.green}${rule.replace}${c.e}"`
             ).join("\n")
         );
         console.log();
