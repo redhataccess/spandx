@@ -24,7 +24,7 @@ priv.tryPlugin = (plugin, req, res, target, cb) => {
 
 priv.doProxy = (proxy, req, res, target) => {
     if (target) {
-        proxy.web(req, res, { target }, e => {
+        proxy.web(req, res, { target, ignorePath: true }, e => {
             console.error(e);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.end();
@@ -59,10 +59,18 @@ module.exports = (conf, proxy) => {
 
         const env = req.headers["x-spandx-env"];
         const route = conf.routes[routeKey];
-        let target = route.host && route.host[env];
-        // console.log(`env: ${env}`);
-        // console.log(`route: ${route}`);
-        // console.log(`target: ${target}`);
+        const routePath = route.path || routeKey;
+        const targetPath =
+            req.url.replace(new RegExp(`^${routeKey}`), "") + routePath;
+        let target = (route.host && route.host[env]) + targetPath;
+        console.log(`req.url: ${req.url}`);
+        console.log(`req.path: ${req.path}`);
+        console.log(`routeKey: ${routeKey}`);
+        console.log(`env: ${env}`);
+        console.log(route);
+        console.log(`target: ${target}`);
+        console.log(`targetPath: ${targetPath}`);
+        console.log(`path: ${routePath}`);
         let fileExists;
         let needsSlash = false;
         const localFile = !target;
@@ -87,9 +95,7 @@ module.exports = (conf, proxy) => {
             if (fileExists) {
                 if (conf.verbose) {
                     console.log(
-                        `GET ${c.fg.l.green}${req.url}${c.end} from ${
-                            c.fg.l.cyan
-                        }${absoluteFilePath}${c.end} ${env}`
+                        `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.cyan}${absoluteFilePath}${c.end} ${env}`
                     );
                 }
 
@@ -107,11 +113,11 @@ module.exports = (conf, proxy) => {
 
         if (conf.verbose) {
             console.log(
-                `GET ${c.fg.l.green}${req.url}${c.end} from ${
-                    c.fg.l.blue
-                }${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
+                `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
             );
         }
+
+        console.log(`req: ${req}`);
 
         priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
             priv.doProxy(proxy, req, res, t);

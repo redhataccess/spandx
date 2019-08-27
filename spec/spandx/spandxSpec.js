@@ -615,7 +615,7 @@ describe("spandx", () => {
             server1.close(() => --runningServers == 0 && done());
             server2.close(() => --runningServers == 0 && done());
         });
-        it("should rewrite URLs within Portal Chrome snippets, on single host routes", async done => {
+        it("should rewrite body URLs within Portal Chrome snippets, on single host routes", async done => {
             const { server, port } = await serve(
                 "spec/helpers/configs/portal-chrome/",
                 4014
@@ -638,7 +638,7 @@ describe("spandx", () => {
 
             server.close(done);
         });
-        it("should rewrite URLs within Portal Chrome snippets, on multi host routes", async done => {
+        it("should rewrite body URLs within Portal Chrome snippets, on multi host routes", async done => {
             const { server: server1 } = await serve(
                 "spec/helpers/configs/portal-chrome/",
                 4014
@@ -704,7 +704,7 @@ describe("spandx", () => {
 
     describe("URL rewriting", () => {
         describe("when routing to local directories", () => {
-            it("should rewrite URLs to match the spandx origin", async done => {
+            it("should rewrite body URLs to match the spandx origin", async done => {
                 await spandx.init(
                     "../spec/helpers/configs/url-rewriting/spandx.local.js"
                 );
@@ -724,7 +724,69 @@ describe("spandx", () => {
             });
         });
         describe("when routing to remote directories", () => {
-            it("should rewrite URLs to match the spandx origin", async done => {
+            it("should honor the path setting when resolving a route", async done => {
+                const { server, port } = await serve(
+                    "spec/helpers/configs/path-setting/",
+                    4014
+                );
+                await spandx.init({
+                    host: "localhost",
+                    port: 1337,
+                    silent: true,
+                    routes: {
+                        "/foo/bar": {
+                            host: "http://localhost:4014",
+                            path: "/"
+                        },
+                        "/foo": {
+                            host: "http://localhost:4014",
+                            path: "/"
+                        },
+                        "/": {
+                            host: "http://localhost:4014",
+                            path: "/"
+                        },
+                        "/realfoo": {
+                            host: "http://localhost:4014",
+                            path: "/foo/"
+                        },
+                        "/realbar": {
+                            host: "http://localhost:4014",
+                            path: "/foo/bar/"
+                        }
+                    }
+                });
+                frisby
+                    .setup({
+                        request: {
+                            headers: {
+                                Accept: "text/html,*/*"
+                            }
+                        }
+                    })
+                    // .get("http://localhost:1337/foo/bar/")
+                    // .expect("status", 200)
+                    // .expect("bodyContains", /path-setting/)
+                    // .get("http://localhost:1337/foo/")
+                    // .expect("status", 200)
+                    // .expect("bodyContains", /path-setting/)
+                    // .get("http://localhost:1337/")
+                    // .expect("status", 200)
+                    // .expect("bodyContains", /path-setting/)
+                    // .get("http://localhost:1337/realfoo/")
+                    // .expect("status", 200)
+                    // .expect("bodyContains", /foo/)
+                    .get("http://localhost:1337/realfoo/bar/")
+                    .expect("status", 200)
+                    .expect("bodyContains", /bar/)
+                    // .get("http://localhost:1337/realbar/")
+                    // .expect("status", 200)
+                    // .expect("bodyContains", /bar/)
+                    .done(() => {
+                        server.close(done);
+                    });
+            });
+            it("should rewrite body URLs to match the spandx origin", async done => {
                 const { server, port } = await serve(
                     "spec/helpers/configs/url-rewriting/",
                     4014
@@ -748,7 +810,7 @@ describe("spandx", () => {
                         server.close(done);
                     });
             });
-            it("should rewrite URLs when using multi-host", async done => {
+            it("should rewrite body URLs when using multi-host", async done => {
                 // serve prod dir and dev dir on different ports
                 const { server: prodServer, port: prodPort } = await serve(
                     "spec/helpers/configs/single-multi/dev",
