@@ -46,6 +46,7 @@
         "http-proxy": "^1.17.0",
         "inquirer": "7.0.0",
         "lodash": "^4.17.10",
+        "nodesi": "^1.11.0",
         "porty": "^3.1.1",
         "print-colors": "^1.0.1",
         "request": "^2.88.0",
