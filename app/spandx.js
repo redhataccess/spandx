@@ -179,20 +179,21 @@ async function init(confIn) {
                 proxy: {
                     target: internalProxyOrigin,
                     proxyReq: [
-                        function(proxyReq, proxyRes) {
+                        function(proxyReq, req, res) {
                             // find and set a header to keep track of the spandx origin
-                            const origin = proxyRes.headers.host.split(":")[0];
-                            proxyReq.setHeader("X-Spandx-Origin", origin);
+                            const origin = req.headers.host.split(":")[0];
 
-                            // find and set a header to keep track of the spandx env
+                            // set a header for spandx origin and env on both the request and response
                             const env = _.findKey(
                                 conf.host,
                                 host => host === origin
                             );
-                            proxyReq.setHeader(
-                                "X-Spandx-Env",
-                                env || "default"
-                            );
+
+                            [res, proxyReq].forEach(r => {
+                                r.setHeader("X-Spandx-Env", env || "default");
+                                r.setHeader("X-Spandx-Origin", origin);
+                            });
+
                             if (typeof env === "undefined") {
                                 if (!config.silent) {
                                     console.warn(

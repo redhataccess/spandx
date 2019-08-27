@@ -140,11 +140,15 @@ describe("spandx", () => {
             const devReq = frisby
                 .get("http://localhost:1337/")
                 .expect("status", 200)
+                .expect("header", "x-spandx-env", "dev")
+                .expect("header", "x-spandx-origin", "localhost")
                 .expect("bodyContains", /DEV/);
 
             const prodReq = frisby
                 .get("http://127.0.0.1:1337/")
                 .expect("status", 200)
+                .expect("header", "x-spandx-env", "prod")
+                .expect("header", "x-spandx-origin", "127.0.0.1")
                 .expect("bodyContains", /PROD/);
 
             // wait for both request's promises to
