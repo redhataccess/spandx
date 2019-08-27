@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const ESI = require("nodesi");
 
-function createEsiMiddleware(conf) {
+function buildEsiMap(conf) {
     const esi = _(conf.host)
         .mapValues((host, env) => {
             const esiconfDefaults = {
@@ -15,9 +15,24 @@ function createEsiMiddleware(conf) {
                 cache: false
             };
 
-            return new ESI(_.defaultsDeep(conf.esi, esiconfDefaults));
+            const config = _.defaultsDeep(
+                _.cloneDeep(conf.esi),
+                esiconfDefaults
+            );
+
+            const esi = new ESI(config);
+
+            esi.spandxGeneratedConfig = config;
+
+            return esi;
         })
         .value();
+
+    return esi;
+}
+
+function createEsiMiddleware(conf) {
+    const esi = buildEsiMap(conf);
 
     function applyESI(data, req, res) {
         return new Promise(function(resolve, reject) {
@@ -39,4 +54,4 @@ function createEsiMiddleware(conf) {
     return applyESI;
 }
 
-module.exports = { createEsiMiddleware };
+module.exports = { buildEsiMap, createEsiMiddleware };

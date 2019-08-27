@@ -225,6 +225,63 @@ describe("spandx", () => {
         });
     });
 
+    describe("spandx.priv.buildEsiMap()", () => {
+        it("should properly set ESI baseUrls when conf.esi is not set", () => {
+            const map = require("../../app/esiMiddleware").buildEsiMap({
+                protocol: "https:",
+                port: 1337,
+                host: {
+                    "ci.foo.redhat.com": "ci.foo.redhat.com",
+                    "qa.foo.redhat.com": "qa.foo.redhat.com",
+                    "stage.foo.redhat.com": "stage.foo.redhat.com",
+                    "prod.foo.redhat.com": "prod.foo.redhat.com"
+                }
+            });
+
+            for (const env of [
+                "ci.foo.redhat.com",
+                "qa.foo.redhat.com",
+                "stage.foo.redhat.com",
+                "prod.foo.redhat.com"
+            ]) {
+                expect(map[env]).toBeDefined();
+                expect(map[env].spandxGeneratedConfig).toBeDefined();
+                expect(map[env].spandxGeneratedConfig.baseUrl).toBeDefined();
+                expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
+                    `https://${env}:1337`
+                );
+            }
+        });
+
+        it("should properly set ESI baseUrls even when conf.esi is set", () => {
+            const map = require("../../app/esiMiddleware").buildEsiMap({
+                esi: { allowedHosts: [/^https:\/\/access.*.redhat.com$/] },
+                protocol: "https:",
+                port: 1337,
+                host: {
+                    "ci.foo.redhat.com": "ci.foo.redhat.com",
+                    "qa.foo.redhat.com": "qa.foo.redhat.com",
+                    "stage.foo.redhat.com": "stage.foo.redhat.com",
+                    "prod.foo.redhat.com": "prod.foo.redhat.com"
+                }
+            });
+
+            for (const env of [
+                "ci.foo.redhat.com",
+                "qa.foo.redhat.com",
+                "stage.foo.redhat.com",
+                "prod.foo.redhat.com"
+            ]) {
+                expect(map[env]).toBeDefined();
+                expect(map[env].spandxGeneratedConfig).toBeDefined();
+                expect(map[env].spandxGeneratedConfig.baseUrl).toBeDefined();
+                expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
+                    `https://${env}:1337`
+                );
+            }
+        });
+    });
+
     describe("esi:include", () => {
         describe("when routing to local directories", () => {
             it("should resolve esi:include with absolute paths", async done => {
