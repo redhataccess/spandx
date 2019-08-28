@@ -61,6 +61,41 @@ This effectively overlays a local directory of static files on top of a remote s
 
 In addition, because `~/projects/pbp/theme` is a local directory, changes to files inside it will trigger a browserSync refresh.
 
+#### Route definitions
+
+Here's a more rigorous definition of how routes are defined.  The `routes` object can contain several types of routes, but they all follow the form `PATH: DESTINATION`.
+
+Destination can be either a local directory or a server (local or remote servers).
+
+##### Routing to a local directory
+
+To route to a local directory, the destination should be a string.  The directory path can be absolute or relative.  If relative, it's resolved relative to the spandx.config.js file.
+
+```
+"/incoming": "./destination"
+```
+
+##### Routing to a server
+
+To route to a server, the destination should be an object with a `host` property.
+
+```js
+"/incoming": {
+  host: "http://localhost:8080"
+}
+```
+
+In this form, requests to `/incoming` will route to `http://localhost:8080/incoming`.  If you would rather route to a different path (such as `http://localhost:8080`), you can specify a `path` property as well.
+
+```js
+"/incoming": {
+  host: "http://localhost:8080",
+  path: "/"
+}
+```
+
+With this path setting, requests to `/incoming` will route to `http://localhost:8080/`.
+
 #### Multi-host routing
 
 spandx allows you to "overlay" local static files on top of a remote webserver.  Many projects have multiple remote webservers, for example a dev server, qa, staging, and production.  To simplify dealing with multiple remotes, spandx offers multi-host routing, whether the local hostname determines which remote host to proxy to.  Here's an example config.
