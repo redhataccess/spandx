@@ -24,7 +24,7 @@ priv.tryPlugin = (plugin, req, res, target, cb) => {
 
 priv.doProxy = (proxy, req, res, target) => {
     if (target) {
-        proxy.web(req, res, { target }, e => {
+        proxy.web(req, res, { target, ignorePath: true }, e => {
             console.error(e);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.end();
@@ -50,72 +50,78 @@ module.exports = (conf, proxy) => {
         // figure out which target to proxy to based on the requested resource path
         const sortedRoutes = _(conf.routes)
             .toPairs()
+            .filter(v => _.startsWith(req.url, v[0]))
             .sortBy(v => -v[0].length)
             .value();
-        const routeIndex = _.findKey(sortedRoutes, v =>
-            _.startsWith(req.url, v[0])
-        );
-        const routeKey = sortedRoutes[routeIndex][0];
 
         const env = req.headers["x-spandx-env"];
-        const route = conf.routes[routeKey];
-        let target = route.host && route.host[env];
-        // console.log(`env: ${env}`);
-        // console.log(`route: ${route}`);
-        // console.log(`target: ${target}`);
-        let fileExists;
-        let needsSlash = false;
-        const localFile = !target;
 
-        // determine if the URL path maps to a local directory
-        // if it maps to a local directory, and if the file exists, serve it
-        // up.  if the URL path maps to an HTTP server, OR if it maps to a file
-        // but the file doesn't exist, in either case proxy to a remote server.
-        if (localFile) {
-            const url = URL.parse(req.url);
-            const relativeFilePath = url.pathname.replace(
-                new RegExp(`^${routeKey}/?`),
-                "/"
-            ); // remove route path (will be replaced with disk path)
-            const absoluteFilePath = path.resolve(
-                conf.configDir,
-                resolveHome(route),
-                relativeFilePath.replace(/^\//, "")
+        for (let routeCandidate of sortedRoutes) {
+            const routeKey = routeCandidate[0];
+            const route = conf.routes[routeKey];
+            const routePath = route.path || routeKey;
+            const targetPath = req.url.replace(
+                new RegExp(`^${routeKey}`),
+                routePath
             );
-            fileExists = fs.existsSync(absoluteFilePath);
+            const targetHost = route.host && route.host[env];
+            let fileExists;
+            let needsSlash = false;
+            const localFile = !targetHost;
+            let target = targetHost + targetPath;
 
-            if (fileExists) {
-                if (conf.verbose) {
-                    console.log(
-                        `GET ${c.fg.l.green}${req.url}${c.end} from ${
-                            c.fg.l.cyan
-                        }${absoluteFilePath}${c.end} ${env}`
-                    );
+            // determine if the URL path maps to a local directory
+            // if it maps to a local directory, and if the file exists, serve it
+            // up.  if the URL path maps to an HTTP server, OR if it maps to a file
+            // but the file doesn't exist, in either case proxy to a remote server.
+            if (localFile) {
+                const url = URL.parse(req.url);
+                const relativeFilePath = url.pathname.replace(
+                    new RegExp(`^${routeKey}/?`),
+                    "/"
+                ); // remove route path (will be replaced with disk path)
+                const absoluteFilePath = path.resolve(
+                    conf.configDir,
+                    resolveHome(route),
+                    relativeFilePath.replace(/^\//, "")
+                );
+                fileExists = fs.existsSync(absoluteFilePath);
+
+                if (fileExists) {
+                    if (conf.verbose) {
+                        console.log(
+                            `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.cyan}${absoluteFilePath}${c.end} ${env}`
+                        );
+                    }
+
+                    req.url = relativeFilePath; // update the request's url to be relative to the on-disk dir
+                    serveLocal[routeKey](req, res, finalhandler(req, res));
+                    return; // stop here, don't continue to HTTP proxy section
                 }
-
-                req.url = relativeFilePath; // update the request's url to be relative to the on-disk dir
-                serveLocal[routeKey](req, res, finalhandler(req, res));
-                return; // stop here, don't continue to HTTP proxy section
             }
-        }
 
-        if (localFile && (!fileExists || needsSlash)) {
-            target = conf.routes["/"].host
-                ? conf.routes["/"].host[env]
-                : undefined;
-        }
+            if (localFile && !fileExists && routeKey.length > 1) {
+                continue;
+            }
 
-        if (conf.verbose) {
-            console.log(
-                `GET ${c.fg.l.green}${req.url}${c.end} from ${
-                    c.fg.l.blue
-                }${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
-            );
-        }
+            if (localFile && (!fileExists || needsSlash)) {
+                target = conf.routes["/"].host
+                    ? conf.routes["/"].host[env]
+                    : undefined;
+            }
 
-        priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
-            priv.doProxy(proxy, req, res, t);
-        });
+            if (conf.verbose) {
+                console.log(
+                    `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
+                );
+            }
+
+            priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
+                priv.doProxy(proxy, req, res, t);
+            });
+
+            return;
+        }
     };
 };
 
