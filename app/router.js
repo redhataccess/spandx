@@ -3,6 +3,7 @@ const path = require("path");
 const URL = require("url");
 const c = require("print-colors");
 const _ = require("lodash");
+const { flow, includes, get } = require("lodash/fp");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
 const resolveHome = require("./resolveHome");
@@ -59,7 +60,10 @@ module.exports = (conf, proxy) => {
         for (let routeCandidate of sortedRoutes) {
             const routeKey = routeCandidate[0];
             const route = conf.routes[routeKey];
-            const isDoc = _.get(req, "headers.accept").includes("text/html");
+            const isDoc = flow(
+                get("headers.accept"),
+                includes("text/html")
+            )(req);
             const routeSingle = route.single;
             const useSingle = route.single && isDoc;
             const routePath = route.path || routeKey;
