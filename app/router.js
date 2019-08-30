@@ -60,11 +60,12 @@ module.exports = (conf, proxy) => {
         for (let routeCandidate of sortedRoutes) {
             const routeKey = routeCandidate[0];
             const route = conf.routes[routeKey];
-            const isDoc = flow(
+            const acceptHTML = flow(
                 get("headers.accept"),
                 includes("text/html")
             )(req);
-            const routeSingle = route.single;
+            const hasExtension = URL.parse(req.url).path.includes(".");
+            const isDoc = acceptHTML && !hasExtension;
             const useSingle = route.single && isDoc;
             const routePath = route.path || routeKey;
             const targetPath = useSingle

@@ -230,6 +230,79 @@ describe("spandx", () => {
         });
     });
 
+    describe("single mode", () => {
+        it("should rewrite requests for html to index.html", async done => {
+            const { server } = await serve("spec/helpers/configs/single", 4014);
+
+            const bs = await spandx.init(
+                "../spec/helpers/configs/single/spandx.config.js"
+            );
+
+            const accept = {
+                request: {
+                    headers: {
+                        Accept: "text/html"
+                    }
+                }
+            };
+
+            const reqs = [
+                frisby
+                    .setup(accept)
+                    .get(`http://localhost:1337/foo`)
+                    .expect("status", 200)
+                    .expect("bodyContains", /FOO/),
+                frisby
+                    .setup(accept)
+                    .get(`http://localhost:1337/foo/bar`)
+                    .expect("status", 200)
+                    .expect("bodyContains", /FOO/),
+                frisby
+                    .setup(accept)
+                    .get(`http://localhost:1337/foo/bar/baz`)
+                    .expect("status", 200)
+                    .expect("bodyContains", /FOO/)
+            ];
+
+            // wait for both request's promises to
+            // resolve, then close up shop
+            await Promise.all(reqs.map(r => r._fetch));
+            server.close(done);
+        });
+        it("should not rewrite requests for non-html assets", async done => {
+            const { server } = await serve("spec/helpers/configs/single", 4014);
+
+            const bs = await spandx.init(
+                "../spec/helpers/configs/single/spandx.config.js"
+            );
+
+            const reqs = [
+                // test fetching a URL with a file extension, it shouldn't
+                // rewrite to the single path
+                frisby
+                    .get(`http://localhost:1337/foo/bar/test.txt`)
+                    .expect("status", 200)
+                    .expect("bodyContains", /TEXT FILE/),
+                // test making a request that doesn't accept text/html
+                frisby
+                    .setup({
+                        request: {
+                            headers: {
+                                Accept: "text/plain"
+                            }
+                        }
+                    })
+                    .get(`http://localhost:1337/foo/bar`)
+                    .expect("status", 404)
+            ];
+
+            // wait for both request's promises to
+            // resolve, then close up shop
+            await Promise.all(reqs.map(r => r._fetch));
+            server.close(done);
+        });
+    });
+
     describe("spandx.priv.buildEsiMap()", () => {
         it("should properly set ESI baseUrls when conf.esi is not set", () => {
             const map = require("../../app/esiMiddleware").buildEsiMap({
