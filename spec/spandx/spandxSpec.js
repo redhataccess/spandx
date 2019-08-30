@@ -137,24 +137,25 @@ describe("spandx", () => {
                 }
             });
 
-            const devReq = frisby
-                .get("http://localhost:1337/")
-                .expect("status", 200)
-                .expect("header", "x-spandx-env", "dev")
-                .expect("header", "x-spandx-origin", "localhost")
-                .expect("bodyContains", /DEV/);
-
-            const prodReq = frisby
-                .get("http://127.0.0.1:1337/")
-                .expect("status", 200)
-                .expect("header", "x-spandx-env", "prod")
-                .expect("header", "x-spandx-origin", "127.0.0.1")
-                .expect("bodyContains", /PROD/);
+            const reqs = [
+                frisby
+                    .get("http://localhost:1337/")
+                    .expect("status", 200)
+                    .expect("header", "x-spandx-env", "dev")
+                    .expect("header", "x-spandx-origin", "localhost")
+                    .expect("bodyContains", /DEV/),
+                frisby
+                    .get("http://127.0.0.1:1337/")
+                    .expect("status", 200)
+                    .expect("header", "x-spandx-env", "prod")
+                    .expect("header", "x-spandx-origin", "127.0.0.1")
+                    .expect("bodyContains", /PROD/)
+            ];
 
             // wait for both request's promises to
             // resolve, then close up shop
-            await Promise.all([devReq._fetch, prodReq._fetch]);
-            let runningServers = 2;
+            await Promise.all(reqs.map(r => r._fetch));
+            let runningServers = reqs.length;
             devServer.close(() => --runningServers == 0 && done());
             prodServer.close(() => --runningServers == 0 && done());
         });
