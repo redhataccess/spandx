@@ -59,11 +59,14 @@ module.exports = (conf, proxy) => {
         for (let routeCandidate of sortedRoutes) {
             const routeKey = routeCandidate[0];
             const route = conf.routes[routeKey];
+            const isDoc = _.get(req, "headers.accept").includes("text/html");
+            const routeSingle = route.single;
+            const useSingle = route.single && isDoc;
             const routePath = route.path || routeKey;
-            const targetPath = req.url.replace(
-                new RegExp(`^${routeKey}`),
-                routePath
-            );
+            const targetPath = useSingle
+                ? routePath
+                : req.url.replace(new RegExp(`^${routeKey}`), routePath);
+
             const targetHost = route.host && route.host[env];
             let fileExists;
             let needsSlash = false;
