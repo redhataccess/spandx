@@ -3,6 +3,7 @@ const path = require("path");
 const URL = require("url");
 const c = require("print-colors");
 const _ = require("lodash");
+const { flow, includes, get } = require("lodash/fp");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
 const resolveHome = require("./resolveHome");
@@ -59,11 +60,18 @@ module.exports = (conf, proxy) => {
         for (let routeCandidate of sortedRoutes) {
             const routeKey = routeCandidate[0];
             const route = conf.routes[routeKey];
+            const acceptHTML = flow(
+                get("headers.accept"),
+                includes("text/html")
+            )(req);
+            const hasExtension = URL.parse(req.url).path.includes(".");
+            const isDoc = acceptHTML && !hasExtension;
+            const useSingle = route.single && isDoc;
             const routePath = route.path || routeKey;
-            const targetPath = req.url.replace(
-                new RegExp(`^${routeKey}`),
-                routePath
-            );
+            const targetPath = useSingle
+                ? routePath
+                : req.url.replace(new RegExp(`^${routeKey}`), routePath);
+
             const targetHost = route.host && route.host[env];
             let fileExists;
             let needsSlash = false;
