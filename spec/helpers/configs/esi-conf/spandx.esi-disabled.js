@@ -2,11 +2,8 @@ module.exports = {
     host: "localhost",
     port: 1337,
     silent: true,
-    esi: true,
+    esi: false,
     routes: {
-        "/": { host: "http://localhost:4014" }
-    },
-    bs: {
-        https: true
+        "/": "./"
     }
 };

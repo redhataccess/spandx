@@ -95,7 +95,8 @@ Option | Description | Type
 `verbose` | Display English summary of configuration settings and display Browsersync logs, or not. | boolean
 `routes` | Define where to send requests for any number of URL paths, best explained in [routes by example](#routes-by-example). | object
 `bs` | A [Browsersync config object][bs-options], in case you need to further customize spandx's Browsersync instance. | object
-`portalChrome` | Setting related to Portal Chrome, see [Portal Chrome settings][portal-chrome-settings]. | object
+`portalChrome` | Settings related to Portal Chrome, see [Portal Chrome settings][portal-chrome-settings]. | object
+`esi` | Set to `true` to enable processing [ESI][esi] tags, or pass in a [nodesi][nodesi] config object. | boolean or object
 
 ## Routes
 
@@ -306,3 +307,5 @@ If spandx doesn't fit, here are a few other tools that offer similar features.
 [rh-quickstart]: ./RH.md
 [portal-chrome-settings]: ./RH.md#portal-chrome-settings
 [pushstate]: https://developer.mozilla.org/en-US/docs/Web/API/History_API
+[esi]: https://en.wikipedia.org/wiki/Edge_Side_Includes
+[nodesi]: https://github.com/Schibsted-Tech-Polska/nodesi

@@ -76,7 +76,9 @@ async function init(confIn) {
         app.use(transformerProxy(chromeMiddleware.SPACommentResolver(conf)));
     }
 
-    app.use(transformerProxy(createEsiMiddleware(conf)));
+    if (_.get(conf, "esi")) {
+        app.use(transformerProxy(createEsiMiddleware(conf)));
+    }
 
     // dynamically proxy to local filesystem or remote webserver
     app.use(router(conf, proxy));
