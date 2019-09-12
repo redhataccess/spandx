@@ -50,6 +50,7 @@ Launch!
     - [Enabling HTTPS](#enabling-https)
 - [spandx as a local dependency](#spandx-as-a-local-dependency)
 - [Contributing](#contributing)
+  - [Commit messages](#commit-messages)
   - [Running specific tests](#running-specific-tests)
 - [Known issues](#known-issues)
   - [cURLing spandx](#curling-spandx)
@@ -247,9 +248,9 @@ Modify `spandx.config.js` to reflect the needs of your application.
 Then edit your `package.json` and add a `start` script which launches spandx.
 
 ```json
-"scripts": {
-    "start": "spandx"
-}
+    "scripts": {
+        "start": "spandx"
+    }
 ```
 
 Now you and your fellow contributors can run `npm start` without having to install or even understand spandx!
@@ -258,16 +259,23 @@ Now you and your fellow contributors can run `npm start` without having to insta
 
 Contributions are very welcome!  There's not much here yet, but when there's enough content it can be split out into a dedicated CONTRIBUTING.md.
 
+## Commit messages
+
+Starting with spandx v2.0.0, one goal is to adhere to the [Conventional Commits][conv-comm] style of writing commit messages.  The rewards of doing so are automating semantic version bumps and CHANGELOG updates.  For now, the commit style will be used and later on, the tooling ([conventional-changelog-cli][conv-cli] perhaps) will be added.
+
 ## Running specific tests
 
 When writing a test, or debugging a failing test, you may want to run *only* that test instead of the entire suite.  To do that, you can filter by the name of the test.  Just be specific enough to target only the test (or tests) you want to run.
 
 For example, to run the test named "should reject invalid multi-host configs":
 
-    npm test -- --filter="invalid"
+    npm test -- --filter="invalid multi"
 
 # Known issues
+
 ## cURLing spandx
+
+When curling spandx, if you are requesting an HTML document, it's important to include an appropriate `Accept` header.  There are two spandx features, described below, that will not work without that header.
 
 ### Body URL rewriting
 
@@ -309,3 +317,5 @@ If spandx doesn't fit, here are a few other tools that offer similar features.
 [pushstate]: https://developer.mozilla.org/en-US/docs/Web/API/History_API
 [esi]: https://en.wikipedia.org/wiki/Edge_Side_Includes
 [nodesi]: https://github.com/Schibsted-Tech-Polska/nodesi
+[conv-comm]: https://www.conventionalcommits.org/#summary
+[conv-cli]: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli
