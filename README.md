@@ -66,10 +66,10 @@ Launch!
 
 To launch spandx, simply run `spandx`.  If a `spandx.config.js` file exists in the current directory, it will be used.
 
-| Option  | Description | Example |
-| --- | --- |
-| `-c`, `--config` | Specify an alternate config file.  Config files are JS by default (to enable commenting), but JSON is also accepted. | `spandx -c ./configs/spandx.json` |
-| `-v`, `--version` | Print the current version of spandx. | `spandx -v` |
+Option  | Description | Example
+--- | --- | ---
+`-c`, `--config` | Specify an alternate config file.  Config files are JS by default (to enable commenting), but JSON is also accepted. | `spandx -c ./configs/spandx.json`
+`-v`, `--version` | Print the current version of spandx. | `spandx -v`
 
 ## init
 
