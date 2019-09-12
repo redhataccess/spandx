@@ -152,8 +152,7 @@ describe("spandx", () => {
                     .expect("bodyContains", /PROD/)
             ];
 
-            // wait for both request's promises to
-            // resolve, then close up shop
+            // wait for all request promises to resolve, then close up shop
             await Promise.all(reqs.map(r => r._fetch));
             let runningServers = reqs.length;
             devServer.close(() => --runningServers == 0 && done());
@@ -264,8 +263,7 @@ describe("spandx", () => {
                     .expect("bodyContains", /FOO/)
             ];
 
-            // wait for both request's promises to
-            // resolve, then close up shop
+            // wait for all request promises to resolve, then close up shop
             await Promise.all(reqs.map(r => r._fetch));
             server.close(done);
         });
@@ -296,8 +294,7 @@ describe("spandx", () => {
                     .expect("status", 404)
             ];
 
-            // wait for both request's promises to
-            // resolve, then close up shop
+            // wait for all request promises to resolve, then close up shop
             await Promise.all(reqs.map(r => r._fetch));
             server.close(done);
         });
@@ -939,8 +936,7 @@ describe("spandx", () => {
                     .expect("status", 200)
                     .expect("bodyContains", /127\.0\.0\.1/);
 
-                // wait for both request's promises to
-                // resolve, then close up shop
+                // wait for all request promises to resolve, then close up shop
                 await Promise.all([devReq._fetch, prodReq._fetch]);
                 let runningServers = 2;
                 devServer.close(() => --runningServers == 0 && done());
