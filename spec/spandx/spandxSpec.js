@@ -300,68 +300,11 @@ describe("spandx", () => {
         });
     });
 
-    describe("spandx.priv.buildEsiMap()", () => {
-        it("should properly set ESI baseUrls when conf.esi is not set", () => {
-            const map = require("../../app/esiMiddleware").buildEsiMap({
-                protocol: "https:",
-                port: 1337,
-                host: {
-                    "ci.foo.redhat.com": "ci.foo.redhat.com",
-                    "qa.foo.redhat.com": "qa.foo.redhat.com",
-                    "stage.foo.redhat.com": "stage.foo.redhat.com",
-                    "prod.foo.redhat.com": "prod.foo.redhat.com"
-                }
-            });
-
-            for (const env of [
-                "ci.foo.redhat.com",
-                "qa.foo.redhat.com",
-                "stage.foo.redhat.com",
-                "prod.foo.redhat.com"
-            ]) {
-                expect(map[env]).toBeDefined();
-                expect(map[env].spandxGeneratedConfig).toBeDefined();
-                expect(map[env].spandxGeneratedConfig.baseUrl).toBeDefined();
-                expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
-                    `https://${env}:1337`
-                );
-            }
-        });
-
-        it("should properly set ESI baseUrls even when conf.esi is set", () => {
-            const map = require("../../app/esiMiddleware").buildEsiMap({
-                esi: { allowedHosts: [/^https:\/\/access.*.redhat.com$/] },
-                protocol: "https:",
-                port: 1337,
-                host: {
-                    "ci.foo.redhat.com": "ci.foo.redhat.com",
-                    "qa.foo.redhat.com": "qa.foo.redhat.com",
-                    "stage.foo.redhat.com": "stage.foo.redhat.com",
-                    "prod.foo.redhat.com": "prod.foo.redhat.com"
-                }
-            });
-
-            for (const env of [
-                "ci.foo.redhat.com",
-                "qa.foo.redhat.com",
-                "stage.foo.redhat.com",
-                "prod.foo.redhat.com"
-            ]) {
-                expect(map[env]).toBeDefined();
-                expect(map[env].spandxGeneratedConfig).toBeDefined();
-                expect(map[env].spandxGeneratedConfig.baseUrl).toBeDefined();
-                expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
-                    `https://${env}:1337`
-                );
-            }
-        });
-    });
-
-    describe("esi:include", () => {
-        describe("when routing to local directories", () => {
-            it("should resolve esi:include with absolute paths", async done => {
+    describe("ESI", () => {
+        describe("ESI configuration", () => {
+            it("should process ESI tags when ESI is enabled", async done => {
                 await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.local.js"
+                    "../spec/helpers/configs/esi-conf/spandx.esi-enabled.js"
                 );
                 frisby
                     .get("http://localhost:1337/esi-abs-paths.html")
@@ -371,116 +314,205 @@ describe("spandx", () => {
                     .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
                     .done(done);
             });
-            it("should resolve esi:include with domain-relative paths", async done => {
+            it("should not process ESI tags when ESI is disabled", async done => {
                 await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.local.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-domain-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(done);
-            });
-            it("should resolve esi:include with file-relative paths", async done => {
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.local.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-file-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI FILE REL PATH PARENT/)
-                    .expect("bodyContains", /REL PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
-                    .done(done);
-            });
-        });
-
-        describe("when routing to remote host", () => {
-            it("should resolve esi:include with absolute paths", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.remote.js"
+                    "../spec/helpers/configs/esi-conf/spandx.esi-disabled.js"
                 );
                 frisby
                     .get("http://localhost:1337/esi-abs-paths.html")
                     .expect("status", 200)
                     .expect("bodyContains", /ESI ABS PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
+                    .expectNot("bodyContains", /ABS PATH ROOT SNIPPET/)
+                    .expectNot("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                    .done(done);
             });
-            it("should resolve esi:include with domain-relative paths", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.remote.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-domain-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
+        });
+
+        describe("ESI baseUrl", () => {
+            it("should properly set ESI baseUrls when conf.esi is not set", () => {
+                const map = require("../../app/esiMiddleware").buildEsiMap({
+                    protocol: "https:",
+                    port: 1337,
+                    host: {
+                        "ci.foo.redhat.com": "ci.foo.redhat.com",
+                        "qa.foo.redhat.com": "qa.foo.redhat.com",
+                        "stage.foo.redhat.com": "stage.foo.redhat.com",
+                        "prod.foo.redhat.com": "prod.foo.redhat.com"
+                    }
+                });
+
+                for (const env of [
+                    "ci.foo.redhat.com",
+                    "qa.foo.redhat.com",
+                    "stage.foo.redhat.com",
+                    "prod.foo.redhat.com"
+                ]) {
+                    expect(map[env]).toBeDefined();
+                    expect(map[env].spandxGeneratedConfig).toBeDefined();
+                    expect(
+                        map[env].spandxGeneratedConfig.baseUrl
+                    ).toBeDefined();
+                    expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
+                        `https://${env}:1337`
+                    );
+                }
             });
-            it("should resolve esi:include with file-relative paths", async done => {
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.remote.js"
-                );
-                frisby
-                    .get("http://localhost:1337/esi-file-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI FILE REL PATH PARENT/)
-                    .expect("bodyContains", /REL PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    });
+
+            it("should properly set ESI baseUrls even when conf.esi is set", () => {
+                const map = require("../../app/esiMiddleware").buildEsiMap({
+                    esi: { allowedHosts: [/^https:\/\/access.*.redhat.com$/] },
+                    protocol: "https:",
+                    port: 1337,
+                    host: {
+                        "ci.foo.redhat.com": "ci.foo.redhat.com",
+                        "qa.foo.redhat.com": "qa.foo.redhat.com",
+                        "stage.foo.redhat.com": "stage.foo.redhat.com",
+                        "prod.foo.redhat.com": "prod.foo.redhat.com"
+                    }
+                });
+
+                for (const env of [
+                    "ci.foo.redhat.com",
+                    "qa.foo.redhat.com",
+                    "stage.foo.redhat.com",
+                    "prod.foo.redhat.com"
+                ]) {
+                    expect(map[env]).toBeDefined();
+                    expect(map[env].spandxGeneratedConfig).toBeDefined();
+                    expect(
+                        map[env].spandxGeneratedConfig.baseUrl
+                    ).toBeDefined();
+                    expect(map[env].spandxGeneratedConfig.baseUrl).toMatch(
+                        `https://${env}:1337`
+                    );
+                }
             });
-            it("should resolve esi:include relative paths over https if https: true", async done => {
-                // this test covers the case where the esi:include src points
-                // to a host with a self-signed cert, and the bug where an
-                // esi:include src with a relative path would get routed to
-                // http://host/path even if https is true.
-                const { server, port } = await serve(
-                    "spec/helpers/configs/esi-include/",
-                    4014
-                );
-                await spandx.init(
-                    "../spec/helpers/configs/esi-include/spandx.https.js"
-                );
-                frisby
-                    .get("https://localhost:1337/esi-domain-rel-paths.html")
-                    .expect("status", 200)
-                    .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
-                    .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
-                    .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
-                    .done(() => {
-                        server.close();
-                        done();
-                    })
-                    .catch(err => {
-                        server.close();
-                        fail(err);
-                    });
+        });
+        describe("esi:include", () => {
+            describe("when routing to local directories", () => {
+                it("should resolve esi:include with absolute paths", async done => {
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.local.js"
+                    );
+                    frisby
+                        .get("http://localhost:1337/esi-abs-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI ABS PATH PARENT/)
+                        .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                        .done(done);
+                });
+                it("should resolve esi:include with domain-relative paths", async done => {
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.local.js"
+                    );
+                    frisby
+                        .get("http://localhost:1337/esi-domain-rel-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
+                        .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                        .done(done);
+                });
+                it("should resolve esi:include with file-relative paths", async done => {
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.local.js"
+                    );
+                    frisby
+                        .get("http://localhost:1337/esi-file-rel-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI FILE REL PATH PARENT/)
+                        .expect("bodyContains", /REL PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
+                        .done(done);
+                });
+            });
+
+            describe("when routing to remote host", () => {
+                it("should resolve esi:include with absolute paths", async done => {
+                    const { server, port } = await serve(
+                        "spec/helpers/configs/esi-include/",
+                        4014
+                    );
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.remote.js"
+                    );
+                    frisby
+                        .get("http://localhost:1337/esi-abs-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI ABS PATH PARENT/)
+                        .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                        .done(() => {
+                            server.close();
+                            done();
+                        });
+                });
+                it("should resolve esi:include with domain-relative paths", async done => {
+                    const { server, port } = await serve(
+                        "spec/helpers/configs/esi-include/",
+                        4014
+                    );
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.remote.js"
+                    );
+                    frisby
+                        .get("http://localhost:1337/esi-domain-rel-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
+                        .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                        .done(() => {
+                            server.close();
+                            done();
+                        });
+                });
+                it("should resolve esi:include with file-relative paths", async done => {
+                    const { server, port } = await serve(
+                        "spec/helpers/configs/esi-include/",
+                        4014
+                    );
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.remote.js"
+                    );
+                    frisby
+                        .get("http://localhost:1337/esi-file-rel-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI FILE REL PATH PARENT/)
+                        .expect("bodyContains", /REL PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /REL PATH SUBDIR SNIPPET/)
+                        .done(() => {
+                            server.close();
+                            done();
+                        });
+                });
+                it("should resolve esi:include relative paths over https if https: true", async done => {
+                    // this test covers the case where the esi:include src points
+                    // to a host with a self-signed cert, and the bug where an
+                    // esi:include src with a relative path would get routed to
+                    // http://host/path even if https is true.
+                    const { server, port } = await serve(
+                        "spec/helpers/configs/esi-include/",
+                        4014
+                    );
+                    await spandx.init(
+                        "../spec/helpers/configs/esi-include/spandx.https.js"
+                    );
+                    frisby
+                        .get("https://localhost:1337/esi-domain-rel-paths.html")
+                        .expect("status", 200)
+                        .expect("bodyContains", /ESI DOMAIN REL PATH PARENT/)
+                        .expect("bodyContains", /ABS PATH ROOT SNIPPET/)
+                        .expect("bodyContains", /ABS PATH SUBDIR SNIPPET/)
+                        .done(() => {
+                            server.close();
+                            done();
+                        })
+                        .catch(err => {
+                            server.close();
+                            fail(err);
+                        });
+                });
             });
         });
     });
