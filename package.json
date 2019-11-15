@@ -1,6 +1,6 @@
 {
     "name": "spandx",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Develop locally, proxy to prod, browser-sync, inject Portal Chrome.",
     "main": "app/spandx.js",
     "bin": "app/cli.js",
@@ -51,6 +51,7 @@
         "inquirer": "7.0.0",
         "lodash": "^4.17.10",
         "nodesi": "^1.11.0",
+        "opn": "5.5.0",
         "porty": "^3.1.1",
         "print-colors": "^1.0.1",
         "request": "^2.88.0",
