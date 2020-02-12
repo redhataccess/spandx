@@ -63,7 +63,7 @@
         "doctoc": "1.4.0",
         "frisby": "2.1.2",
         "http-server": "0.12.1",
-        "husky": "4.2.2",
+        "husky": "4.2.3",
         "jasmine": "3.5.0",
         "jasmine-spec-reporter": "4.2.1",
         "lint-staged": "10.0.7",
