@@ -69,6 +69,6 @@
         "lint-staged": "10.0.8",
         "nodemon": "2.0.2",
         "opn": "5.5.0",
-        "prettier": "1.19.1"
+        "prettier": "2.0.5"
     }
 }
