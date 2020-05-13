@@ -78,10 +78,10 @@ async function init(confIn) {
 
     if (_.get(conf, "esi")) {
         app.use((res, req, next) => {
-            if (res.headers.accept === 'text/event-stream') {
-                next();
-            } else {
+            if (res.headers.accept.includes('text/html') || res.headers.accept.includes('*/*')) {
                 transformerProxy(createEsiMiddleware(conf))(res, req, next);
+            } else {
+                next();
             }
         });
     }
