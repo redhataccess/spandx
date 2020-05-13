@@ -77,7 +77,13 @@ async function init(confIn) {
     }
 
     if (_.get(conf, "esi")) {
-        app.use(transformerProxy(createEsiMiddleware(conf)));
+        app.use((res, req, next) => {
+            if (res.headers.accept === 'text/event-stream') {
+                next();
+            } else {
+                transformerProxy(createEsiMiddleware(conf))(res, req, next);
+            }
+        });
     }
 
     // dynamically proxy to local filesystem or remote webserver
