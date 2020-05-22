@@ -7,6 +7,7 @@ const { flow, includes, get } = require("lodash/fp");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
 const resolveHome = require("./resolveHome");
+const HttpsProxyAgent = require("https-proxy-agent");
 const priv = {};
 
 priv.tryPlugin = (plugin, req, res, target, cb) => {
@@ -23,9 +24,18 @@ priv.tryPlugin = (plugin, req, res, target, cb) => {
     }
 };
 
-priv.doProxy = (proxy, req, res, target) => {
+priv.doProxy = (proxy, req, res, target, conf) => {
     if (target) {
-        proxy.web(req, res, { target, ignorePath: true }, e => {
+        const options = {
+            target,
+            ignorePath: true
+        };
+
+        if (conf.proxy) {
+            options.agent = new HttpsProxyAgent(conf.proxy);
+        }
+
+        proxy.web(req, res, options, e => {
             console.error(e);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.end();
@@ -125,7 +135,7 @@ module.exports = (conf, proxy) => {
             }
 
             priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
-                priv.doProxy(proxy, req, res, t);
+                priv.doProxy(proxy, req, res, t, conf);
             });
 
             return;

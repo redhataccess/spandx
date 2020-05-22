@@ -9,15 +9,16 @@ let chromePath;
 
 async function getParts({
     host = DEFAULT_CHROME_HOST,
-    path = DEFAULT_CHROME_PATH
+    path = DEFAULT_CHROME_PATH,
+    proxy
 } = {}) {
     if (cache[host + path]) {
         return cache[host + path];
     }
 
-    const headReq = fetchChromePart({ host, part: "head", path });
-    const headerReq = fetchChromePart({ host, part: "header", path });
-    const footerReq = fetchChromePart({ host, part: "footer", path });
+    const headReq = fetchChromePart({ host, part: "head", path, proxy });
+    const headerReq = fetchChromePart({ host, part: "header", path, proxy });
+    const footerReq = fetchChromePart({ host, part: "footer", path, proxy });
 
     const head = await headReq;
     const header = await headerReq;
@@ -34,7 +35,8 @@ async function getParts({
 function fetchChromePart({
     host = DEFAULT_CHROME_HOST,
     path = DEFAULT_CHROME_PATH,
-    part
+    part,
+    proxy
 } = {}) {
     return new Promise((resolve, reject) => {
         const url = `${host}${path}${part}?legacy=false`;
@@ -42,7 +44,8 @@ function fetchChromePart({
         request(
             {
                 url,
-                strictSSL: false
+                strictSSL: false,
+                proxy
             },
             function(err, response, body) {
                 if (err) {
