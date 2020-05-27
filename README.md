@@ -98,6 +98,7 @@ Option | Description | Type
 `bs` | A [Browsersync config object][bs-options], in case you need to further customize spandx's Browsersync instance. | object
 `portalChrome` | Settings related to Portal Chrome, see [Portal Chrome settings][portal-chrome-settings]. | object
 `esi` | Set to `true` to enable processing [ESI][esi] tags, or pass in a [nodesi][nodesi] config object. | boolean or object
+`proxy` | Define a proxy host and a URL regex pattern for target URLs that should be proxied. | object
 
 ## Routes
 
@@ -212,6 +213,19 @@ routes: {
 ```
 
 Here, a request to `/my-app/users/active` would be routed to `http://localhost:8080/`.
+
+## Setting up the proxy object
+
+If you're developing an app that needs to connect to a proxy, use the proxy object to define the proxy host and define a URL regex pattern for request that should go through the proxy.
+
+```js
+proxy: {
+    host: "http://someproxy.com:1234",
+    pattern: "^https:\/\/(.*?).someurl.com"
+}
+```
+
+Here, when a URL like `https://api.qa.someurl.com` is requested, it would be routed through the proxy.
 
 ## Overriding Browsersync options
 
