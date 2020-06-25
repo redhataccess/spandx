@@ -1,3 +1,20 @@
+# [2.1.0](https://github.com/redhataccess/spandx/compare/v2.0.1...v2.1.0) (2020-05-27)
+
+
+### Features
+
+* adding the ability to use a proxy server for certain paths ([#143](https://github.com/redhataccess/spandx/issues/143)) ([a220c9e](https://github.com/redhataccess/spandx/commit/a220c9eb189aed3f7dfe0721c793ac39e1fd090c))
+
+
+
+## [2.0.1](https://github.com/redhataccess/spandx/compare/v2.0.0...v2.0.1) (2019-10-18)
+
+
+### Bug Fixes
+
+* npm install error related to 'opn' dependency ([fcbf726](https://github.com/redhataccess/spandx/commit/fcbf726e014b5609726c95e96240dcea4b992e50))
+
+
 # 2.0.0
 
 ## Breaking changes

@@ -13,7 +13,8 @@
         "start": "node app/spandx.js",
         "dev": "nodemon spandx.js",
         "debug": "node-debug spandx.js",
-        "precommit": "lint-staged"
+        "precommit": "lint-staged",
+        "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
     },
     "lint-staged": {
         "{app,spec}/**/*.{js,json}": [
@@ -45,6 +46,7 @@
     "dependencies": {
         "browser-sync": "^2.18.13",
         "connect": "^3.6.6",
+        "conventional-changelog-cli": "^2.0.34",
         "finalhandler": "^1.1.1",
         "hostile": "^1.3.2",
         "http-proxy": "^1.17.0",
