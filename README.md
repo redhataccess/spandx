@@ -46,7 +46,7 @@ Launch!
       - [Multi-host routing](#multi-host-routing)
       - [Path rewriting](#path-rewriting)
       - [single mode](#single-mode)
-      - [Setting up the proxy object] (#Setting up the proxy object)
+     - [Setting up the proxy object](#setting-up-the-proxy-object)
   - [Overriding Browsersync options](#overriding-browsersync-options)
     - [Enabling HTTPS](#enabling-https)
 - [spandx as a local dependency](#spandx-as-a-local-dependency)
