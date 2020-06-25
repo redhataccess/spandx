@@ -1010,6 +1010,18 @@ describe("spandx", () => {
                     server.close(done);
                 });
         });
+        it("if the remote is unreachable, return bad gateway", async done => {
+            await spandx.init(
+                "../spec/helpers/configs/bad-gateway/spandx.config.js"
+            );
+            frisby
+                .get("http://localhost:1337/")
+                .expect("status", 502)
+                .expect("bodyContains", /bad gateway/i)
+                .done(() => {
+                    done();
+                });
+        });
     });
 
     describe("routing order", () => {

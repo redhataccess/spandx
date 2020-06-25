@@ -33,7 +33,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
 
         if (confProxy) {
             const regex = RegExp(confProxy.pattern);
-            
+
             // if the target URL passes the regex test based on the
             // pattern provided in the proxy.pattern property,
             // add a new HttpsProxyAgent
@@ -44,7 +44,10 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
 
         proxy.web(req, res, options, e => {
             console.error(e);
-            res.writeHead(200, { "Content-Type": "text/plain" });
+            res.writeHead(502, { "Content-Type": "text/plain" });
+            res.write(
+                `HTTP 502 Bad gateway\n\nRequest to ${req.url} was proxied to ${target} which did not respond.`
+            );
             res.end();
         });
     } else {
