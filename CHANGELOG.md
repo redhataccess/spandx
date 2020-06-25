@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/redhataccess/spandx/compare/v2.1.0...v2.1.1) (2020-06-25)
+
+### Bug Fixes
+
+* respond with a 502 when remote is unreachable ([#145](https://github.com/redhataccess/spandx/issues/145)) ([4ac3e24](https://github.com/redhataccess/spandx/commit/4ac3e24f8c3752c4691b08d9285fda4ac8932f6d))
+
+
 # [2.1.0](https://github.com/redhataccess/spandx/compare/v2.0.1...v2.1.0) (2020-05-27)
 
 
