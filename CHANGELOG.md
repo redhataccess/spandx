@@ -1,3 +1,12 @@
+## [2.1.2](https://github.com/redhataccess/spandx/compare/v2.1.1...v2.1.2) (2020-07-01)
+
+
+### Bug Fixes
+
+* Do not use ESI middleware for text streams ([#141](https://github.com/redhataccess/spandx/issues/141)) ([8a291d6](https://github.com/redhataccess/spandx/commit/8a291d6006e55d465d863bfbc8742a8448c9de0c))
+
+
+
 ## [2.1.1](https://github.com/redhataccess/spandx/compare/v2.1.0...v2.1.1) (2020-06-25)
 
 ### Bug Fixes
