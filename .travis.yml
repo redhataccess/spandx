@@ -6,8 +6,7 @@ os:
     - linux
     - osx
 
-# Leaving the exclusion here for quick reference if exclusions are needed in the future.
-# matrix:
-#     exclude:
-#         - os: osx # skip this because on Travis, node.js segfaults on osx+node 11
-#           node_js: "11"
+matrix:
+    exclude:
+        - os: osx # skip this because on Travis, node.js segfaults on osx+node 11
+          node_js: "12"
