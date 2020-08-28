@@ -70,7 +70,7 @@
         "jasmine": "3.5.0",
         "jasmine-spec-reporter": "4.2.1",
         "lint-staged": "10.2.13",
-        "nodemon": "2.0.2",
+        "nodemon": "2.0.4",
         "opn": "5.5.0",
         "prettier": "2.1.1"
     }
