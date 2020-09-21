@@ -173,31 +173,29 @@ async function init(confIn) {
     // launch!
 
     // create a promise that resolves when browsersync is ready
-    const bsReadyPromise = new Promise(resolve => {
+    const bsReadyPromise = new Promise((resolve) => {
         const bsOptions = _.defaultsDeep(
             {
+                // this object's browser-sync settings cannot be overridden by a user's spandx.config.js
                 port: conf.port,
                 open: false,
                 startPath: conf.startPath,
-                cors: true,
-                online: false,
-                ui: false,
                 logLevel: conf.verbose ? "info" : "silent",
                 files: conf.files,
                 proxy: {
                     target: internalProxyOrigin,
                     proxyReq: [
-                        function(proxyReq, req, res) {
+                        function (proxyReq, req, res) {
                             // find and set a header to keep track of the spandx origin
                             const origin = req.headers.host.split(":")[0];
 
                             // set a header for spandx origin and env on both the request and response
                             const env = _.findKey(
                                 conf.host,
-                                host => host === origin
+                                (host) => host === origin
                             );
 
-                            [res, proxyReq].forEach(r => {
+                            [res, proxyReq].forEach((r) => {
                                 r.setHeader("X-Spandx-Env", env || "default");
                                 r.setHeader("X-Spandx-Origin", origin);
                             });
@@ -209,12 +207,19 @@ async function init(confIn) {
                                     );
                                 }
                             }
-                        }
-                    ]
+                        },
+                    ],
                 },
-                rewriteRules: _.concat(conf.rewriteRules, conf.bs.rewriteRules)
+                rewriteRules: _.concat(conf.rewriteRules, conf.bs.rewriteRules),
             },
-            _.omit(conf.bs, "rewriteRules")
+            _.omit(conf.bs, "rewriteRules"),
+            {
+                // this object's browser-sync settings can be overridden by a user's spandx.config.js
+                ghostMode: false,
+                cors: true,
+                online: false,
+                ui: false,
+            }
         );
         bs.init(bsOptions, () => {
             if (conf.open) {
