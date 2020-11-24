@@ -3,7 +3,7 @@ const path = require("path");
 const URL = require("url");
 const c = require("print-colors");
 const _ = require("lodash");
-const {flow, includes, get} = require("lodash/fp");
+const { flow, includes, get } = require("lodash/fp");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
 const resolveHome = require("./resolveHome");
@@ -44,7 +44,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
 
         proxy.web(req, res, options, (e) => {
             console.error(e);
-            res.writeHead(502, {"Content-Type": "text/plain"});
+            res.writeHead(502, { "Content-Type": "text/plain" });
             res.write(
                 `HTTP 502 Bad gateway\n\nRequest to ${req.url} was proxied to ${target} which did not respond.`
             );
@@ -141,7 +141,11 @@ module.exports = (conf, proxy) => {
 
             if (conf.verbose) {
                 console.log(
-                    `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target.replace(new RegExp(`${req.url}$`), "")}${c.end}${c.fg.l.green}${req.url}${c.end}`
+                    `GET ${c.fg.l.green}${req.url}${c.end} from ${
+                        c.fg.l.blue
+                    }${target.replace(new RegExp(`${req.url}$`), "")}${c.end}${
+                        c.fg.l.green
+                    }${req.url}${c.end}`
                 );
             }
 
