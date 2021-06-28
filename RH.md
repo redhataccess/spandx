@@ -74,7 +74,6 @@ Primer is an upcoming re-imagining of Portal Chrome.
 This feature allows grafting HTML template changes into an existing page, even on a remote server, effectively previewing what the changes will look like when they are deployed to that server.
 
 With `primer.preview` set to `true`, spandx detects the head, header, and footer (the "parts") in Customer Portal pages you visit and replaces them with fresh Primer parts fetched from `/services/primer`.  You can control the routing of this request in your `routes` object.
-
 ```js
 module.exports = {
     primer: {

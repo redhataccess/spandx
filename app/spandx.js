@@ -16,7 +16,7 @@ const router = require("./router.js");
 const config = require("./config");
 const resolveHome = require("./resolveHome");
 const chromeMiddleware = require("./chromeMiddleware");
-const {createEsiMiddleware} = require("./esiMiddleware");
+const { createEsiMiddleware } = require("./esiMiddleware");
 
 let proxy;
 let internalProxy;
@@ -119,10 +119,13 @@ async function init(confIn) {
 
                         return `  ${c.fg.l.blue}${url
                             .replace(/\/$/, "")
-                            .replace(new RegExp(`${conf.startPath}$`), "")}${c.end
-                            }${c.fg.l.green}${route[0]}${c.e} will be routed to ${c.fg.l.blue
-                            }${route[1].host[env] || route[1].host}${c.e}${c.fg.l.green
-                            }${route[0]}${c.e}`;
+                            .replace(new RegExp(`${conf.startPath}$`), "")}${
+                            c.end
+                        }${c.fg.l.green}${route[0]}${c.e} will be routed to ${
+                            c.fg.l.blue
+                        }${route[1].host[env] || route[1].host}${c.e}${
+                            c.fg.l.green
+                        }${route[0]}${c.e}`;
                     })
                     .join("\n");
             }).join("\n")
@@ -141,7 +144,8 @@ async function init(confIn) {
                                 .replace(
                                     new RegExp(`${conf.startPath}$`),
                                     ""
-                                )}${c.end}${c.fg.l.green}${route[0]}${c.end
+                                )}${c.end}${c.fg.l.green}${route[0]}${
+                                c.end
                             } will be routed to ${c.fg.l.cyan}${path.resolve(
                                 conf.configDir,
                                 resolveHome(route[1])
@@ -243,7 +247,8 @@ async function init(confIn) {
 
     if (!conf.silent) {
         console.log(
-            `spandx URL${conf.spandxUrl.length > 1 ? "s" : ""
+            `spandx URL${
+                conf.spandxUrl.length > 1 ? "s" : ""
             }:\n\n${conf.spandxUrl
                 .map((url) => `  ${c.fg.l.blue}${url}${c.end}`)
                 .join("\n")}\n`
@@ -269,4 +274,4 @@ if (require.main === module) {
     init();
 }
 
-module.exports = {init, exit};
+module.exports = { init, exit };
