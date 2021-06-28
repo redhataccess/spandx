@@ -16,7 +16,7 @@ const router = require("./router.js");
 const config = require("./config");
 const resolveHome = require("./resolveHome");
 const chromeMiddleware = require("./chromeMiddleware");
-const { createEsiMiddleware } = require("./esiMiddleware");
+const {createEsiMiddleware} = require("./esiMiddleware");
 
 let proxy;
 let internalProxy;
@@ -63,7 +63,7 @@ async function init(confIn) {
         preserveHeaderKeyCase: true,
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
-        protocolRewrite: conf.protocol.replace(":", "")
+        protocolRewrite: conf.protocol.replace(":", ""),
     });
 
     //
@@ -76,11 +76,23 @@ async function init(confIn) {
         app.use(transformerProxy(chromeMiddleware.SPACommentResolver(conf)));
     }
 
+    // if configuration says to, inject fresh chrome into prechromed pages
+    if (_.get(conf, "primer.localPreview")) {
+        app.use(transformerProxy(chromeMiddleware.chromeSwapper(conf)));
+    }
+
     if (_.get(conf, "esi")) {
+        console.log("ESI enabled");
         app.use((res, req, next) => {
-            if (res.headers.accept.includes('text/html') || res.headers.accept.includes('*/*')) {
+            console.log("request received");
+            if (
+                res.headers.accept.includes("text/html") ||
+                res.headers.accept.includes("*/*")
+            ) {
+                console.log("it is html; applying ESI");
                 transformerProxy(createEsiMiddleware(conf))(res, req, next);
             } else {
+                console.log("it is not html");
                 next();
             }
         });
@@ -98,22 +110,19 @@ async function init(confIn) {
         console.log("These paths will be routed to the following remote hosts");
         console.log();
         console.log(
-            _.map(conf.webRoutes, route => {
+            _.map(conf.webRoutes, (route) => {
                 return conf.spandxUrl
-                    .map(url => {
-                        const env = _.findKey(conf.host, host =>
+                    .map((url) => {
+                        const env = _.findKey(conf.host, (host) =>
                             new RegExp(`${host}`).test(url)
                         );
 
                         return `  ${c.fg.l.blue}${url
                             .replace(/\/$/, "")
-                            .replace(new RegExp(`${conf.startPath}$`), "")}${
-                            c.end
-                        }${c.fg.l.green}${route[0]}${c.e} will be routed to ${
-                            c.fg.l.blue
-                        }${route[1].host[env] || route[1].host}${c.e}${
-                            c.fg.l.green
-                        }${route[0]}${c.e}`;
+                            .replace(new RegExp(`${conf.startPath}$`), "")}${c.end
+                            }${c.fg.l.green}${route[0]}${c.e} will be routed to ${c.fg.l.blue
+                            }${route[1].host[env] || route[1].host}${c.e}${c.fg.l.green
+                            }${route[0]}${c.e}`;
                     })
                     .join("\n");
             }).join("\n")
@@ -123,17 +132,16 @@ async function init(confIn) {
         console.log("These paths will be routed to your local filesystem");
         console.log();
         console.log(
-            _.map(conf.diskRoutes, route => {
+            _.map(conf.diskRoutes, (route) => {
                 return conf.spandxUrl
                     .map(
-                        url =>
+                        (url) =>
                             `  ${c.fg.l.blue}${url
                                 .replace(/\/$/, "")
                                 .replace(
                                     new RegExp(`${conf.startPath}$`),
                                     ""
-                                )}${c.end}${c.fg.l.green}${route[0]}${
-                                c.end
+                                )}${c.end}${c.fg.l.green}${route[0]}${c.end
                             } will be routed to ${c.fg.l.cyan}${path.resolve(
                                 conf.configDir,
                                 resolveHome(route[1])
@@ -150,7 +158,7 @@ async function init(confIn) {
         );
         console.log();
         console.log(
-            _.map(conf.files, file => `  ${c.fg.l.cyan}${file}${c.e}`).join(
+            _.map(conf.files, (file) => `  ${c.fg.l.cyan}${file}${c.e}`).join(
                 "\n"
             )
         );
@@ -163,7 +171,7 @@ async function init(confIn) {
         console.log(
             _.map(
                 conf.rewriteRules,
-                rule =>
+                (rule) =>
                     `  ${c.fg.l.pink}${rule.match}${c.e} will be replaced with "${c.fg.d.green}${rule.replace}${c.e}"`
             ).join("\n")
         );
@@ -231,10 +239,9 @@ async function init(confIn) {
 
     if (!conf.silent) {
         console.log(
-            `spandx URL${
-                conf.spandxUrl.length > 1 ? "s" : ""
+            `spandx URL${conf.spandxUrl.length > 1 ? "s" : ""
             }:\n\n${conf.spandxUrl
-                .map(url => `  ${c.fg.l.blue}${url}${c.end}`)
+                .map((url) => `  ${c.fg.l.blue}${url}${c.end}`)
                 .join("\n")}\n`
         );
     }
@@ -258,4 +265,4 @@ if (require.main === module) {
     init();
 }
 
-module.exports = { init, exit };
+module.exports = {init, exit};

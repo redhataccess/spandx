@@ -3,16 +3,16 @@ const path = require("path");
 const URL = require("url");
 const c = require("print-colors");
 const _ = require("lodash");
-const { flow, includes, get } = require("lodash/fp");
+const {flow, includes, get} = require("lodash/fp");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
 const resolveHome = require("./resolveHome");
-const HttpsProxyAgent = require("https-proxy-agent");
+const ProxyAgent = require("proxy-agent");
 const priv = {};
 
 priv.tryPlugin = (plugin, req, res, target, cb) => {
     if (typeof plugin === "function") {
-        plugin(req, res, target).then(t => {
+        plugin(req, res, target).then((t) => {
             // Plugin may have sent back a new target
             // if they did use it
             t = t || target;
@@ -28,7 +28,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
     if (target) {
         const options = {
             target,
-            ignorePath: true
+            ignorePath: true,
         };
 
         if (confProxy) {
@@ -38,13 +38,13 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
             // pattern provided in the proxy.pattern property,
             // add a new HttpsProxyAgent
             if (regex.test(target)) {
-                options.agent = new HttpsProxyAgent(confProxy.host);
+                options.agent = new ProxyAgent(confProxy.host);
             }
         }
 
-        proxy.web(req, res, options, e => {
+        proxy.web(req, res, options, (e) => {
             console.error(e);
-            res.writeHead(502, { "Content-Type": "text/plain" });
+            res.writeHead(502, {"Content-Type": "text/plain"});
             res.write(
                 `HTTP 502 Bad gateway\n\nRequest to ${req.url} was proxied to ${target} which did not respond.`
             );
@@ -61,9 +61,9 @@ module.exports = (conf, proxy) => {
     // serving that dir
     const serveLocal = _(conf.routes)
         .omitBy(_.isObject)
-        .mapValues(dir =>
+        .mapValues((dir) =>
             serveStatic(path.resolve(conf.configDir, resolveHome(dir)), {
-                redirect: true
+                redirect: true,
             })
         )
         .value();
@@ -71,8 +71,8 @@ module.exports = (conf, proxy) => {
         // figure out which target to proxy to based on the requested resource path
         const sortedRoutes = _(conf.routes)
             .toPairs()
-            .filter(v => _.startsWith(req.url, v[0]))
-            .sortBy(v => -v[0].length)
+            .filter((v) => _.startsWith(req.url, v[0]))
+            .sortBy((v) => -v[0].length)
             .value();
 
         const env = req.headers["x-spandx-env"];
@@ -108,6 +108,7 @@ module.exports = (conf, proxy) => {
                     new RegExp(`^${routeKey}/?`),
                     "/"
                 ); // remove route path (will be replaced with disk path)
+
                 const absoluteFilePath = path.resolve(
                     conf.configDir,
                     resolveHome(route),
@@ -144,7 +145,7 @@ module.exports = (conf, proxy) => {
                 );
             }
 
-            priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
+            priv.tryPlugin(conf.routerPlugin, req, res, target, (t) => {
                 priv.doProxy(proxy, req, res, t, conf.proxy);
             });
 
