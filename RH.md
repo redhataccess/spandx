@@ -69,16 +69,16 @@ routes: {
 
 Primer is an upcoming re-imagining of Portal Chrome.
 
-### Local preview for Primer head/header/footer
+### Preview Primer head/header/footer
 
-This feature allows grafting local HTML template changes onto a remote server, effectively previewing what the changes will look like when they are deployed to that server.
+This feature allows grafting HTML template changes into an existing page, even on a remote server, effectively previewing what the changes will look like when they are deployed to that server.
 
-With `primer.localPreview` set to `true`, spandx detects the head, header, and footer (the "parts") in Customer Portal pages you visit and replaces them with fresh Primer parts fetched from `/services/primer`.  You can control the routing of this request in your `routes` object.
+With `primer.preview` set to `true`, spandx detects the head, header, and footer (the "parts") in Customer Portal pages you visit and replaces them with fresh Primer parts fetched from `/services/primer`.  You can control the routing of this request in your `routes` object.
 
 ```js
 module.exports = {
     primer: {
-        localPreview: true,
+        preview: true,
     },
 };
 ```

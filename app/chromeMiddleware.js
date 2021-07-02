@@ -6,9 +6,7 @@ function SPACommentResolver(conf) {
     return async function SPACommentResolverMiddleware(data, req, res) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         if (isHTML) {
-            const origin = req.headers["x-spandx-origin"];
-            const host = `http${conf.bs.https ? "s" : ""}://${origin}:${conf.port
-                }`;
+            const host = req.headers["x-spandx-origin"];
             const chromeParts = await chromeCache.getParts({host});
             return data
                 .toString()
@@ -22,39 +20,14 @@ function SPACommentResolver(conf) {
 }
 
 function chromeSwapper(conf) {
-    const headSlicer = createTokenSlicer({
-        tokens: [
-            {
-                start: /<!--\s*CP_PRIMER_HEAD\s*-->/,
-                end: /<!--\s*\/CP_CHROME_HEAD\s*-->/,
-                name: "head", // note: this name was chosen to correspond with the property name in the return value of chromeCache.getParts()
-            },
-        ],
-    });
-    const headerSlicer = createTokenSlicer({
-        tokens: [
-            {
-                start: /<!--\s*CP_PRIMER_HEADER\s*-->/,
-                end: /<!--\s*\/CP_PRIMER_HEADER\s*-->/,
-                name: "header", // note: this name was chosen to correspond with the property name in the return value of chromeCache.getParts()
-            },
-        ],
-    });
-    const footerSlicer = createTokenSlicer({
-        tokens: [
-            {
-                start: /<!--\s*CP_PRIMER_FOOTER\s*-->/,
-                end: /<!--\s*\/CP_PRIMER_FOOTER\s*-->/,
-                name: "footer", // note: this name was chosen to correspond with the property name in the return value of chromeCache.getParts()
-            },
-        ],
-    });
-
     return async function ChromeSwapperMiddleware(data, req, res) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
-        if (isHTML) {
+        const isPrimerAlready = req.url.startsWith("/services/primer");
+        if (isHTML && !isPrimerAlready) {
+            const origin = req.headers["x-spandx-origin"];
+            console.log({origin});
             const chromeParts = await chromeCache.getParts({
-                host: `http://localhost:8765`,
+                host: origin,
                 path: "/services/primer/",
                 useCached: false,
             });

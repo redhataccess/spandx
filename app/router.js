@@ -141,7 +141,7 @@ module.exports = (conf, proxy) => {
 
             if (conf.verbose) {
                 console.log(
-                    `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
+                    `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target.replace(new RegExp(`${req.url}$`), "")}${c.end}${c.fg.l.green}${req.url}${c.end}`
                 );
             }
 

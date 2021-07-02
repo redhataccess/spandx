@@ -77,7 +77,7 @@ async function init(confIn) {
     }
 
     // if configuration says to, inject fresh chrome into prechromed pages
-    if (_.get(conf, "primer.localPreview")) {
+    if (_.get(conf, "primer.preview")) {
         app.use(transformerProxy(chromeMiddleware.chromeSwapper(conf)));
     }
 
@@ -195,12 +195,16 @@ async function init(confIn) {
                     proxyReq: [
                         function (proxyReq, req, res) {
                             // find and set a header to keep track of the spandx origin
-                            const origin = req.headers.host.split(":")[0];
+                            const url = new URL("http://localhost/");
+                            url.hostname = req.headers.host.split(":")[0];
+                            url.port = conf.port;
+                            url.protocol = conf.bs.https ? "https:" : "http:";
+                            const origin = url.origin;
 
                             // set a header for spandx origin and env on both the request and response
                             const env = _.findKey(
                                 conf.host,
-                                (host) => host === origin
+                                (host) => host === url.hostname
                             );
 
                             [res, proxyReq].forEach((r) => {
