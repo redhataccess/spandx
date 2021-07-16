@@ -12,7 +12,7 @@ const priv = {};
 
 priv.tryPlugin = (plugin, req, res, target, cb) => {
     if (typeof plugin === "function") {
-        plugin(req, res, target).then(t => {
+        plugin(req, res, target).then((t) => {
             // Plugin may have sent back a new target
             // if they did use it
             t = t || target;
@@ -28,7 +28,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
     if (target) {
         const options = {
             target,
-            ignorePath: true
+            ignorePath: true,
         };
 
         if (confProxy) {
@@ -42,7 +42,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
             }
         }
 
-        proxy.web(req, res, options, e => {
+        proxy.web(req, res, options, (e) => {
             console.error(e);
             res.writeHead(502, { "Content-Type": "text/plain" });
             res.write(
@@ -61,9 +61,9 @@ module.exports = (conf, proxy) => {
     // serving that dir
     const serveLocal = _(conf.routes)
         .omitBy(_.isObject)
-        .mapValues(dir =>
+        .mapValues((dir) =>
             serveStatic(path.resolve(conf.configDir, resolveHome(dir)), {
-                redirect: true
+                redirect: true,
             })
         )
         .value();
@@ -71,8 +71,8 @@ module.exports = (conf, proxy) => {
         // figure out which target to proxy to based on the requested resource path
         const sortedRoutes = _(conf.routes)
             .toPairs()
-            .filter(v => _.startsWith(req.url, v[0]))
-            .sortBy(v => -v[0].length)
+            .filter((v) => _.startsWith(req.url, v[0]))
+            .sortBy((v) => -v[0].length)
             .value();
 
         const env = req.headers["x-spandx-env"];
@@ -140,11 +140,11 @@ module.exports = (conf, proxy) => {
 
             if (conf.verbose) {
                 console.log(
-                    `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target}${c.end}${c.fg.l.green}${req.url}${c.end}`
+                    `GET ${c.fg.l.green}${req.url}${c.end} from ${c.fg.l.blue}${target}${c.end}`
                 );
             }
 
-            priv.tryPlugin(conf.routerPlugin, req, res, target, t => {
+            priv.tryPlugin(conf.routerPlugin, req, res, target, (t) => {
                 priv.doProxy(proxy, req, res, t, conf.proxy);
             });
 
