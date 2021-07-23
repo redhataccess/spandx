@@ -53,7 +53,7 @@
         "https-proxy-agent": "5.0.0",
         "inquirer": "8.1.0",
         "lodash": "4.17.10",
-        "nodesi": "1.11.0",
+        "nodesi": "1.17.0",
         "opn": "5.5.0",
         "porty": "3.1.1",
         "print-colors": "1.0.1",
