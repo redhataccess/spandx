@@ -44,7 +44,7 @@
     },
     "homepage": "https://github.com/redhataccess/spandx#readme",
     "dependencies": {
-        "browser-sync": "2.27.3",
+        "browser-sync": "2.18.13",
         "connect": "3.6.6",
         "conventional-changelog-cli": "2.0.34",
         "finalhandler": "1.1.1",
@@ -59,7 +59,6 @@
         "porty": "3.1.1",
         "print-colors": "1.0.1",
         "proxy-agent": "4.0.1",
-        "request": "2.88.0",
         "serve-static": "1.13.2",
         "token-slice": "0.0.5",
         "transformer-proxy": "0.3.4",
