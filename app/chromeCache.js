@@ -11,20 +11,21 @@ async function getParts({
     host = DEFAULT_CHROME_HOST,
     path = DEFAULT_CHROME_PATH,
     useCached = true,
+    legacy = false,
 } = {}) {
     if (useCached && cache[host + path]) {
         return cache[host + path];
     }
 
-    const headReq = fetchChromePart({host, part: "head", path});
-    const headerReq = fetchChromePart({host, part: "header", path});
-    const footerReq = fetchChromePart({host, part: "footer", path});
+    const headReq = fetchChromePart({ host, part: "head", path, legacy });
+    const headerReq = fetchChromePart({ host, part: "header", path, legacy });
+    const footerReq = fetchChromePart({ host, part: "footer", path, legacy });
 
     const head = await headReq;
     const header = await headerReq;
     const footer = await footerReq;
 
-    const parts = {head, header, footer};
+    const parts = { head, header, footer };
 
     if (useCached) {
         cache[host + path] = parts;
@@ -39,8 +40,9 @@ async function fetchChromePart({
     host = DEFAULT_CHROME_HOST,
     path = DEFAULT_CHROME_PATH,
     part,
+    legacy = false,
 } = {}) {
-    const url = `${host}${path}${part}?legacy=false`;
+    const url = `${host}${path}${part}${legacy ? "?legacy=false" : ""}`;
     console.log(`fetching chrome from ${url}`);
 
     try {

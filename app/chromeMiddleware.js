@@ -1,13 +1,15 @@
 const chromeCache = require("./chromeCache");
 const { createTokenSlicer } = require("token-slice");
-const got = require("got");
 
 function SPACommentResolver(conf) {
     return async function SPACommentResolverMiddleware(data, req, res) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         if (isHTML) {
             const host = req.headers["x-spandx-origin"];
-            const chromeParts = await chromeCache.getParts({ host });
+            const chromeParts = await chromeCache.getParts({
+                host,
+                legacy: true,
+            });
             return data
                 .toString()
                 .replace(/<!--\s+SPA_HEAD\s+-->/, chromeParts.head)
