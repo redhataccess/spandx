@@ -1,3 +1,35 @@
+# [2.2.0](https://github.com/redhataccess/spandx/compare/v2.1.2...v2.2.0) (2021-07-26)
+
+
+### Bug Fixes
+
+* allow certain bs settings to be overridden ([#167](https://github.com/redhataccess/spandx/issues/167)) ([3b55ea1](https://github.com/redhataccess/spandx/commit/3b55ea11d7bb5c0c52bb1f2cd3964128b89b0045))
+* **deps:** update dependency connect to v3.7.0 ([#213](https://github.com/redhataccess/spandx/issues/213)) ([7126e16](https://github.com/redhataccess/spandx/commit/7126e16d61aa70c9760b91789d152a32dd9c39ba))
+* **deps:** update dependency conventional-changelog-cli to v2.1.1 ([#214](https://github.com/redhataccess/spandx/issues/214)) ([9763b14](https://github.com/redhataccess/spandx/commit/9763b143182fcbefdf86f5f3c9dfd5c314c5b4a4))
+* **deps:** update dependency finalhandler to v1.1.2 ([#208](https://github.com/redhataccess/spandx/issues/208)) ([fd4b7e1](https://github.com/redhataccess/spandx/commit/fd4b7e1aadd83e01872646d409324b3aeac80c24))
+* **deps:** update dependency hostile to v1.3.3 ([#209](https://github.com/redhataccess/spandx/issues/209)) ([c20b887](https://github.com/redhataccess/spandx/commit/c20b887bfd095e3fb759f77654e596f1f4b4a401))
+* **deps:** update dependency http-proxy to v1.18.1 [security] ([#178](https://github.com/redhataccess/spandx/issues/178)) ([57f4f9a](https://github.com/redhataccess/spandx/commit/57f4f9af5041d18f95c99e8ece534cb5551c01fd))
+* **deps:** update dependency inquirer to v7.3.2 ([#155](https://github.com/redhataccess/spandx/issues/155)) ([d4f7ec8](https://github.com/redhataccess/spandx/commit/d4f7ec8bd706d2e502341857eadce7dec6bab948))
+* **deps:** update dependency inquirer to v7.3.3 ([#157](https://github.com/redhataccess/spandx/issues/157)) ([df66f07](https://github.com/redhataccess/spandx/commit/df66f073c1fd879a45603d3e119a27719c57d44c))
+* **deps:** update dependency inquirer to v8 ([#180](https://github.com/redhataccess/spandx/issues/180)) ([67e95b9](https://github.com/redhataccess/spandx/commit/67e95b9fbeb50058cd275d2b1629914544aee1cb))
+* **deps:** update dependency inquirer to v8.1.2 ([#210](https://github.com/redhataccess/spandx/issues/210)) ([60953d0](https://github.com/redhataccess/spandx/commit/60953d02f5a5263c4ee44be4e8e17cf6a74986c3))
+* **deps:** update dependency lodash to v4.17.21 [security] ([#179](https://github.com/redhataccess/spandx/issues/179)) ([3d01eae](https://github.com/redhataccess/spandx/commit/3d01eae3e0241b1d7112793afbea4e63a6fa79b8))
+* **deps:** update dependency proxy-agent to v5 ([#218](https://github.com/redhataccess/spandx/issues/218)) ([d2c2673](https://github.com/redhataccess/spandx/commit/d2c2673a1ba0203f81d2d562d7e371629602c778))
+* **deps:** update dependency serve-static to v1.14.1 ([#215](https://github.com/redhataccess/spandx/issues/215)) ([17f0bb3](https://github.com/redhataccess/spandx/commit/17f0bb3d6d8d30d9c756c71501cab26851db5298))
+* **deps:** update dependency transformer-proxy to v0.3.5 ([#211](https://github.com/redhataccess/spandx/issues/211)) ([646d551](https://github.com/redhataccess/spandx/commit/646d551a2e59dd783a23b842004de3ab6ab0e025))
+* **deps:** update dependency yargs to v16 ([#164](https://github.com/redhataccess/spandx/issues/164)) ([64dd001](https://github.com/redhataccess/spandx/commit/64dd001be12ca6200d1d9a0bbc7edfeac52c9b58))
+* **deps:** update dependency yargs to v16.2.0 ([#216](https://github.com/redhataccess/spandx/issues/216)) ([d58e5dc](https://github.com/redhataccess/spandx/commit/d58e5dc31d64ecf4942910682da7eb648ef6aa7a))
+* **deps:** update dependency yargs to v17 ([#203](https://github.com/redhataccess/spandx/issues/203)) ([dd088e5](https://github.com/redhataccess/spandx/commit/dd088e55cd6d57966e9565e01d619e9b0efbce6a))
+* lock dependency versions ([#207](https://github.com/redhataccess/spandx/issues/207)) ([5c17e73](https://github.com/redhataccess/spandx/commit/5c17e739b84cf1c9276a830b53e8044a213e69d0))
+* print correct target url for remote requests ([012b011](https://github.com/redhataccess/spandx/commit/012b01167e44329bec7a94a12333a8154940f5e6))
+
+
+### Features
+
+* add primer preview ([#205](https://github.com/redhataccess/spandx/issues/205)) ([2c07cce](https://github.com/redhataccess/spandx/commit/2c07cce8dd0b0d2e3711abd39bfdc13aee1c03e2)), closes [#151](https://github.com/redhataccess/spandx/issues/151) [#180](https://github.com/redhataccess/spandx/issues/180) [#190](https://github.com/redhataccess/spandx/issues/190) [#178](https://github.com/redhataccess/spandx/issues/178) [#175](https://github.com/redhataccess/spandx/issues/175) [#172](https://github.com/redhataccess/spandx/issues/172)
+
+
+
 ## [2.1.2](https://github.com/redhataccess/spandx/compare/v2.1.1...v2.1.2) (2020-07-01)
 
 
