@@ -62,7 +62,7 @@
         "serve-static": "1.14.1",
         "token-slice": "0.0.5",
         "transformer-proxy": "0.3.5",
-        "yargs": "16.2.0"
+        "yargs": "17.0.1"
     },
     "devDependencies": {
         "doctoc": "2.0.1",
