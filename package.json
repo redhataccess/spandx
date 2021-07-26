@@ -49,7 +49,7 @@
         "conventional-changelog-cli": "2.0.34",
         "finalhandler": "1.1.1",
         "got": "11.8.2",
-        "hostile": "1.3.2",
+        "hostile": "1.3.3",
         "http-proxy": "1.17.0",
         "https-proxy-agent": "5.0.0",
         "inquirer": "8.1.0",
