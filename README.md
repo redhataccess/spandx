@@ -1,4 +1,3 @@
-
 ![spandx logo](./spandx-logo.png)
 
 [![Build Status][build-img]][build]
@@ -31,35 +30,33 @@ Launch!
 
 # Table of Contents
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
+<!-- toc -->
 
 - [Commands](#commands)
-  - [spandx](#spandx)
-  - [init](#init)
+  * [spandx](#spandx)
+  * [init](#init)
 - [Configuration](#configuration)
-  - [spandx.config.js](#spandxconfigjs)
-  - [Routes](#routes)
-    - [Routing to a local directory](#routing-to-a-local-directory)
-    - [Routing to a server](#routing-to-a-server)
+  * [spandx.config.js](#spandxconfigjs)
+  * [Routes](#routes)
+    + [Routing to a local directory](#routing-to-a-local-directory)
+    + [Routing to a server](#routing-to-a-server)
       - [Multi-host routing](#multi-host-routing)
       - [Path rewriting](#path-rewriting)
       - [single mode](#single-mode)
-     - [Setting up the proxy object](#setting-up-the-proxy-object)
-  - [Overriding Browsersync options](#overriding-browsersync-options)
-    - [Enabling HTTPS](#enabling-https)
+  * [Setting up the proxy object](#setting-up-the-proxy-object)
+  * [Overriding Browsersync options](#overriding-browsersync-options)
+    + [Enabling HTTPS](#enabling-https)
 - [spandx as a local dependency](#spandx-as-a-local-dependency)
 - [Contributing](#contributing)
-  - [Commit messages](#commit-messages)
-  - [Running specific tests](#running-specific-tests)
+  * [Commit messages](#commit-messages)
+  * [Running specific tests](#running-specific-tests)
 - [Known issues](#known-issues)
-  - [cURLing spandx](#curling-spandx)
-    - [Body URL rewriting](#body-url-rewriting)
-    - [single mode URL rewriting](#single-mode-url-rewriting)
+  * [cURLing spandx](#curling-spandx)
+    + [Body URL rewriting](#body-url-rewriting)
+    + [single mode URL rewriting](#single-mode-url-rewriting)
 - [Alternatives](#alternatives)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- tocstop -->
 
 # Commands
 
