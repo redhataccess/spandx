@@ -11,7 +11,7 @@
     "scripts": {
         "test": "jasmine spec/spandx/*.js",
         "start": "node app/spandx.js",
-        "dev": "nodemon spandx.js",
+        "dev": "npx nodemon spandx.js",
         "debug": "node-debug spandx.js",
         "precommit": "lint-staged",
         "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
