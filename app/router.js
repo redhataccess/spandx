@@ -140,10 +140,11 @@ module.exports = (conf, proxy) => {
             }
 
             if (conf.verbose) {
+                const targetURL = URL.parse(target);
                 console.log(
                     `GET ${c.fg.l.green}${req.url}${c.end} from ${
                         c.fg.l.blue
-                    }${target.replace(new RegExp(`${req.url}$`), "")}${c.end}${
+                    }${`${targetURL.protocol}//${targetURL.host}`}${c.end}${
                         c.fg.l.green
                     }${req.url}${c.end}`
                 );
