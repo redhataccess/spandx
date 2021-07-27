@@ -1,3 +1,12 @@
+## [2.2.1](https://github.com/redhataccess/spandx/compare/v2.2.0...v2.2.1) (2021-07-27)
+
+
+### Bug Fixes
+
+* de-dupe URL path logging ([#225](https://github.com/redhataccess/spandx/issues/225)) ([bcfa416](https://github.com/redhataccess/spandx/commit/bcfa416091c512a4ac34dda5946f0e7d8f7ee8cd))
+
+
+
 # [2.2.0](https://github.com/redhataccess/spandx/compare/v2.1.2...v2.2.0) (2021-07-26)
 
 
