@@ -1,3 +1,12 @@
+## [2.2.2](https://github.com/redhataccess/spandx/compare/v2.2.1...v2.2.2) (2021-08-03)
+
+
+### Bug Fixes
+
+* declutter up startup logs ([#226](https://github.com/redhataccess/spandx/issues/226)) ([29c4833](https://github.com/redhataccess/spandx/commit/29c4833d2c6f9e06f9b3c1570b93a8d4bb8b3101))
+
+
+
 ## [2.2.1](https://github.com/redhataccess/spandx/compare/v2.2.0...v2.2.1) (2021-07-27)
 
 
