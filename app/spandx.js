@@ -112,7 +112,7 @@ async function init(confIn) {
         console.log(
             _.map(conf.webRoutes, (route) => {
                 return conf.spandxUrl
-                    .map((url) => {
+                    .map(({ url }) => {
                         const env = _.findKey(conf.host, (host) =>
                             new RegExp(`${host}`).test(url)
                         );
@@ -138,7 +138,7 @@ async function init(confIn) {
             _.map(conf.diskRoutes, (route) => {
                 return conf.spandxUrl
                     .map(
-                        (url) =>
+                        ({ url }) =>
                             `  ${c.fg.l.blue}${url
                                 .replace(/\/$/, "")
                                 .replace(
@@ -192,7 +192,7 @@ async function init(confIn) {
                 port: conf.port,
                 open: false,
                 startPath: conf.startPath,
-                logLevel: conf.verbose ? "info" : "silent",
+                logLevel: "silent",
                 files: conf.files,
                 proxy: {
                     target: internalProxyOrigin,
@@ -239,18 +239,29 @@ async function init(confIn) {
         );
         bs.init(bsOptions, () => {
             if (conf.open) {
-                opn(conf.spandxUrl[0]);
+                opn(conf.spandxUrl[0].url);
             }
             resolve(bs);
         });
     });
 
     if (!conf.silent) {
+        const maxEnvLength = conf.spandxUrl.reduce(
+            (m, { env }) => Math.max(m, env.length),
+            0
+        );
         console.log(
             `spandx URL${
                 conf.spandxUrl.length > 1 ? "s" : ""
             }:\n\n${conf.spandxUrl
-                .map((url) => `  ${c.fg.l.blue}${url}${c.end}`)
+                .map(
+                    ({ env, url }) =>
+                        `  ${
+                            env === "default"
+                                ? ""
+                                : `${env.padEnd(maxEnvLength + 1)}: `
+                        }${c.fg.l.blue}${url}${c.end}`
+                )
                 .join("\n")}\n`
         );
     }

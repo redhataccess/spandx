@@ -37,9 +37,9 @@ const defaultConfig = {
     verbose: false,
     silent: false,
     routes: {
-        "/": path.resolve(__dirname, "splash")
+        "/": path.resolve(__dirname, "splash"),
     },
-    bs: {}
+    bs: {},
 };
 
 let configState = {};
@@ -58,7 +58,7 @@ async function create(incomingConfig = {}, configDir = __dirname) {
     // choose a port for the internal proxy, avoiding the external port just chosen
     incomingConfig.internalPort = await porty.find({
         min: incomingConfig.port,
-        avoids: [incomingConfig.port]
+        avoids: [incomingConfig.port],
     });
 
     _.extend(
@@ -83,13 +83,12 @@ async function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
     } catch (e) {
         if (e.toString().indexOf("Error: Cannot find module") === 0) {
             throw new ConfigOpenError(
-                `Tried to open spandx config file ${c.fg.l.cyan}${filePath}${c.end
-                } but couldn't find it, or couldn't access it.`
+                `Tried to open spandx config file ${c.fg.l.cyan}${filePath}${c.end} but couldn't find it, or couldn't access it.`
             );
         } else {
             throw new ConfigProcessError(
-                `Tried to process spandx config file ${c.fg.l.cyan}${filePath}${c.end
-                } ` + `but. Got an exception loading the config: ${e}`
+                `Tried to process spandx config file ${c.fg.l.cyan}${filePath}${c.end} ` +
+                    `but. Got an exception loading the config: ${e}`
             );
         }
 
@@ -129,11 +128,7 @@ function validateHosts(conf) {
 }
 
 function validateEnvsMatch(conf, routeHostMaps) {
-    const sortKeys = obj =>
-        _(obj)
-            .keys()
-            .sortBy()
-            .value();
+    const sortKeys = (obj) => _(obj).keys().sortBy().value();
 
     const hasSameKeys = _.curry((envs1, envs2) =>
         _.isEqual(sortKeys(envs1), sortKeys(envs2))
@@ -144,8 +139,8 @@ function validateEnvsMatch(conf, routeHostMaps) {
     const matchesSpandxHosts = hasSameKeys(spandxHosts);
 
     const allEnvsMatch = routeHostMaps
-        .map(h => sortKeys(h))
-        .filter(envs => !matchesSpandxHosts(envs)) // filter *out* the ones that match spandx hosts
+        .map((h) => sortKeys(h))
+        .filter((envs) => !matchesSpandxHosts(envs)) // filter *out* the ones that match spandx hosts
         .isEmpty(); // if empty, then every single route host matched
 
     return allEnvsMatch;
@@ -158,14 +153,14 @@ function processConf(conf, configDir = __dirname) {
     // separate the local disk routes from the web routes
     const routeGroups = _(conf.routes)
         .toPairs()
-        .partition(pair => _.isObject(pair[1])); // filter out URLs, only want local file paths here
+        .partition((pair) => _.isObject(pair[1])); // filter out URLs, only want local file paths here
 
     const webRoutes = routeGroups.get(0);
     const diskRoutes = routeGroups.get(1);
 
     const webRouteHosts = _(webRoutes)
         .map(1) // get route value
-        .filter(r => _.isString(r.host)); // only select routes with strings for their host; at this point it should be ALL of them, but playing it safe anyway
+        .filter((r) => _.isString(r.host)); // only select routes with strings for their host; at this point it should be ALL of them, but playing it safe anyway
 
     // convert any simplified host values into explicit host config (ie,
     // convert from a string like "localhost" to an object like
@@ -175,17 +170,17 @@ function processConf(conf, configDir = __dirname) {
 
         // for any web routes that have a single host, change them into a
         // multi-host entry where each env points to the same place
-        webRouteHosts.forEach(r => {
+        webRouteHosts.forEach((r) => {
             const routeHost = r.host;
             r.host = _({})
                 .extend(conf.host)
-                .mapValues(v => routeHost)
+                .mapValues((v) => routeHost)
                 .value();
         });
     } else {
         // single host mode
-        conf.host = {default: conf.host};
-        webRouteHosts.forEach(r => (r.host = {default: r.host})); // convert host string to object
+        conf.host = { default: conf.host };
+        webRouteHosts.forEach((r) => (r.host = { default: r.host })); // convert host string to object
     }
 
     // build a list of file paths to watch for auto-reload, by combining the
@@ -194,13 +189,13 @@ function processConf(conf, configDir = __dirname) {
     // browser-sync to auto-reload their stuff)
     const diskRouteFiles = _(diskRoutes)
         .map(1)
-        .map(filePath => path.resolve(configDir, resolveHome(filePath)))
+        .map((filePath) => path.resolve(configDir, resolveHome(filePath)))
         .value();
     const otherLocalFiles = _(webRoutes)
         .map(1)
         .filter("watch")
         .map("watch")
-        .map(filePath => path.resolve(configDir, resolveHome(filePath)))
+        .map((filePath) => path.resolve(configDir, resolveHome(filePath)))
         .value();
 
     const files = _.concat(diskRouteFiles, otherLocalFiles);
@@ -213,20 +208,20 @@ function processConf(conf, configDir = __dirname) {
     const protocol = conf.bs.https ? "https:" : "http:";
     const rewriteRules = _(webRoutes)
         .map("1.host")
-        .map(h =>
+        .map((h) =>
             _.map(h, (v, env) => ({
                 match: new RegExp(v, "g"),
-                replace: `${protocol}//${conf.host[env]}:${conf.port}`
+                replace: `${protocol}//${conf.host[env]}:${conf.port}`,
             }))
         )
         .flatten()
         .value();
 
     const startPath = conf.startPath || "";
-    const spandxUrl = _.map(
-        conf.host,
-        host => `${protocol}//${host}:${conf.port}${startPath}`
-    );
+    const spandxUrl = _.map(conf.host, (host, env) => ({
+        env,
+        url: `${protocol}//${host}:${conf.port}${startPath}`,
+    }));
 
     // allow 'silent' to override 'verbose'
     const verbose = conf.silent ? false : conf.verbose;
@@ -243,7 +238,7 @@ function processConf(conf, configDir = __dirname) {
         protocol,
         spandxUrl,
         startPath,
-        configDir
+        configDir,
     };
 }
 
@@ -252,5 +247,5 @@ module.exports = {
     get,
     fromFile,
     defaultConfig,
-    process: processConf
+    process: processConf,
 };
