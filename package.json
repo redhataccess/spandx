@@ -59,7 +59,7 @@
         "serve-static": "1.14.1",
         "token-slice": "0.0.6",
         "transformer-proxy": "0.3.5",
-        "yargs": "17.1.0"
+        "yargs": "17.1.1"
     },
     "devDependencies": {
         "frisby": "2.1.3",
