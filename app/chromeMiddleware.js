@@ -1,5 +1,4 @@
 const chromeCache = require("./chromeCache");
-const { createTokenSlicer } = require("token-slice");
 
 function SPACommentResolver(conf) {
     return async function SPACommentResolverMiddleware(data, req, res) {
