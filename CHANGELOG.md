@@ -1,3 +1,15 @@
+## [2.2.3](https://github.com/redhataccess/spandx/compare/v2.2.2...v2.2.3) (2021-12-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency inquirer to v8.1.5 ([#238](https://github.com/redhataccess/spandx/issues/238)) ([ee40f73](https://github.com/redhataccess/spandx/commit/ee40f73cc1dcda34bb6c1d276dc0d55943818466))
+* **deps:** update dependency token-slice to v0.0.6 ([#232](https://github.com/redhataccess/spandx/issues/232)) ([5fdca7f](https://github.com/redhataccess/spandx/commit/5fdca7f8b7504315a42210aaf72ca196aca01843))
+* **deps:** update dependency yargs to v17.1.0 ([#227](https://github.com/redhataccess/spandx/issues/227)) ([9778cc8](https://github.com/redhataccess/spandx/commit/9778cc8636fcc324318d8ed6523e196a8de1f3fd))
+* **deps:** update dependency yargs to v17.1.1 ([#233](https://github.com/redhataccess/spandx/issues/233)) ([f3ee374](https://github.com/redhataccess/spandx/commit/f3ee3748b12ceb299bb71c23fbe342256312c491))
+
+
+
 ## [2.2.2](https://github.com/redhataccess/spandx/compare/v2.2.1...v2.2.2) (2021-08-03)
 
 
