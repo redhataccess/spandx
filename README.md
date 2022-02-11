@@ -309,7 +309,8 @@ If spandx doesn't fit, here are a few other tools that offer similar features.
 
  - [devd][devd], a local development server with a focus on flexible reverse proxying, much like spandx.  Written in Go.
  - [http-server][http-server], a simple command-line HTTP server.  The `--proxy` flag provides a remote fallback for requests that can't be resolved locally.  Written in JS.
- - [dprox][dprox], a declarative reverse proxy for local development.  Similar configuration philosophy to spandx.
+ - [dprox][dprox], a declarative reverse proxy for local development.  Similar configuration philosophy to spandx.'
+ - [traefik][traefik]
 
 
 
@@ -331,3 +332,4 @@ If spandx doesn't fit, here are a few other tools that offer similar features.
 [nodesi]: https://github.com/Schibsted-Tech-Polska/nodesi
 [conv-comm]: https://www.conventionalcommits.org/#summary
 [conv-cli]: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli
+[traefik]: https://github.com/traefik/traefik
