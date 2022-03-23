@@ -1,3 +1,12 @@
+## [2.2.4](https://github.com/redhataccess/spandx/compare/v2.2.3...v2.2.4) (2022-03-23)
+
+
+### Features
+
+* update `init cp` config, including valid SSL support and proxy settings ([9c2c9a7](https://github.com/redhataccess/spandx/commit/9c2c9a73ff010dae31a46a30d1b9dd54f33667a1))
+
+
+
 ## [2.2.3](https://github.com/redhataccess/spandx/compare/v2.2.2...v2.2.3) (2021-12-14)
 
 
