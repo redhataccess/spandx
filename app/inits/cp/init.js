@@ -1,24 +1,29 @@
 const fs = require("fs");
 const { promisify } = require("util");
 
-const { defaultsDeep } = require("lodash");
 const inquirer = require("inquirer");
 const c = require("print-colors");
 
 const writeFileAsync = promisify(fs.writeFile);
 
 function generateConfig(answers) {
-    return `module.exports = {
-    host: {
-        dev: "dev.foo.redhat.com",
-        qa: "qa.foo.redhat.com",
-        stage: "stage.foo.redhat.com",
-        prod: "prod.foo.redhat.com",
+    return `const fs = require("fs");
 
-        devApi: "api.dev.foo.redhat.com",
-        qaApi: "api.qa.foo.redhat.com",
-        stageApi: "api.stage.foo.redhat.com",
-        prodApi: "api.prod.foo.redhat.com"
+const sslReady =
+  fs.existsSync("ssl/spandx.pem") && fs.existsSync("ssl/spandx-key.pem");
+
+if (!sslReady) {
+  console.log("Launching with invalid SSL cert 🔓");
+} else {
+  console.log("Launching with valid SSL cert 🔒");
+}
+
+module.exports = {
+    host: {
+        prod: "prod.foo.redhat.com",
+        stage: "stage.foo.redhat.com",
+        qa: "qa.foo.redhat.com",
+        dev: "dev.foo.redhat.com",
     },
     port: 1337,
     open: true,
@@ -27,8 +32,17 @@ function generateConfig(answers) {
     portalChrome: {
         resolveSPAComments: true
     },
+    primer: {
+        // preview: true
+    },
+    proxy: {
+        host: "http://squid.corp.redhat.com:3128",
+        pattern: "^https:\/\/(.*?).redhat.com"
+    },
     bs: {
-        https: true,
+        https: sslReady
+          ? { cert: "ssl/spandx.pem", key: "ssl/spandx-key.pem" } // 🔒
+          : true, // 🔓
         codeSync: ${answers.livereload || true}
     },
     routes: {${
@@ -49,15 +63,10 @@ function generateConfig(answers) {
     }
         "/": {
             host: {
-                dev: "https://access.devgssci.devlab.phx1.redhat.com",
+                dev: "https://access.dev.redhat.com",
                 qa: "https://access.qa.redhat.com",
                 stage: "https://access.stage.redhat.com",
                 prod: "https://access.redhat.com",
-
-                devApi: "https://api.access.devgssci.devlab.phx1.redhat.com",
-                qaApi: "https://api.access.qa.redhat.com",
-                stageApi: "https://api.access.stage.redhat.com",
-                prodApi: "https://api.access.redhat.com"
             }
         }
     }
@@ -73,10 +82,6 @@ async function writeHosts() {
         "qa.foo.redhat.com",
         "stage.foo.redhat.com",
         "prod.foo.redhat.com",
-        "api.dev.foo.redhat.com",
-        "api.qa.foo.redhat.com",
-        "api.stage.foo.redhat.com",
-        "api.prod.foo.redhat.com"
     ];
 
     try {
@@ -86,11 +91,7 @@ async function writeHosts() {
         );
     } catch (e) {
         console.error(
-            `Unable to write ${
-                hostile.HOSTS
-            }.  Either try again with sudo, or copy the following into your ${
-                hostile.HOSTS
-            } file.
+            `Unable to write ${hostile.HOSTS}.  Either try again with sudo, or copy the following into your ${hostile.HOSTS} file.
             `
         );
         console.error(`127.0.0.1 ${hostnames.join(" ")}`);
@@ -103,17 +104,17 @@ async function writeConfig() {
             type: "confirm",
             name: "confirmDir",
             message: `Your current directory, \`${process.cwd()}\`, has no package.json file, do you still wish to generate spandx.config.js here?`,
-            when: () => !fs.existsSync("./package.json")
+            when: () => !fs.existsSync("./package.json"),
         },
         {
             type: "confirm",
             name: "confirmOverwrite",
             message: `spandx.config.js already exists in your current directory, do you wish to overwrite it?`,
-            when: () => fs.existsSync("./spandx.config.js")
-        }
+            when: () => fs.existsSync("./spandx.config.js"),
+        },
     ]);
 
-    ["confirmDir", "confirmOverwrite"].forEach(confirm => {
+    ["confirmDir", "confirmOverwrite"].forEach((confirm) => {
         if (dirCheck.hasOwnProperty(confirm) && !dirCheck[confirm]) {
             console.log(`Aborting.`);
             process.exit(0);
@@ -125,7 +126,7 @@ async function writeConfig() {
             type: "input",
             name: "path",
             message: "Path (ex: /support/cases or /search)",
-            validate: value => {
+            validate: (value) => {
                 console.log(value);
                 const startsWithSlash = value.startsWith("/");
                 const noWhitespace = !/\s/.test(value);
@@ -141,7 +142,7 @@ async function writeConfig() {
                 }
 
                 return valid || messages.join(", ");
-            }
+            },
         },
         {
             type: "list",
@@ -151,18 +152,18 @@ async function writeConfig() {
             choices: [
                 {
                     name: "dev server",
-                    value: "server"
+                    value: "server",
                 },
-                { name: "dist directory", value: "dir" }
-            ]
+                { name: "dist directory", value: "dir" },
+            ],
         },
         {
             type: "input",
             name: "host",
             default: "localhost:8080",
             message: "What is your local dev server's URL?",
-            when: answers => answers.location === "server",
-            filter: answer => {
+            when: (answers) => answers.location === "server",
+            filter: (answer) => {
                 const missingProtocol = !/https?:\/\//.test(answer);
                 if (missingProtocol) {
                     // default to http
@@ -170,7 +171,7 @@ async function writeConfig() {
                 } else {
                     return answer;
                 }
-            }
+            },
         },
         {
             type: "confirm",
@@ -178,7 +179,7 @@ async function writeConfig() {
             default: true,
             message:
                 "Enable spandx's livereload?  If your dev server provides LiveReload/browser-sync, choose No.",
-            when: answers => answers.location === "server"
+            when: (answers) => answers.location === "server",
         },
         {
             type: "input",
@@ -186,8 +187,8 @@ async function writeConfig() {
             default: "dist",
             message:
                 "What is the path to your dist directory?  It should be relative to your project root (where package.json is).",
-            when: answers => answers.location === "dir"
-        }
+            when: (answers) => answers.location === "dir",
+        },
     ]);
 
     try {
