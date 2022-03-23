@@ -10,19 +10,20 @@ function generateConfig(answers) {
     return `const fs = require("fs");
 
 const sslReady =
-  fs.existsSync("ssl/primer.pem") && fs.existsSync("ssl/primer-key.pem");
+  fs.existsSync("ssl/spandx.pem") && fs.existsSync("ssl/spandx-key.pem");
 
 if (!sslReady) {
-  console.log("Launching with self-signed 🔓https");
-  console.log("To set up valid 🔒https, see README.md");
+  console.log("Launching with invalid SSL cert 🔓");
+} else {
+  console.log("Launching with valid SSL cert 🔒");
 }
 
 module.exports = {
     host: {
-        dev: "dev.foo.redhat.com",
-        qa: "qa.foo.redhat.com",
-        stage: "stage.foo.redhat.com",
         prod: "prod.foo.redhat.com",
+        stage: "stage.foo.redhat.com",
+        qa: "qa.foo.redhat.com",
+        dev: "dev.foo.redhat.com",
     },
     port: 1337,
     open: true,
@@ -40,7 +41,7 @@ module.exports = {
     },
     bs: {
         https: sslReady
-          ? { cert: "ssl/chrome.pem", key: "ssl/chrome.pem" } // 🔒
+          ? { cert: "ssl/spandx.pem", key: "ssl/spandx-key.pem" } // 🔒
           : true, // 🔓
         codeSync: ${answers.livereload || true}
     },
