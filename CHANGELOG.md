@@ -1,3 +1,12 @@
+## [2.2.5](https://github.com/redhataccess/spandx/compare/v2.2.4...v2.2.5) (2022-03-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency browser-sync to v2.27.9 ([#248](https://github.com/redhataccess/spandx/issues/248)) ([f7dfa3a](https://github.com/redhataccess/spandx/commit/f7dfa3afd049fa6fa3b5e39bd5c9243de267cd59))
+
+
+
 ## [2.2.4](https://github.com/redhataccess/spandx/compare/v2.2.3...v2.2.4) (2022-03-23)
 
 
