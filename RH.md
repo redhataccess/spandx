@@ -69,7 +69,7 @@ routes: {
 
 To set up valid local SSL certificates, [install mkcert](https://github.com/FiloSottile/mkcert#installation).  Then run `mkcert -install` (you only need to do this once).
 
-Then you can this `mkcert` to your package.json.  It creates self-signed certificates for spandx to use, and places them in a `ssl` directory (which should be gitignored).
+Then you can this `mkcert` script to your package.json's `"scripts"` object.  It creates self-signed certificates for spandx to use, and places them in a `ssl` directory (which should be gitignored).
 
 ```json
 "mkcert": "mkdir ssl > /dev/null; mkcert --cert-file ssl/spandx.pem --key-file ssl/spandx-key.pem dev.foo.redhat.com qa.foo.redhat.com stage.foo.redhat.com prod.foo.redhat.com",
