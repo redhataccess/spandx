@@ -4,37 +4,25 @@
     "description": "Develop locally, proxy to prod, browser-sync, inject Portal Chrome.",
     "main": "app/spandx.js",
     "bin": "app/cli.js",
-    "files": [
-        "app",
-        "spandx.config.js"
-    ],
+    "files": ["app", "spandx.config.js"],
     "scripts": {
         "test": "jasmine spec/spandx/*.js",
         "start": "node app/spandx.js",
         "dev": "npx nodemon spandx.js",
         "debug": "node-debug spandx.js",
         "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+        "update-readme-toc": "markdown-toc -i README.md",
         "prepare": "husky install"
     },
     "lint-staged": {
-        "{app,spec}/**/*.{js,json}": [
-            "prettier --write"
-        ],
-        "examples/**/*.{js,json}": [
-            "prettier --write"
-        ],
-        "README.md": [
-            "markdown-toc -i README.md"
-        ]
+        "{app,spec}/**/*.{js,json}": ["prettier --write"],
+        "examples/**/*.{js,json}": ["prettier --write"]
     },
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/redhataccess/spandx.git"
     },
-    "keywords": [
-        "proxy",
-        "local"
-    ],
+    "keywords": ["proxy", "local"],
     "license": "GPL-3.0",
     "bugs": {
         "url": "https://github.com/redhataccess/spandx/issues"
