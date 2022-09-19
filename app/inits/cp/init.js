@@ -85,16 +85,18 @@ async function writeHosts() {
     ];
 
     try {
-        await set("127.0.0.1", hostnames.join(" "));
+        await set("127.0.0.1", hostnames.join(" ")); // ipv4
+        await set("::1", hostnames.join(" ")); // ipv6 (required for WSL2)
         console.log(
             `Added ${c.fg.l.cyan}cp${c.end} hostnames to ${hostile.HOSTS}`
         );
     } catch (e) {
         console.error(
-            `Unable to write ${hostile.HOSTS}.  Either try again with sudo, or copy the following into your ${hostile.HOSTS} file.
+            `Unable to write ${hostile.HOSTS}.  Either try again with sudo, or manually copy lines below into ${hostile.HOSTS}
             `
         );
         console.error(`127.0.0.1 ${hostnames.join(" ")}`);
+        console.error(`::1 ${hostnames.join(" ")}`);
     }
 }
 
