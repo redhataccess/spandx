@@ -39,7 +39,7 @@
     },
     "homepage": "https://github.com/redhataccess/spandx#readme",
     "dependencies": {
-        "browser-sync": "2.18.13",
+        "browser-sync": "2.26.9",
         "connect": "3.7.0",
         "conventional-changelog-cli": "2.1.1",
         "finalhandler": "1.1.2",
