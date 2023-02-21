@@ -56,7 +56,7 @@
         "proxy-agent": "5.0.0",
         "serve-static": "1.14.1",
         "transformer-proxy": "0.3.5",
-        "yargs": "17.1.1"
+        "yargs": "17.7.1"
     },
     "devDependencies": {
         "frisby": "2.1.3",
