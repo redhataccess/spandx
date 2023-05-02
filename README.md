@@ -266,7 +266,7 @@ Then edit your `package.json` and add a `start` script which launches spandx.
     }
 ```
 
-Now you and your fellow contributors can run `npm start` without having to install or even understand spandx!
+Now you and your fellow contributors can run `yarn start` without having to install or even understand spandx!
 
 # Contributing
 
@@ -282,7 +282,7 @@ When writing a test, or debugging a failing test, you may want to run *only* tha
 
 For example, to run the test named "should reject invalid multi-host configs":
 
-    npm test -- --filter="invalid multi"
+    yarn test -- --filter="invalid multi"
 
 # Known issues
 
