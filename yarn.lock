@@ -149,6 +149,13 @@ agent-base@^7.0.2:
   dependencies:
     debug "^4.3.4"
 
+agent-base@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.0.tgz#536802b76bc0b34aa50195eb2442276d613e3434"
+  integrity sha512-o/zjMZRhJxny7OyEF+Op8X+efiELC7k7yOjMzgfzVqOzXqkBkWI79YoTdOtsuWd5BWhAGAuOY/Xa6xpiaWXiNg==
+  dependencies:
+    debug "^4.3.4"
+
 aggregate-error@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/aggregate-error/-/aggregate-error-3.1.0.tgz#92670ff50f5359bdb7a3e0d40d0ec30c5737687a"
@@ -2234,12 +2241,12 @@ http-errors@~1.6.2:
     setprototypeof "1.1.0"
     statuses ">= 1.4.0 < 2"
 
-http-proxy-agent@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-6.0.1.tgz#c18aa52daa625a9bd00243f57252fd44e86ff40b"
-  integrity sha512-rD8wrfJHbnVll9lkIpQH3vDbKON1Ssciggwydom/r89HLBXEqdMhL6wx7QF5WePDPSr0OdoztdXoojbrXadG5Q==
+http-proxy-agent@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-7.0.0.tgz#e9096c5afd071a3fce56e6252bb321583c124673"
+  integrity sha512-+ZT+iBxVUQ1asugqnD6oWoRiS25AkjNfG085dKJGtGxkdwLQrMKU5wJr2bOOFAXzKcTuqq+7fZlTMgG3SRfIYQ==
   dependencies:
-    agent-base "^7.0.1"
+    agent-base "^7.1.0"
     debug "^4.3.4"
 
 http-proxy@1.15.2:
@@ -2302,12 +2309,12 @@ https-proxy-agent@6.2.0:
     agent-base "^7.0.2"
     debug "4"
 
-https-proxy-agent@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-6.1.0.tgz#e00f1efb849171ea349721481d3bcbef03ab4d13"
-  integrity sha512-rvGRAlc3y+iS7AC9Os2joN91mX8wHpJ4TEklmHHxr7Gz2Juqa7fJmJ8wWxXNpTaRt56MQTwojxV5d82UW/+jwg==
+https-proxy-agent@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-7.0.0.tgz#75cb70d04811685667183b31ab158d006750418a"
+  integrity sha512-0euwPCRyAPSgGdzD1IVN9nJYHtBhJwb6XPfbpQcYbPCwrBidX6GzxmchnaF4sfF/jPb74Ojx5g4yTg3sixlyPw==
   dependencies:
-    agent-base "^7.0.1"
+    agent-base "^7.0.2"
     debug "4"
 
 human-signals@^4.3.0:
@@ -3587,16 +3594,16 @@ p-try@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
 
-pac-proxy-agent@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/pac-proxy-agent/-/pac-proxy-agent-6.0.2.tgz#503d49a142d58e49165fdd4198ad799d3afb86fe"
-  integrity sha512-jh3apaSHpjtB6IfbiTBgt4svoyC18TvAo4N4hm/BPMK78W4mPt46JbeZm6yIXURX+8sMohURtLp3dDDFSHNk/Q==
+pac-proxy-agent@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/pac-proxy-agent/-/pac-proxy-agent-6.0.3.tgz#61042187093b67aa7dd05b41e4ec7c241a27c428"
+  integrity sha512-5Hr1KgPDoc21Vn3rsXBirwwDnF/iac1jN/zkpsOYruyT+ZgsUhUOgVwq3v9+ukjZd/yGm/0nzO1fDfl7rkGoHQ==
   dependencies:
-    agent-base "^7.0.1"
+    agent-base "^7.0.2"
     debug "^4.3.4"
     get-uri "^6.0.1"
-    http-proxy-agent "^6.0.1"
-    https-proxy-agent "^6.1.0"
+    http-proxy-agent "^7.0.0"
+    https-proxy-agent "^7.0.0"
     pac-resolver "^6.0.1"
     socks-proxy-agent "^8.0.1"
 
@@ -3817,17 +3824,17 @@ promise@^7.0.4:
   dependencies:
     asap "~2.0.3"
 
-proxy-agent@6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/proxy-agent/-/proxy-agent-6.2.0.tgz#03c9d5fb85c6c80f1b27d101f11f4f364b7838ed"
-  integrity sha512-g3rBHXPhEa0Z1nxZkirj0+US1SCcA67SnjpxbdZf7BloLdULEUCzbQozsq+wFwhmMeZegeZISDZjPFN/Ct9DaQ==
+proxy-agent@6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/proxy-agent/-/proxy-agent-6.2.1.tgz#062df6609a4012fd1c108974865599b61e77abde"
+  integrity sha512-OIbBKlRAT+ycCm6wAYIzMwPejzRtjy8F3QiDX0eKOA3e4pe3U9F/IvzcHP42bmgQxVv97juG+J8/gx+JIeCX/Q==
   dependencies:
-    agent-base "^7.0.1"
+    agent-base "^7.0.2"
     debug "^4.3.4"
-    http-proxy-agent "^6.0.1"
-    https-proxy-agent "^6.1.0"
+    http-proxy-agent "^7.0.0"
+    https-proxy-agent "^7.0.0"
     lru-cache "^7.14.1"
-    pac-proxy-agent "^6.0.2"
+    pac-proxy-agent "^6.0.3"
     proxy-from-env "^1.1.0"
     socks-proxy-agent "^8.0.1"
 
