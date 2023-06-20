@@ -4,11 +4,30 @@ function SPACommentResolver(conf) {
     return async function SPACommentResolverMiddleware(data, req, res) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         if (isHTML) {
+            let locale = "en"; // default
+            const cookies = req.headers["cookie"];
+            if (cookies && cookies.includes("rh_locale")) {
+                const localeCookie = cookies
+                    .split(";")
+                    .filter((c) => c.split("=")[0].trim() === "rh_locale")[0];
+                if (localeCookie) {
+                    locale = localeCookie.split("=")[1].trim();
+                }
+            }
+
+            if (!chromeCache.LOCALES.includes(locale)) {
+                console.warn(
+                    `spandx received rh_locale cookie "${locale}" which is not a supported locale, falling back to "en".  supported locales are ${chromeCache.LOCALES}`
+                );
+            }
             const host = req.headers["x-spandx-origin"];
             const chromeParts = await chromeCache.getParts({
                 host,
                 legacy: true,
+                locale,
             });
+
+            // console.log(chromeParts.header);
             return data
                 .toString()
                 .replace(/<!--\s+SPA_HEAD\s+-->/, chromeParts.head)

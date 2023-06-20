@@ -124,7 +124,7 @@ module.exports = (conf, proxy) => {
                     }
 
                     req.url = relativeFilePath; // update the request's url to be relative to the on-disk dir
-                    serveLocal[routeKey](req, res, finalhandler(req, res));
+                    serveLocal[routeKey](req, res);
                     return; // stop here, don't continue to HTTP proxy section
                 }
             }
