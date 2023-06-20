@@ -1,3 +1,28 @@
+## [2.2.6](https://github.com/redhataccess/spandx/compare/v2.2.5...v2.2.6) (2023-06-20)
+
+
+### Bug Fixes
+
+* **deps:** downgrade browsersync ([#282](https://github.com/redhataccess/spandx/issues/282)) ([8445edb](https://github.com/redhataccess/spandx/commit/8445edbfc86d2a931c8a3307de3ca57bfbf1ff82))
+* **deps:** update dependency conventional-changelog-cli to v2.2.2 ([#276](https://github.com/redhataccess/spandx/issues/276)) ([11c144d](https://github.com/redhataccess/spandx/commit/11c144d8022c6ce636f7ead712e752f195f2bd92))
+* **deps:** update dependency finalhandler to v1.2.0 ([#301](https://github.com/redhataccess/spandx/issues/301)) ([9fb4e74](https://github.com/redhataccess/spandx/commit/9fb4e74fd4e47e681e17f626794861963a6caa71))
+* **deps:** update dependency got to v11.8.6 ([#270](https://github.com/redhataccess/spandx/issues/270)) ([448b9e3](https://github.com/redhataccess/spandx/commit/448b9e3c733c212e12141111e7233b6fa20c4a16))
+* **deps:** update dependency http-proxy to v1.18.1 ([#304](https://github.com/redhataccess/spandx/issues/304)) ([b0922b3](https://github.com/redhataccess/spandx/commit/b0922b32b5d71876d07818a7efcfcf8711b4b82b))
+* **deps:** update dependency https-proxy-agent to v5.0.1 ([#296](https://github.com/redhataccess/spandx/issues/296)) ([ed5a2b3](https://github.com/redhataccess/spandx/commit/ed5a2b3fe8080ab51f8cf06fd6eaafff06f4677f))
+* **deps:** update dependency https-proxy-agent to v6 ([#322](https://github.com/redhataccess/spandx/issues/322)) ([d2ade82](https://github.com/redhataccess/spandx/commit/d2ade820539b56cdba06f4e5802b841f305f6bf4))
+* **deps:** update dependency https-proxy-agent to v7 ([#329](https://github.com/redhataccess/spandx/issues/329)) ([a0bebfa](https://github.com/redhataccess/spandx/commit/a0bebfa0e0d6046d20272c2b713037e1d07e167b))
+* **deps:** update dependency inquirer to v8.2.5 ([#244](https://github.com/redhataccess/spandx/issues/244)) ([dbb4ebf](https://github.com/redhataccess/spandx/commit/dbb4ebf55824117585393f2b59475d2b2b56ece1))
+* **deps:** update dependency inquirer to v9 ([#316](https://github.com/redhataccess/spandx/issues/316)) ([3d9ac91](https://github.com/redhataccess/spandx/commit/3d9ac911b2d742dd7d6d94173bd89b5914a0cb97))
+* **deps:** update dependency inquirer to v9.2.4 ([#321](https://github.com/redhataccess/spandx/issues/321)) ([f0b6eb5](https://github.com/redhataccess/spandx/commit/f0b6eb5dd6bed5da38dc2eee2e74552dacc51861))
+* **deps:** update dependency inquirer to v9.2.6 ([#326](https://github.com/redhataccess/spandx/issues/326)) ([ecf1f99](https://github.com/redhataccess/spandx/commit/ecf1f990065b48e8356d84d1d50248e52453e55e))
+* **deps:** update dependency proxy-agent to v6 ([#323](https://github.com/redhataccess/spandx/issues/323)) ([884888a](https://github.com/redhataccess/spandx/commit/884888a0f3891dc1a18a5e92e59232708b0b06b4))
+* **deps:** update dependency proxy-agent to v6.2.1 ([#328](https://github.com/redhataccess/spandx/issues/328)) ([86ed53b](https://github.com/redhataccess/spandx/commit/86ed53b229ab66684372ec4ed61023d101c3f466))
+* **deps:** update dependency serve-static to v1.15.0 ([#305](https://github.com/redhataccess/spandx/issues/305)) ([8d229a2](https://github.com/redhataccess/spandx/commit/8d229a22cd36d7b0f2f23934c9f8f62ee269b6f7))
+* **deps:** update dependency yargs to v17.7.1 ([#306](https://github.com/redhataccess/spandx/issues/306)) ([fe2d533](https://github.com/redhataccess/spandx/commit/fe2d53375a6424401ffa8e4f471b349be0c12dcb))
+* **deps:** update dependency yargs to v17.7.2 ([#320](https://github.com/redhataccess/spandx/issues/320)) ([af9fcf5](https://github.com/redhataccess/spandx/commit/af9fcf5b1710c53c8dd8b8901663d4ccc44d82a1))
+
+
+
 ## [2.2.5](https://github.com/redhataccess/spandx/compare/v2.2.4...v2.2.5) (2022-03-25)
 
 
