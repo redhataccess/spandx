@@ -93,7 +93,7 @@ Option | Description | Type
 `startPath` | The URL path to open, if `open` is true. ex: `"/site"`. | string
 `verbose` | Display English summary of configuration settings and display Browsersync logs, or not. | boolean
 `silent` | Print nothing to stdout. | boolean
-`routes` | Define where to send requests for any number of URL paths, best explained in [routes by example](#routes-by-example). | object
+`routes` | Define where to send requests for any number of URL paths, best explained in [routes by example](#routes). | object
 `bs` | A [Browsersync config object][bs-options], in case you need to further customize spandx's Browsersync instance. | object
 `portalChrome` | Settings related to Portal Chrome, see [Portal Chrome settings][portal-chrome-settings]. | object
 `esi` | Set to `true` to enable processing [ESI][esi] tags, or pass in a [nodesi][nodesi] config object. | boolean or object
