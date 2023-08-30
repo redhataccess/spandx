@@ -1,9 +1,10 @@
 ## [2.2.7](https://github.com/redhataccess/spandx/compare/v2.2.6...v2.2.7) (2023-08-30)
 
-
+This patch reverts the breakage caused by a browser-sync upgrade in 2.2.6.
 
 ## [2.2.6](https://github.com/redhataccess/spandx/compare/v2.2.5...v2.2.6) (2023-06-20)
 
+DEPRECATED: This patch inadvertently introduced a breakage caused an upgrade of browser-sync.  Please use 2.2.7 instead.
 
 ### Bug Fixes
 
