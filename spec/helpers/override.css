@@ -1,0 +1,70 @@
+#global-search-wrapper button[aria-label="Options menu"] {
+  background-color: rgb(255, 255, 255) !important;
+  padding: 6px 8px;
+}
+
+#pf-select-toggle-id-1 > span.pf-c-select__toggle-arrow {
+  margin-left: var(--pf-c-select__toggle-arrow--MarginLeft);
+  margin-right: var(--pf-c-select__toggle-arrow--MarginRight);
+}
+
+#global-search-wrapper > section > div > div > div[class='pf-c-text-input-group'],
+#global-search-wrapper > input {
+  padding-bottom: 6px;
+  padding-left: 32px;
+  background-color: rgb(255, 255, 255) !important;
+  padding-right: 8px;
+  padding-top: 6px;
+}
+
+
+#global-search-wrapper > section > div > div > button[aria-label="Search"] {
+  margin-bottom: 0px;
+  margin-left: -1px;
+  margin-right: 0px;
+  margin-top: 0px;
+  padding-bottom: 6px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 6px;
+  position: relative;
+}
+
+.pf-c-menu, .pf-c-select__menu {
+  --pf-global--Color--100: var(--pf-global--Color--dark-100);
+  --pf-global--Color--200: var(--pf-global--Color--dark-200);
+  --pf-global--BorderColor--100: var(--pf-global--BorderColor--dark-100);
+  --pf-global--primary-color--100: var(--pf-global--primary-color--dark-100);
+  --pf-global--link--Color: var(--pf-global--link--Color--dark);
+  --pf-global--link--Color--hover: var(--pf-global--link--Color--dark--hover);
+  --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--light-100)
+}
+
+.pf-c-menu__search {
+  padding: var(--pf-c-menu__search--PaddingTop) var(--pf-c-menu__search--PaddingRight) var(--pf-c-menu__search--PaddingBottom) var(--pf-c-menu__search--PaddingLeft)
+}
+
+.pf-c-menu__list {
+  --pf-hidden-visible--visible--Display: var(--pf-c-menu__list--Display);
+  padding-bottom: var(--pf-c-menu__list--PaddingBottom);
+  padding-top: var(--pf-c-menu__list--PaddingTop);
+}
+
+.pf-c-menu__item {
+  padding: var(--pf-c-menu__item--PaddingTop) var(--pf-c-menu__item--PaddingRight) var(--pf-c-menu__item--PaddingBottom) var(--pf-c-menu__item--PaddingLeft);
+}
+
+
+.pf-c-menu__group-title {
+  color: var(--pf-c-menu__group-title--Color);
+  font-size: var(--pf-c-menu__group-title--FontSize);
+  font-weight: var(--pf-c-menu__group-title--FontWeight);
+  padding-left: var(--pf-c-menu__group-title--PaddingLeft);
+  padding-right: var(--pf-c-menu__group-title--PaddingRight);
+  padding-top: var(--pf-c-menu__group-title--PaddingTop);
+}
+
+
+.pf-c-menu__item-icon {
+  margin-right: var(--pf-c-menu__item-icon--MarginRight)
+}

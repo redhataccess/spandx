@@ -59,6 +59,8 @@ async function init(confIn) {
     const app = connect();
 
     proxy = httpProxy.createProxyServer({
+        target: `ws://localhost:${internalProxyPort}`,
+        ws: true,
         changeOrigin: true,
         preserveHeaderKeyCase: true,
         autoRewrite: true,

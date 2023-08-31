@@ -1,20 +1,20 @@
 module.exports = {
     host: {
         dev: "localhost",
-        prod: "127.0.0.1"
+        prod: "127.0.0.1",
     },
     port: 1337,
     silent: true,
     portalChrome: {
-        resolveSPAComments: true
+        resolveSPAComments: true,
     },
     routes: {
         "/services/chrome/": "./mock-chrome",
         "/": {
             host: {
-                dev: "http://localhost:4014",
-                prod: "http://localhost:4015"
-            }
-        }
-    }
+                dev: "localhost:4014",
+                prod: "localhost:4015",
+            },
+        },
+    },
 };
