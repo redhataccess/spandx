@@ -38,7 +38,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
             // pattern provided in the proxy.pattern property,
             // add a new HttpsProxyAgent
             if (regex.test(target)) {
-                options.agent = new ProxyAgent(confProxy.host);
+                options.agent = new ProxyAgent.ProxyAgent(confProxy.host);
             }
         }
 

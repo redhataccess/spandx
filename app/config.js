@@ -242,10 +242,36 @@ function processConf(conf, configDir = __dirname) {
     };
 }
 
+function getRoute(conf, urlPath) {
+    // figure out which route to proxy to based on the requested resource path
+    const bestMatchedRoute = _(conf.routes)
+        .toPairs()
+        .filter((v) => _.startsWith(urlPath, v[0]))
+        .sortBy((v) => -v[0].length)
+        .first();
+    return bestMatchedRoute[1];
+}
+
+function getTarget(conf, spandxEnv, urlPath) {
+    // figure out which target URL to proxy to based on the requested resource path
+    const route = getRoute(conf, urlPath);
+
+    if (typeof route == "string") {
+        // local disk route
+        return route;
+    } else if (typeof route.host == "string") {
+        return route.host;
+    } else {
+        return route.host[spandxEnv];
+    }
+}
+
 module.exports = {
     create,
     get,
     fromFile,
     defaultConfig,
     process: processConf,
+    getRoute,
+    getTarget,
 };

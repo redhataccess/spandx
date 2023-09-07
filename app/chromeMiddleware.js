@@ -1,4 +1,5 @@
 const chromeCache = require("./chromeCache");
+const config = require("./config");
 
 function SPACommentResolver(conf) {
     return async function SPACommentResolverMiddleware(data, req, res) {
@@ -11,16 +12,19 @@ function SPACommentResolver(conf) {
                     .split(";")
                     .filter((c) => c.split("=")[0].trim() === "rh_locale")[0];
                 if (localeCookie) {
-                    locale = localeCookie.split("=")[1].trim();
+                    const localeCookieValue = localeCookie.split("=")[1].trim();
+                    if (chromeCache.LOCALES.includes(localeCookieValue)) {
+                        locale = localeCookieValue;
+                    } else {
+                        console.warn(
+                            `spandx received rh_locale cookie "${locale}" which is not a supported locale, falling back to "en".  supported locales are ${chromeCache.LOCALES}`
+                        );
+                    }
                 }
             }
 
-            if (!chromeCache.LOCALES.includes(locale)) {
-                console.warn(
-                    `spandx received rh_locale cookie "${locale}" which is not a supported locale, falling back to "en".  supported locales are ${chromeCache.LOCALES}`
-                );
-            }
-            const host = req.headers["x-spandx-origin"];
+            const env = req.headers["x-spandx-env"];
+            const host = config.getTarget(conf, env, req.url);
             const chromeParts = await chromeCache.getParts({
                 host,
                 legacy: true,

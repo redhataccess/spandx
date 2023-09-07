@@ -2,7 +2,7 @@ const got = require("got");
 
 const DEFAULT_CHROME_HOST = "https://access.redhat.com";
 const DEFAULT_CHROME_PATH = "/services/chrome/";
-const LOCALES = ["en", "ja", "ko", "zh_CN"];
+const LOCALES = ["en", "ja", "ko", "zh_CN", "fr"];
 
 const cache = {};
 let chromeHost;
@@ -16,6 +16,7 @@ async function getParts({
     locale = "en",
 } = {}) {
     const cacheKey = host + path + locale;
+    console.log({ cacheKey });
     if (useCached && cache[cacheKey]) {
         return cache[cacheKey];
     }
