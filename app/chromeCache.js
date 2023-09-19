@@ -16,7 +16,6 @@ async function getParts({
     locale = "en",
 } = {}) {
     const cacheKey = host + path + locale;
-    console.log({ cacheKey });
     if (useCached && cache[cacheKey]) {
         return cache[cacheKey];
     }
