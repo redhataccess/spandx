@@ -6,8 +6,12 @@ function SPACommentResolver(conf) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         if (isHTML) {
             const locale = getLocaleCookie(req.headers["cookie"]);
-            const env = req.headers["x-spandx-env"];
-            const host = config.getTarget(conf, env, req.url);
+            const host = config.getTargetHost(
+                conf,
+                req.headers["x-spandx-env"],
+                req.url,
+                req.headers["x-spandx-origin"]
+            );
             const chromeParts = await chromeCache.getParts({
                 host,
                 legacy: true,
@@ -31,8 +35,12 @@ function chromeSwapper(conf) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         const isPrimerAlready = req.url.startsWith("/services/primer");
         if (isHTML && !isPrimerAlready) {
-            const env = req.headers["x-spandx-env"];
-            const host = config.getTarget(conf, env, req.url);
+            const host = config.getTargetHost(
+                conf,
+                req.headers["x-spandx-env"],
+                req.url,
+                req.headers["x-spandx-origin"]
+            );
             const locale = getLocaleCookie(req.headers["cookie"]);
             const chromeParts = await chromeCache.getParts({
                 host,

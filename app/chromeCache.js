@@ -75,7 +75,7 @@ async function fetchChromePart({
         const res = await got(url);
         return res.body;
     } catch (e) {
-        console.error(e);
+        console.error(`attempting to fetch ${url} failed`);
     }
 }
 

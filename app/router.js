@@ -139,6 +139,8 @@ module.exports = (conf, proxy) => {
                     : undefined;
             }
 
+            if (target === undefined) continue;
+
             if (conf.verbose) {
                 const targetURL = URL.parse(target);
                 console.log(
