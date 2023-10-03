@@ -638,7 +638,7 @@ describe("spandx", () => {
     });
 
     describe("portal chrome", () => {
-        it("should resolve SPA comments into Portal Chrome on local routes", async (done) => {
+        it("should resolve SPA comments into Portal Chrome on local routes", async () => {
             await spandx.init(
                 "../spec/helpers/configs/portal-chrome/spandx.local.js"
             );
@@ -649,8 +649,6 @@ describe("spandx", () => {
             expect(res.body).toMatch(/HEAD CONTENT/);
             expect(res.body).toMatch(/HEADER CONTENT/);
             expect(res.body).toMatch(/FOOTER CONTENT/);
-
-            done();
         });
         it("should resolve SPA comments into Portal Chrome on single host routes", async (done) => {
             const { server, port } = await serve(

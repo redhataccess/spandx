@@ -46,11 +46,6 @@ async function init(confIn) {
             }
     }
 
-    // config.getRoute(conf, "/services/chrome/head/en")
-    // config.getTarget(conf, "stage", "/services/chrome/head/en")
-    // TODO remove this exit
-    // process.exit(0);
-
     // since this is a local development tool, allow self-signed ssl certificates.
     https.globalAgent.options.rejectUnauthorized = false;
 
