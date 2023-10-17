@@ -266,7 +266,8 @@ function getTargetURL(conf, spandxEnv, urlPath) {
 
 function getTargetHost(conf, spandxEnv, urlPath, spandxOrigin) {
     const { route, routeType } = getTargetURL(conf, spandxEnv, urlPath);
-    return routeType === "disk" ? spandxOrigin : route;
+    let host = routeType === "disk" ? spandxOrigin : route;
+    return host;
 }
 
 module.exports = {

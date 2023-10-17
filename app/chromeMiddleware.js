@@ -9,7 +9,7 @@ function SPACommentResolver(conf) {
             const host = config.getTargetHost(
                 conf,
                 req.headers["x-spandx-env"],
-                req.url,
+                "/services/chrome/",
                 req.headers["x-spandx-origin"]
             );
             const chromeParts = await chromeCache.getParts({
@@ -18,7 +18,6 @@ function SPACommentResolver(conf) {
                 locale,
             });
 
-            // console.log(chromeParts.header);
             return data
                 .toString()
                 .replace(/<!--\s+SPA_HEAD\s+-->/, chromeParts.head)
@@ -38,7 +37,7 @@ function chromeSwapper(conf) {
             const host = config.getTargetHost(
                 conf,
                 req.headers["x-spandx-env"],
-                req.url,
+                "/services/primer/",
                 req.headers["x-spandx-origin"]
             );
             const locale = getLocaleCookie(req.headers["cookie"]);

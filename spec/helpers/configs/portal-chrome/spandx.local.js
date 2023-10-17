@@ -1,8 +1,7 @@
 module.exports = {
     host: "localhost",
     port: 1337,
-    silent: false,
-    verbose: true,
+    silent: true,
     portalChrome: {
         resolveSPAComments: true,
     },
