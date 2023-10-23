@@ -638,6 +638,24 @@ describe("spandx", () => {
     });
 
     describe("portal chrome", () => {
+        it("should honor rh_locale value when applying chrome", async () => {
+            await spandx.init(
+                "../spec/helpers/configs/portal-chrome/spandx.local.js"
+            );
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            cookie: "rh_locale=ko",
+                        },
+                    },
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).toMatch(/HEAD CONTENT KO/);
+            expect(res.body).toMatch(/HEADER CONTENT KO/);
+            expect(res.body).toMatch(/FOOTER CONTENT KO/);
+        });
         it("should resolve SPA comments into Portal Chrome on local routes", async () => {
             await spandx.init(
                 "../spec/helpers/configs/portal-chrome/spandx.local.js"
@@ -788,6 +806,22 @@ describe("spandx", () => {
     });
 
     describe("primer", () => {
+        it("should honor rh_locale value when applying primer", async () => {
+            await spandx.init("../spec/helpers/configs/primer/spandx.local.js");
+            const res = await frisby
+                .setup({
+                    request: {
+                        headers: {
+                            cookie: "rh_locale=ko",
+                        },
+                    },
+                })
+                .get("http://localhost:1337/test-page.html");
+
+            expect(res.body).toMatch(/KO HEAD_AFTER \(file\)/);
+            expect(res.body).toMatch(/KO HEADER_AFTER \(file\)/);
+            expect(res.body).toMatch(/KO FOOTER_AFTER \(file\)/);
+        });
         it("should allow local preview of Primer parts", async (done) => {
             await spandx.init("../spec/helpers/configs/primer/spandx.local.js");
             const res = await frisby
