@@ -827,7 +827,13 @@ describe("spandx", () => {
                     "../spec/helpers/configs/url-rewriting/spandx.local.js"
                 );
                 frisby
-                    .setup()
+                    .setup({
+                        request: {
+                            headers: {
+                                accept: "text/html",
+                            },
+                        },
+                    })
                     .get("http://localhost:1337/")
                     .expect("status", 200)
                     .expect("bodyContains", /URL REWRITING INDEX/)
