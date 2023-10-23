@@ -64,6 +64,7 @@ async function init(confIn) {
         autoRewrite: true,
         secure: false, // don't validate SSL/HTTPS
         protocolRewrite: conf.protocol.replace(":", ""),
+        cookieDomainRewrite: true,
     });
 
     //

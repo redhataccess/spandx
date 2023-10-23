@@ -91,8 +91,6 @@ async function fromFile(filePath = `${process.cwd()}/spandx.config.js`) {
                     `but. Got an exception loading the config: ${e}`
             );
         }
-
-        process.exit(1);
     }
     const conf = await create(confObj, path.parse(fullPath).dir);
     return conf;
@@ -242,10 +240,43 @@ function processConf(conf, configDir = __dirname) {
     };
 }
 
+function getRoute(conf, urlPath) {
+    // figure out which route to proxy to based on the requested resource path
+    const bestMatchedRoute = _(conf.routes)
+        .toPairs()
+        .filter((v) => _.startsWith(urlPath, v[0]))
+        .sortBy((v) => -v[0].length)
+        .first();
+    return bestMatchedRoute[1];
+}
+
+function getTargetURL(conf, spandxEnv, urlPath) {
+    // figure out which target URL to proxy to based on the requested resource path
+    const route = getRoute(conf, urlPath);
+
+    if (typeof route == "string") {
+        // local disk route
+        return { route, routeType: "disk" };
+    } else if (typeof route.host == "string") {
+        return { route: route.host, routeType: "network" };
+    } else {
+        return { route: route.host[spandxEnv], routetype: "network" };
+    }
+}
+
+function getTargetHost(conf, spandxEnv, urlPath, spandxOrigin) {
+    const { route, routeType } = getTargetURL(conf, spandxEnv, urlPath);
+    let host = routeType === "disk" ? spandxOrigin : route;
+    return host;
+}
+
 module.exports = {
     create,
     get,
     fromFile,
     defaultConfig,
     process: processConf,
+    getRoute,
+    getTargetURL,
+    getTargetHost,
 };

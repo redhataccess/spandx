@@ -38,7 +38,7 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
             // pattern provided in the proxy.pattern property,
             // add a new HttpsProxyAgent
             if (regex.test(target)) {
-                options.agent = new ProxyAgent(confProxy.host);
+                options.agent = new ProxyAgent.ProxyAgent(confProxy.host);
             }
         }
 
@@ -124,7 +124,7 @@ module.exports = (conf, proxy) => {
                     }
 
                     req.url = relativeFilePath; // update the request's url to be relative to the on-disk dir
-                    serveLocal[routeKey](req, res, finalhandler(req, res));
+                    serveLocal[routeKey](req, res);
                     return; // stop here, don't continue to HTTP proxy section
                 }
             }
@@ -138,6 +138,8 @@ module.exports = (conf, proxy) => {
                     ? conf.routes["/"].host[env]
                     : undefined;
             }
+
+            if (target === undefined) continue;
 
             if (conf.verbose) {
                 const targetURL = URL.parse(target);

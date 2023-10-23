@@ -1,14 +1,23 @@
 const chromeCache = require("./chromeCache");
+const config = require("./config");
 
 function SPACommentResolver(conf) {
     return async function SPACommentResolverMiddleware(data, req, res) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         if (isHTML) {
-            const host = req.headers["x-spandx-origin"];
+            const locale = getLocaleCookie(req.headers["cookie"]);
+            const host = config.getTargetHost(
+                conf,
+                req.headers["x-spandx-env"],
+                "/services/chrome/",
+                req.headers["x-spandx-origin"]
+            );
             const chromeParts = await chromeCache.getParts({
                 host,
                 legacy: true,
+                locale,
             });
+
             return data
                 .toString()
                 .replace(/<!--\s+SPA_HEAD\s+-->/, chromeParts.head)
@@ -25,12 +34,17 @@ function chromeSwapper(conf) {
         const isHTML = (res.getHeader("content-type") || "").includes("html");
         const isPrimerAlready = req.url.startsWith("/services/primer");
         if (isHTML && !isPrimerAlready) {
-            const origin = req.headers["x-spandx-origin"];
-            console.log({ origin });
+            const host = config.getTargetHost(
+                conf,
+                req.headers["x-spandx-env"],
+                "/services/primer/",
+                req.headers["x-spandx-origin"]
+            );
+            const locale = getLocaleCookie(req.headers["cookie"]);
             const chromeParts = await chromeCache.getParts({
-                host: origin,
+                host,
                 path: "/services/primer/",
-                useCached: false,
+                locale,
             });
 
             return data
@@ -83,6 +97,26 @@ function chromeSwapper(conf) {
 
         return data;
     };
+}
+
+function getLocaleCookie(cookies) {
+    let locale = "en"; // default
+    if (cookies && cookies.includes("rh_locale")) {
+        const localeCookie = cookies
+            .split(";")
+            .filter((c) => c.split("=")[0].trim() === "rh_locale")[0];
+        if (localeCookie) {
+            const localeCookieValue = localeCookie.split("=")[1].trim();
+            if (chromeCache.LOCALES.includes(localeCookieValue)) {
+                locale = localeCookieValue;
+            } else {
+                console.warn(
+                    `spandx received rh_locale cookie "${locale}" which is not a supported locale, falling back to "en".  supported locales are ${chromeCache.LOCALES}`
+                );
+            }
+        }
+    }
+    return locale;
 }
 
 module.exports = { SPACommentResolver, chromeSwapper };
