@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/redhataccess/spandx/compare/v2.2.7...v3.0.0) (2023-10-23)
+
+* test!: remove support for node 16  ([111e79a](https://github.com/redhataccess/spandx/commit/111e79a409a43de55962e94ed08752f68cbc9d0c))
+
+### Features
+
+* apply localized primer/chrome based on rh_locale cookie ([86dff14](https://github.com/redhataccess/spandx/commit/86dff145dca27689782068d4c44a6b05a5f739b2))
+
+### BREAKING CHANGES
+
+* remove support for node 16
+
 ## [2.2.7](https://github.com/redhataccess/spandx/compare/v2.2.6...v2.2.7) (2023-08-30)
 
 This patch reverts the breakage caused by a browser-sync upgrade in 2.2.6.
