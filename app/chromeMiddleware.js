@@ -16,6 +16,7 @@ function SPACommentResolver(conf) {
                 host,
                 legacy: true,
                 locale,
+                conf,
             });
 
             return data

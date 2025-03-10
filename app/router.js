@@ -7,7 +7,8 @@ const { flow, includes, get } = require("lodash/fp");
 const finalhandler = require("finalhandler");
 const serveStatic = require("serve-static");
 const resolveHome = require("./resolveHome");
-const ProxyAgent = require("proxy-agent");
+const HttpsProxyAgent = require("https-proxy-agent");
+const HttpProxyAgent = require("http-proxy-agent");
 const priv = {};
 
 priv.tryPlugin = (plugin, req, res, target, cb) => {
@@ -38,7 +39,15 @@ priv.doProxy = (proxy, req, res, target, confProxy = null) => {
             // pattern provided in the proxy.pattern property,
             // add a new HttpsProxyAgent
             if (regex.test(target)) {
-                options.agent = new ProxyAgent.ProxyAgent(confProxy.host);
+                if (target.startsWith("https:")) {
+                    options.agent = new HttpsProxyAgent.HttpsProxyAgent(
+                        confProxy.host
+                    );
+                } else if (target.startsWith("http:")) {
+                    options.agent = new HttpProxyAgent.HttpProxyAgent(
+                        confProxy.host
+                    );
+                }
             }
         }
 

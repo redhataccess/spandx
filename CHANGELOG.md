@@ -1,3 +1,27 @@
+# [3.1.0-prerelease.0](https://github.com/redhataccess/spandx/compare/v2.2.7...v3.1.0-prerelease.0) (2025-03-10)
+
+
+### Bug Fixes
+
+* proxy support ([d08832f](https://github.com/redhataccess/spandx/commit/d08832f8cfc593e1d62f45ade7840b5077a172fc))
+
+
+* test!: remove support for node 16 (#347) ([111e79a](https://github.com/redhataccess/spandx/commit/111e79a409a43de55962e94ed08752f68cbc9d0c)), closes [#347](https://github.com/redhataccess/spandx/issues/347)
+
+
+### Features
+
+* apply localized primer/chrome based on rh_locale cookie ([86dff14](https://github.com/redhataccess/spandx/commit/86dff145dca27689782068d4c44a6b05a5f739b2))
+
+
+### BREAKING CHANGES
+
+* remove support for node 16
+
+Co-authored-by: Aditi Ohri <aohri@redhat.com>
+
+
+
 # [3.0.0](https://github.com/redhataccess/spandx/compare/v2.2.7...v3.0.0) (2023-10-23)
 
 * test!: remove support for node 16  ([111e79a](https://github.com/redhataccess/spandx/commit/111e79a409a43de55962e94ed08752f68cbc9d0c))

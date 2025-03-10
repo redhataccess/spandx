@@ -1,3 +1,4 @@
+const { HttpProxyAgent, HttpsProxyAgent } = require("hpagent");
 const got = require("got");
 
 const DEFAULT_CHROME_HOST = "https://access.redhat.com";
@@ -26,6 +27,7 @@ async function getParts({
         path,
         legacy,
         locale,
+        conf,
     });
     const headerReq = fetchChromePart({
         host,
@@ -33,6 +35,7 @@ async function getParts({
         path,
         legacy,
         locale,
+        conf,
     });
     const footerReq = fetchChromePart({
         host,
@@ -40,6 +43,7 @@ async function getParts({
         path,
         legacy,
         locale,
+        conf,
     });
 
     const [head, header, footer] = await Promise.all([
@@ -65,17 +69,30 @@ async function fetchChromePart({
     part,
     legacy = false,
     locale = "en",
+    conf,
 } = {}) {
-    const url = `${host}${path}${part}/${locale}${
+    const url = `${host}${path}${part}/${locale}/${
         legacy ? "?legacy=false" : ""
     }`;
     console.log(`fetching chrome from ${url}`);
 
+    let options = {};
+
+    if (host.startsWith("https:")) {
+        options.agent = {
+            https: new HttpsProxyAgent({ proxy: conf.proxy.host }),
+        };
+    } else if (host.startsWith("http:")) {
+        options.agent = {
+            http: new HttpProxyAgent({ proxy: conf.proxy.host }),
+        };
+    }
+
     try {
-        const res = await got(url);
+        const res = await got(url, options);
         return res.body;
     } catch (e) {
-        console.error(`attempting to fetch ${url} failed`);
+        console.error(`attempting to fetch ${url} failed: ${e}`);
     }
 }
 
