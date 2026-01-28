@@ -1,3 +1,22 @@
+# [3.0.0](https://github.com/redhataccess/spandx/compare/v2.2.7...v3.0.0) (2026-01-28)
+
+
+* test!: remove support for node 16 (#347) ([111e79a](https://github.com/redhataccess/spandx/commit/111e79a409a43de55962e94ed08752f68cbc9d0c)), closes [#347](https://github.com/redhataccess/spandx/issues/347)
+
+
+### Features
+
+* apply localized primer/chrome based on rh_locale cookie ([86dff14](https://github.com/redhataccess/spandx/commit/86dff145dca27689782068d4c44a6b05a5f739b2))
+
+
+### BREAKING CHANGES
+
+* remove support for node 16
+
+Co-authored-by: Aditi Ohri <aohri@redhat.com>
+
+
+
 # [3.0.0](https://github.com/redhataccess/spandx/compare/v2.2.7...v3.0.0) (2023-10-23)
 
 * test!: remove support for node 16  ([111e79a](https://github.com/redhataccess/spandx/commit/111e79a409a43de55962e94ed08752f68cbc9d0c))
