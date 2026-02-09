@@ -84,14 +84,14 @@ async function init(confIn) {
 
     if (_.get(conf, "esi")) {
         console.log("ESI enabled");
-        app.use((res, req, next) => {
+        app.use((req, res, next) => {
             console.log("request received");
             if (
-                res.headers.accept.includes("text/html") ||
-                res.headers.accept.includes("*/*")
+                req.headers.accept?.includes("text/html") ||
+                req.headers.accept?.includes("*/*")
             ) {
                 console.log("it is html; applying ESI");
-                transformerProxy(createEsiMiddleware(conf))(res, req, next);
+                transformerProxy(createEsiMiddleware(conf))(req, res, next);
             } else {
                 console.log("it is not html");
                 next();
