@@ -1,3 +1,7 @@
+## [3.0.2](https://github.com/redhataccess/spandx/compare/v3.0.1...v3.0.2) (2026-02-10)
+
+
+
 ## [3.0.1](https://github.com/redhataccess/spandx/compare/v2.2.7...v3.0.1) (2026-01-28)
 
 
