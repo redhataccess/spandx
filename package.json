@@ -54,7 +54,7 @@
         "porty": "3.1.1",
         "print-colors": "1.0.1",
         "proxy-agent": "6.5.0",
-        "serve-static": "1.15.0",
+        "serve-static": "1.16.0",
         "transformer-proxy": "0.3.5",
         "yargs": "17.4.1"
     },
